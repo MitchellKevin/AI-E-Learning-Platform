@@ -1,0 +1,124 @@
+@use "mixins" as *;
+
+@include motion-keyframes;
+
+@keyframes dot {
+  0%,
+  80%,
+  100% {
+    opacity: 0.25;
+  }
+  40% {
+    opacity: 1;
+  }
+}
+
+@keyframes caret {
+  50% {
+    opacity: 0;
+  }
+}
+
+.explanation {
+  max-width: 36rem;
+  padding: 12px 14px;
+  border: 1px solid var(--color-line);
+  border-left: 3px solid var(--color-brand);
+  border-radius: var(--radius-sm);
+  background: var(--color-canvas);
+  animation: fade-up var(--duration-slow) var(--ease-out) both;
+}
+
+.success {
+  border-left-color: var(--color-success);
+}
+
+.label {
+  @include eyebrow;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin-bottom: 6px;
+  font-size: 9px;
+  color: var(--color-brand);
+
+  svg {
+    width: 12px;
+    height: 12px;
+  }
+}
+
+.text {
+  font-size: 12px;
+  line-height: 1.65;
+  color: var(--color-body);
+}
+
+.streaming > span:first-child::after {
+  content: "";
+  display: inline-block;
+  width: 6px;
+  height: 12px;
+  margin-left: 2px;
+  border-radius: 1px;
+  background: var(--color-brand);
+  vertical-align: -2px;
+  animation: caret 900ms steps(1) infinite;
+}
+
+.thinking {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 12px;
+  color: var(--color-muted);
+}
+
+.dots {
+  display: inline-flex;
+  gap: 3px;
+
+  span {
+    width: 4px;
+    height: 4px;
+    border-radius: 999px;
+    background: var(--color-brand);
+    animation: dot 1s var(--ease-in-out) infinite;
+
+    &:nth-child(2) {
+      animation-delay: 150ms;
+    }
+
+    &:nth-child(3) {
+      animation-delay: 300ms;
+    }
+  }
+}
+
+.ask {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 0;
+  border: none;
+  background: none;
+  color: var(--color-brand);
+  font-size: 12px;
+  font-weight: 500;
+  text-decoration: underline;
+  text-decoration-color: transparent;
+  text-underline-offset: 3px;
+  cursor: pointer;
+  transition: text-decoration-color var(--duration) var(--ease-out);
+  @include focus-ring;
+
+  &:hover {
+    text-decoration-color: currentColor;
+  }
+
+  svg {
+    flex-shrink: 0;
+    width: 14px;
+    height: 14px;
+  }
+}

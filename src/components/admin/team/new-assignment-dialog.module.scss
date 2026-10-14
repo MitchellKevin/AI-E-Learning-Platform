@@ -1,0 +1,201 @@
+@use "mixins" as *;
+
+@include motion-keyframes;
+
+.form {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+
+.fieldset {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  min-width: 0;
+  margin: 0;
+  padding: 0;
+  border: none;
+}
+
+.legend {
+  padding: 0;
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--color-ink);
+}
+
+.modeRow {
+  display: flex;
+}
+
+// Teams als nette kaartjes naast elkaar
+
+.teams {
+  display: grid;
+  gap: 8px;
+  @include stagger-children(3, fade-in, var(--duration));
+
+  @include from($sm) {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+}
+
+.teamOption {
+  padding: 12px 14px;
+  border: 1px solid var(--color-line);
+  border-radius: var(--radius);
+  transition:
+    border-color var(--duration) var(--ease-out),
+    background-color var(--duration) var(--ease-out);
+
+  &:hover {
+    border-color: var(--color-line-strong);
+  }
+
+  &:has(input:checked) {
+    border-color: var(--color-brand);
+    background: var(--color-brand-soft);
+  }
+}
+
+// Personen: zoeken en een scrollende lijst
+
+.people {
+  border: 1px solid var(--color-line);
+  border-radius: var(--radius);
+  overflow: hidden;
+  animation: fade-in var(--duration) var(--ease-out) both;
+}
+
+.peopleHead {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px 16px;
+  padding: 12px;
+  border-bottom: 1px solid var(--color-line);
+  background: var(--color-canvas);
+}
+
+.peopleSearch {
+  flex: 1 1 220px;
+  background: var(--color-surface);
+}
+
+.peopleCount {
+  font-size: 12px;
+  font-weight: 500;
+  color: var(--color-body);
+  font-variant-numeric: tabular-nums;
+}
+
+.peopleList {
+  @include reset-list;
+  max-height: 248px;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+
+  > li + li {
+    border-top: 1px solid var(--color-line);
+  }
+}
+
+.person {
+  padding: 10px 12px;
+  transition: background-color var(--duration-fast) var(--ease-out);
+
+  &:hover {
+    background: var(--color-canvas);
+  }
+
+  &:has(input:checked) {
+    background: var(--color-brand-soft);
+  }
+}
+
+.noResults {
+  padding: 16px 12px;
+  font-size: 13px;
+  color: var(--color-muted);
+}
+
+.error {
+  display: flex;
+  align-items: flex-start;
+  gap: 6px;
+  font-size: 12px;
+  line-height: 1.4;
+  color: var(--color-danger);
+  @include enter(0, fade-up, var(--duration));
+
+  svg {
+    flex-shrink: 0;
+    width: 14px;
+    height: 14px;
+    margin-top: 1px;
+  }
+}
+
+// Deadline met snelkeuzes
+
+.row {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.quick {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.chip {
+  height: 30px;
+  padding-inline: 12px;
+  border: 1px solid var(--color-line-strong);
+  border-radius: 999px;
+  background: var(--color-surface);
+  color: var(--color-body);
+  font-size: 12px;
+  font-weight: 500;
+  cursor: pointer;
+  transition:
+    border-color var(--duration) var(--ease-out),
+    background-color var(--duration) var(--ease-out),
+    color var(--duration) var(--ease-out),
+    transform var(--duration-fast) var(--ease-out);
+  @include focus-ring;
+
+  &:hover {
+    border-color: var(--color-brand);
+    color: var(--color-brand);
+  }
+
+  &:active {
+    transform: scale(0.97);
+  }
+}
+
+.chipActive {
+  border-color: var(--color-brand);
+  background: var(--color-brand-soft);
+  color: var(--color-brand);
+}
+
+.counter {
+  font-size: 11px;
+  color: var(--color-muted);
+  font-variant-numeric: tabular-nums;
+}
+
+.counterOver {
+  font-weight: 600;
+  color: var(--color-danger);
+}
+
+.switch {
+  padding-top: 20px;
+  border-top: 1px solid var(--color-line);
+}

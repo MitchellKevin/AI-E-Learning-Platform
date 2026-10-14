@@ -1,0 +1,20 @@
+.name {
+  display: block;
+  font-family: var(--font-jetbrains), ui-monospace, monospace;
+  font-size: 12px;
+  font-weight: 500;
+  color: var(--color-ink);
+  overflow-wrap: anywhere;
+}
+
+.provider {
+  display: block;
+  margin-top: 2px;
+  font-size: 12px;
+  color: var(--color-muted);
+}
+
+.purpose {
+  min-width: 220px;
+  line-height: 1.5;
+}

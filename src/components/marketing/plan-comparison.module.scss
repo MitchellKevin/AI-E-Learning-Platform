@@ -1,0 +1,123 @@
+@use "mixins" as *;
+
+.table {
+  table-layout: fixed;
+
+  // Smal op mobiel, zodat er naast de vaste kolom nog een abonnement in beeld past.
+  th:first-child {
+    width: 150px;
+
+    @include from($md) {
+      width: 40%;
+    }
+  }
+}
+
+// Functiekolom blijft zichtbaar tijdens horizontaal scrollen.
+.sticky {
+  position: sticky;
+  left: 0;
+  z-index: 1;
+  background: var(--color-surface);
+  box-shadow: inset -1px 0 0 var(--color-line);
+
+  thead & {
+    background: var(--color-canvas);
+  }
+
+  // Zelfde hovertint als de rest van de rij, maar dekkend.
+  tbody tr:hover > & {
+    background: color-mix(in srgb, var(--color-surface), var(--color-ink) 2%);
+  }
+
+  @include from($lg) {
+    box-shadow: none;
+  }
+}
+
+.planHead {
+  display: inline-flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: center;
+  gap: 4px 6px;
+  font-size: 13px;
+  letter-spacing: 0;
+  text-transform: none;
+  color: var(--color-ink);
+}
+
+.groupRow {
+  background: var(--color-canvas);
+}
+
+.groupHead {
+  padding: 0;
+  border-top: 1px solid var(--color-line);
+  border-bottom: 1px solid var(--color-line);
+  text-align: left;
+}
+
+// Sticky binnen de rij, zodat de groepstitel bij scrollen links blijft staan.
+.groupTitle {
+  position: sticky;
+  left: 0;
+  display: inline-block;
+  padding: 12px 16px;
+  @include eyebrow;
+  color: var(--color-brand);
+}
+
+.rowHead {
+  height: 52px;
+  padding: 10px 12px;
+  border-bottom: 1px solid var(--color-line);
+  font-size: 13px;
+  font-weight: 400;
+  line-height: 1.4;
+  text-align: left;
+  color: var(--color-ink);
+
+  @include from($md) {
+    padding-inline: 16px;
+  }
+
+  tr:last-child > & {
+    border-bottom: 0;
+  }
+}
+
+// Aanbevolen abonnement: zachte merkkleur over de hele kolom.
+.highlight {
+  background: rgb(29 78 216 / 0.04);
+}
+
+.yes,
+.no {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 24px;
+  height: 24px;
+  border-radius: 999px;
+
+  svg {
+    width: 14px;
+    height: 14px;
+  }
+}
+
+.yes {
+  background: var(--color-brand-soft);
+  color: var(--color-brand);
+}
+
+.no {
+  color: var(--color-line-strong);
+}
+
+.text {
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--color-ink);
+}

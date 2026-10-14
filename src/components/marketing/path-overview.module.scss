@@ -1,0 +1,217 @@
+@use "mixins" as *;
+
+@include motion-keyframes;
+
+.overview {
+  margin-top: 40px;
+}
+
+.baseWrap {
+  @include enter(1);
+}
+
+.card {
+  @include card;
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  overflow: hidden;
+  transition:
+    border-color var(--duration) var(--ease-out),
+    box-shadow var(--duration) var(--ease-out);
+
+  &:hover {
+    border-color: var(--color-line-strong);
+    box-shadow: 0 6px 16px rgb(15 23 42 / 0.06);
+  }
+}
+
+.featured {
+  @include from($md) {
+    flex-direction: row;
+  }
+
+  .main {
+    @include from($md) {
+      flex: 1.2;
+      padding: 32px;
+    }
+  }
+
+  .side {
+    border-top: 1px solid var(--color-line);
+    background: var(--color-canvas);
+
+    @include from($md) {
+      flex: 1;
+      padding: 32px;
+      border-top: 0;
+      border-left: 1px solid var(--color-line);
+    }
+  }
+
+  .title {
+    font-size: 32px;
+  }
+}
+
+.main {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 12px;
+  padding: 24px;
+}
+
+.eyebrow {
+  @include eyebrow;
+  color: var(--color-brand);
+}
+
+.title {
+  font-size: 24px;
+  font-weight: 500;
+  letter-spacing: -0.02em;
+}
+
+.description {
+  max-width: 34rem;
+  margin-bottom: 4px;
+  font-size: 14px;
+  line-height: 1.6;
+  color: var(--color-body);
+}
+
+.tagIcon {
+  width: 12px;
+  height: 12px;
+  margin-right: 5px;
+}
+
+.side {
+  flex: 1;
+  padding: 20px 24px 24px;
+  border-top: 1px solid var(--color-line);
+}
+
+.sideTitle {
+  @include eyebrow;
+  color: var(--color-muted);
+}
+
+.topics {
+  @include reset-list;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  margin-top: 16px;
+  font-size: 14px;
+  color: var(--color-ink);
+
+  li {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+}
+
+.topicNumber {
+  display: flex;
+  flex-shrink: 0;
+  align-items: center;
+  justify-content: center;
+  width: 24px;
+  height: 24px;
+  border: 1px solid var(--color-line-strong);
+  border-radius: 999px;
+  background: var(--color-surface);
+  font-size: 11px;
+  font-weight: 600;
+  font-variant-numeric: tabular-nums;
+  color: var(--color-body);
+}
+
+.goals {
+  @include reset-list;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  margin-top: 14px;
+  font-size: 14px;
+  line-height: 1.45;
+  color: var(--color-body);
+
+  li {
+    display: flex;
+    align-items: flex-start;
+    gap: 8px;
+  }
+
+  svg {
+    flex-shrink: 0;
+    width: 16px;
+    height: 16px;
+    margin-top: 1px;
+    color: var(--color-success);
+  }
+}
+
+// Vertakking tussen AI 101 en de specialisaties.
+.fork {
+  position: relative;
+  display: flex;
+  justify-content: center;
+  height: 72px;
+  @include enter(2, fade-in);
+
+  // Verticale lijn uit de basiskaart.
+  &::before {
+    content: "";
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    left: 50%;
+    width: 1px;
+    background: var(--color-line-strong);
+  }
+
+  // Horizontale tak naar beide kaarten (alleen als ze naast elkaar staan).
+  &::after {
+    @include from($md) {
+      content: "";
+      position: absolute;
+      right: 25%;
+      bottom: 0;
+      left: 25%;
+      height: 12px;
+      border: 1px solid var(--color-line-strong);
+      border-bottom: 0;
+      border-radius: 8px 8px 0 0;
+    }
+  }
+}
+
+.forkLabel {
+  position: relative;
+  z-index: 1;
+  align-self: center;
+  margin-bottom: 8px;
+  padding: 5px 12px;
+  border: 1px solid var(--color-line);
+  border-radius: 999px;
+  background: var(--color-surface);
+  font-size: 12px;
+  font-weight: 500;
+  color: var(--color-body);
+}
+
+.specialisations {
+  @include reset-list;
+  display: grid;
+  gap: 16px;
+  @include stagger-children(2, fade-up, var(--duration-slow), 3);
+
+  @include from($md) {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}

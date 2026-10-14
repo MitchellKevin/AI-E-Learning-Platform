@@ -1,0 +1,154 @@
+@use "mixins" as *;
+
+@include motion-keyframes;
+
+.podium {
+  @include reset-list;
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  align-items: end;
+  gap: 8px;
+  max-width: 480px;
+  margin-inline: auto;
+
+  @include from($sm) {
+    gap: 16px;
+  }
+}
+
+.place {
+  // Treden rijzen na elkaar op; de persoon verschijnt zodra de trede staat.
+  --rise-delay: calc(var(--stagger) * 2 * var(--order, 0) + 80ms);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  min-width: 0;
+}
+
+// Visueel 2-1-3, in de DOM (en voor screenreaders) 1-2-3.
+.place1 {
+  order: 2;
+}
+
+.place2 {
+  order: 1;
+}
+
+.place3 {
+  order: 3;
+}
+
+.person {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: 100%;
+  padding-bottom: 12px;
+  text-align: center;
+  animation: fade-up var(--duration-slow) var(--ease-out) both;
+  animation-delay: calc(var(--rise-delay) + 320ms);
+}
+
+.avatar {
+  position: relative;
+  display: flex;
+  border-radius: 999px;
+  box-shadow: 0 0 0 3px var(--color-surface);
+
+  .me & {
+    box-shadow:
+      0 0 0 3px var(--color-surface),
+      0 0 0 5px var(--color-brand);
+  }
+
+  .place1 & {
+    animation: pop var(--duration-slow) var(--ease-out) both;
+    animation-delay: calc(var(--rise-delay) + 360ms);
+  }
+}
+
+.crown {
+  position: absolute;
+  top: -15px;
+  left: 50%;
+  display: flex;
+  color: var(--color-brand);
+  translate: -50% 0;
+}
+
+.name {
+  max-width: 100%;
+  margin-top: 10px;
+  overflow: hidden;
+  font-size: 13px;
+  font-weight: 600;
+  line-height: 1.3;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+
+  @include from($sm) {
+    font-size: 14px;
+  }
+}
+
+.you {
+  font-weight: 500;
+  color: var(--color-brand);
+}
+
+.team {
+  margin-top: 2px;
+  font-size: 11px;
+  color: var(--color-muted);
+}
+
+.points {
+  margin-top: 4px;
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--color-ink);
+  font-variant-numeric: tabular-nums;
+}
+
+.unit {
+  font-size: 11px;
+  font-weight: 400;
+  color: var(--color-muted);
+}
+
+.step {
+  display: flex;
+  justify-content: center;
+  width: 100%;
+  height: 52px;
+  padding-top: 10px;
+  border-radius: var(--radius) var(--radius) 0 0;
+  background: var(--color-brand-soft);
+  transform-origin: bottom;
+  animation: grow-y var(--duration-slow) var(--ease-out) both;
+  animation-delay: var(--rise-delay);
+
+  .place1 & {
+    height: 96px;
+    background: var(--color-brand);
+    color: #fff;
+  }
+
+  .place2 & {
+    height: 72px;
+  }
+}
+
+.rank {
+  font-size: 22px;
+  font-weight: 600;
+  line-height: 1;
+  color: var(--color-brand);
+  animation: fade-in var(--duration) var(--ease-out) both;
+  animation-delay: calc(var(--rise-delay) + 240ms);
+
+  .place1 & {
+    font-size: 28px;
+    color: #fff;
+  }
+}

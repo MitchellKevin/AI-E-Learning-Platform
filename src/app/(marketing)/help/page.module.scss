@@ -1,0 +1,317 @@
+@use "mixins" as *;
+
+@include motion-keyframes;
+
+// Kop met zoekveld
+
+.hero {
+  background: var(--color-surface);
+  border-bottom: 1px solid var(--color-line);
+}
+
+.heroInner {
+  @include container;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding-block: 48px 40px;
+  text-align: center;
+  @include stagger-children(4);
+
+  @include from($md) {
+    padding-block: 72px 56px;
+  }
+}
+
+.eyebrow {
+  @include eyebrow;
+  color: var(--color-brand);
+}
+
+.title {
+  max-width: 20ch;
+  margin-top: 12px;
+  font-size: 32px;
+  line-height: 1.15;
+  letter-spacing: -0.02em;
+
+  @include from($sm) {
+    font-size: 48px;
+  }
+}
+
+.lead {
+  max-width: 34rem;
+  margin-top: 14px;
+  font-size: 15px;
+  line-height: 1.6;
+  color: var(--color-body);
+}
+
+.searchWrap {
+  width: 100%;
+  margin-top: 28px;
+}
+
+// Inhoud
+
+.content {
+  @include container;
+  display: flex;
+  flex-direction: column;
+  gap: 56px;
+  padding-block: 48px 96px;
+}
+
+// Onderwerpen
+
+.categories {
+  @include reset-list;
+  display: grid;
+  gap: 12px;
+
+  @include from($md) {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  @include from($lg) {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+
+  @include stagger-children(5, fade-up, var(--duration-slow), 2);
+}
+
+// Springen via #categorie-… landt niet onder een vaste header.
+.categoryItem {
+  scroll-margin-top: 96px;
+}
+
+.category {
+  @include card;
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  padding: 20px;
+  transition: border-color var(--duration) var(--ease-out);
+
+  &:hover,
+  .categoryItem:target & {
+    border-color: var(--color-line-strong);
+  }
+
+  .categoryItem:target & {
+    box-shadow: 0 0 0 3px var(--color-brand-soft);
+  }
+}
+
+.categoryHead {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.categoryIcon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 40px;
+  height: 40px;
+  border-radius: 999px;
+  background: var(--color-brand-soft);
+  color: var(--color-brand);
+
+  svg {
+    width: 18px;
+    height: 18px;
+    transition: transform var(--duration) var(--ease-spring);
+  }
+
+  .category:hover & svg {
+    transform: scale(1.1);
+  }
+}
+
+.categoryCount {
+  @include eyebrow;
+  font-size: 10px;
+  color: var(--color-muted);
+}
+
+.categoryTitle {
+  margin-top: 16px;
+  font-size: 18px;
+  letter-spacing: -0.01em;
+}
+
+.categoryText {
+  margin-top: 4px;
+  font-size: 13px;
+  line-height: 1.6;
+  color: var(--color-body);
+}
+
+.categoryArticles {
+  @include reset-list;
+  margin-top: 16px;
+  border-top: 1px solid var(--color-line);
+
+  li + li {
+    border-top: 1px solid var(--color-line);
+  }
+}
+
+.categoryLink {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding-block: 10px;
+  border-radius: var(--radius-sm);
+  font-size: 13px;
+  line-height: 1.45;
+  transition: color var(--duration-fast) var(--ease-out);
+  @include focus-ring;
+
+  span {
+    transition: transform var(--duration) var(--ease-out);
+  }
+
+  svg {
+    flex-shrink: 0;
+    width: 14px;
+    height: 14px;
+    color: var(--color-muted);
+    transition:
+      transform var(--duration) var(--ease-out),
+      color var(--duration-fast) var(--ease-out);
+  }
+
+  &:hover {
+    color: var(--color-brand);
+
+    span {
+      transform: translateX(2px);
+    }
+
+    svg {
+      transform: translateX(2px);
+      color: var(--color-brand);
+    }
+  }
+}
+
+// FAQ + populair
+
+.split {
+  display: grid;
+  gap: 48px;
+
+  @include from($lg) {
+    grid-template-columns: minmax(0, 1fr) 320px;
+    align-items: start;
+    gap: 32px;
+  }
+}
+
+// Op mobiel eerst de populaire artikelen: kort en vaak precies wat je zoekt.
+.popular {
+  order: -1;
+
+  @include from($lg) {
+    order: 0;
+    position: sticky;
+    top: 96px;
+  }
+}
+
+.popularList {
+  @include reset-list;
+  @include card;
+  overflow: hidden;
+  @include stagger-children(6, fade-in, var(--duration-slow), 2);
+}
+
+.popularList > li + li {
+  border-top: 1px solid var(--color-line);
+}
+
+.popularLink {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 14px 16px;
+  outline: none;
+  transition: background-color var(--duration-fast) var(--ease-out);
+
+  &:hover,
+  &:focus-visible {
+    background: var(--color-canvas);
+  }
+
+  &:focus-visible {
+    box-shadow: inset 0 0 0 2px var(--color-brand);
+  }
+}
+
+.popularRank {
+  display: flex;
+  flex-shrink: 0;
+  align-items: center;
+  justify-content: center;
+  width: 26px;
+  height: 26px;
+  border: 1px solid var(--color-line-strong);
+  border-radius: 999px;
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--color-body);
+  transition:
+    border-color var(--duration-fast) var(--ease-out),
+    color var(--duration-fast) var(--ease-out);
+
+  .popularLink:hover & {
+    border-color: var(--color-brand);
+    color: var(--color-brand);
+  }
+}
+
+.popularText {
+  display: grid;
+  flex: 1;
+  gap: 2px;
+  min-width: 0;
+}
+
+.popularTitle {
+  font-size: 14px;
+  font-weight: 500;
+  line-height: 1.4;
+}
+
+.popularMeta {
+  font-size: 11px;
+  color: var(--color-muted);
+}
+
+.popularArrow {
+  flex-shrink: 0;
+  width: 15px;
+  height: 15px;
+  color: var(--color-muted);
+  transition:
+    transform var(--duration) var(--ease-out),
+    color var(--duration-fast) var(--ease-out);
+
+  .popularLink:hover & {
+    transform: translateX(3px);
+    color: var(--color-brand);
+  }
+}
+
+.faq {
+  min-width: 0;
+}
+
+.contact {
+  @include enter(3);
+}

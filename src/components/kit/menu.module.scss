@@ -1,0 +1,164 @@
+@use "mixins" as *;
+
+@keyframes menu-in {
+  from {
+    opacity: 0;
+    transform: translateY(-4px) scale(0.98);
+  }
+}
+
+.root {
+  position: relative;
+  display: inline-flex;
+}
+
+.bareTrigger {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 0;
+  border: none;
+  border-radius: 999px;
+  background: none;
+  cursor: pointer;
+  transition: transform var(--duration-fast) var(--ease-out);
+
+  &:active {
+    transform: scale(0.96);
+  }
+
+  &:focus-visible {
+    outline: 2px solid var(--color-brand);
+    outline-offset: 2px;
+  }
+}
+
+.content {
+  @include card;
+  position: absolute;
+  top: calc(100% + 8px);
+  z-index: var(--z-popover);
+  display: flex;
+  flex-direction: column;
+  min-width: 200px;
+  max-width: calc(100vw - 2 * var(--gutter));
+  max-height: min(480px, calc(100dvh - 96px));
+  padding: 6px;
+  overflow-y: auto;
+  box-shadow: var(--shadow-popover);
+  animation: menu-in var(--duration) var(--ease-out) both;
+}
+
+.start {
+  left: 0;
+  transform-origin: top left;
+}
+
+.end {
+  right: 0;
+  transform-origin: top right;
+}
+
+.popover {
+  padding: 0;
+
+  &:focus-visible {
+    outline: none;
+  }
+}
+
+.item {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  width: 100%;
+  padding: 8px 10px;
+  border: none;
+  border-radius: 6px;
+  background: none;
+  color: var(--color-ink);
+  font-size: 13px;
+  text-align: left;
+  cursor: pointer;
+  outline: none;
+  transition: background-color var(--duration-fast) var(--ease-out);
+
+  &:hover,
+  &:focus {
+    background: var(--color-canvas);
+  }
+
+  &:focus-visible {
+    box-shadow: inset 0 0 0 2px var(--color-brand);
+  }
+
+  &.danger {
+    color: var(--color-danger);
+  }
+
+  &.danger:hover,
+  &.danger:focus {
+    background: var(--color-danger-soft);
+  }
+
+  &.disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+  }
+
+  &.disabled:hover {
+    background: none;
+  }
+}
+
+.itemIcon {
+  display: flex;
+  flex-shrink: 0;
+  margin-top: 1px;
+  color: var(--color-muted);
+
+  svg {
+    width: 16px;
+    height: 16px;
+  }
+
+  .danger & {
+    color: inherit;
+  }
+}
+
+.itemText {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 0;
+}
+
+.itemLabel {
+  line-height: 1.4;
+}
+
+.itemDescription {
+  font-size: 12px;
+  line-height: 1.45;
+  color: var(--color-body);
+}
+
+.trailing {
+  flex-shrink: 0;
+  font-size: 11px;
+  color: var(--color-muted);
+}
+
+.separator {
+  height: 1px;
+  margin: 6px -6px;
+  background: var(--color-line);
+}
+
+.label {
+  @include eyebrow;
+  padding: 8px 10px 4px;
+  color: var(--color-muted);
+}

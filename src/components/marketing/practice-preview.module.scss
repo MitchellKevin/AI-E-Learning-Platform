@@ -1,0 +1,104 @@
+@use "mixins" as *;
+
+@include motion-keyframes;
+
+@keyframes blink {
+  50% {
+    opacity: 0;
+  }
+}
+
+.preview {
+  display: grid;
+  gap: 10px;
+  user-select: none;
+
+  @include from($md) {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+.prompt,
+.feedback {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  padding: 14px;
+  border: 1px solid var(--color-line);
+  border-radius: var(--radius);
+}
+
+.prompt {
+  background: var(--color-canvas);
+}
+
+.feedback {
+  background: var(--color-surface);
+}
+
+.label {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  @include eyebrow;
+  font-size: 10px;
+  color: var(--color-muted);
+
+  svg {
+    width: 12px;
+    height: 12px;
+  }
+
+  &.brand {
+    color: var(--color-brand);
+  }
+}
+
+.code {
+  font-family: var(--font-jetbrains), ui-monospace, monospace;
+  font-size: 12px;
+  line-height: 1.6;
+  color: var(--color-ink);
+}
+
+.caret {
+  display: inline-block;
+  width: 7px;
+  height: 14px;
+  margin-left: 2px;
+  vertical-align: -2px;
+  background: var(--color-brand);
+  animation: blink 1.1s steps(1) infinite;
+}
+
+.list {
+  @include reset-list;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  @include stagger-children(3, fade-up, var(--duration-slow), 4);
+}
+
+.item {
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+  font-size: 12px;
+  line-height: 1.45;
+  color: var(--color-body);
+
+  svg {
+    flex-shrink: 0;
+    width: 14px;
+    height: 14px;
+    margin-top: 1px;
+  }
+
+  &.ok svg {
+    color: var(--color-success);
+  }
+
+  &.todo svg {
+    color: var(--color-warning);
+  }
+}

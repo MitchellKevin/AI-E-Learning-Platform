@@ -1,0 +1,34 @@
+@use "mixins" as *;
+
+.list {
+  @include reset-list;
+  display: grid;
+  gap: 6px 24px;
+  font-size: 13px;
+  line-height: 1.5;
+  color: var(--color-body);
+
+  @include from($md) {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  li {
+    position: relative;
+    padding-left: 16px;
+
+    &::before {
+      content: "";
+      position: absolute;
+      top: 8px;
+      left: 2px;
+      width: 5px;
+      height: 5px;
+      border-radius: 999px;
+      background: var(--color-brand);
+    }
+  }
+}
+
+.action {
+  display: flex;
+}

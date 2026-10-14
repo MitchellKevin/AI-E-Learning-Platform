@@ -1,0 +1,359 @@
+@use "mixins" as *;
+
+@include motion-keyframes;
+
+// Kopie van shake; wisselen van naam herstart de animatie bij een herhaalde foute poging.
+@keyframes shake-alt {
+  20%,
+  60% {
+    transform: translateX(-4px);
+  }
+  40%,
+  80% {
+    transform: translateX(4px);
+  }
+}
+
+.blocks {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.text {
+  max-width: 36rem;
+  font-size: 13px;
+  line-height: 1.65;
+  color: var(--color-body);
+}
+
+.label {
+  margin-bottom: 8px;
+  font-size: 9px;
+  color: var(--color-body);
+}
+
+.steps {
+  @include reset-list;
+  display: grid;
+  overflow: hidden;
+  border: 1px solid var(--color-line);
+  border-radius: var(--radius-sm);
+  background: var(--color-canvas);
+
+  @include from($sm) {
+    grid-template-columns: repeat(3, 1fr);
+  }
+
+  li {
+    padding: 12px;
+    font-size: 11px;
+    color: var(--color-body);
+
+    & + li {
+      border-top: 1px solid var(--color-line);
+
+      @include from($sm) {
+        border-top: none;
+        border-left: 1px solid var(--color-line);
+      }
+    }
+  }
+}
+
+.stepLabel {
+  margin-bottom: 4px;
+  font-size: 9px;
+  color: var(--color-brand);
+}
+
+.code {
+  margin: 0;
+  padding: 14px 16px;
+  overflow-x: auto;
+  border: 1px solid var(--color-line);
+  border-radius: var(--radius-sm);
+  background: var(--color-canvas);
+  font-size: 11px;
+  line-height: 1.7;
+}
+
+.check {
+  display: flex;
+  flex-direction: column;
+}
+
+.question {
+  margin-block: 4px 12px;
+  font-size: 12px;
+}
+
+.inputRow {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.input {
+  flex: 1 1 200px;
+  height: 34px;
+  padding-inline: 12px;
+  border: 1px solid var(--color-line-strong);
+  border-radius: var(--radius-sm);
+  background: var(--color-canvas);
+  font-size: 12px;
+  transition:
+    border-color var(--duration) var(--ease-out),
+    background-color var(--duration) var(--ease-out);
+
+  &:focus {
+    outline: 2px solid var(--color-brand);
+    outline-offset: -1px;
+  }
+
+  &.correct {
+    border-color: var(--color-brand);
+    background: var(--color-brand-soft);
+  }
+
+  &.wrong {
+    border-color: var(--color-danger);
+    animation: shake 320ms var(--ease-out);
+
+    &.again {
+      animation-name: shake-alt;
+    }
+  }
+}
+
+%button {
+  height: 34px;
+  padding-inline: 16px;
+  border-radius: 999px;
+  font-size: 12px;
+  font-weight: 600;
+  cursor: pointer;
+  transition:
+    transform var(--duration-fast) var(--ease-out),
+    background-color var(--duration) var(--ease-out),
+    border-color var(--duration) var(--ease-out),
+    opacity var(--duration) var(--ease-out);
+  @include focus-ring;
+
+  &:active:not(:disabled) {
+    transform: scale(0.97);
+  }
+
+  &:disabled {
+    cursor: default;
+    opacity: 0.5;
+  }
+}
+
+.primaryButton {
+  @extend %button;
+  border: none;
+  background: var(--color-ink);
+  color: #fff;
+
+  &:hover:not(:disabled) {
+    background: var(--color-ink-hover);
+  }
+}
+
+.secondaryButton {
+  @extend %button;
+  align-self: flex-start;
+  border: 1px solid var(--color-line-strong);
+  background: var(--color-surface);
+
+  &:hover:not(:disabled) {
+    border-color: var(--color-ink);
+  }
+}
+
+.feedback {
+  min-height: 1em;
+  margin-top: 10px;
+  font-size: 12px;
+  color: var(--color-body);
+}
+
+.message {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  animation: fade-in var(--duration) var(--ease-out) both;
+}
+
+.success {
+  color: var(--color-brand);
+  font-weight: 500;
+
+  svg {
+    flex-shrink: 0;
+    width: 14px;
+    height: 14px;
+    stroke-width: 3;
+    animation: pop var(--duration-slow) var(--ease-out) 60ms both;
+  }
+}
+
+.hint {
+  display: block;
+  margin-top: 4px;
+  font-style: italic;
+  animation: fade-up var(--duration) var(--ease-out) both;
+}
+
+.danger {
+  color: var(--color-danger);
+}
+
+// Afronden zonder vragen: knop met uitleg waarom hij nog uit staat.
+.completeRow {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px 12px;
+
+  .secondaryButton {
+    align-self: auto;
+  }
+}
+
+.completeHint {
+  font-size: 12px;
+  color: var(--color-muted);
+}
+
+.continueRow {
+  display: flex;
+  animation: fade-up var(--duration-slow) var(--ease-out) 200ms both;
+}
+
+.explanationWrap {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 10px;
+  margin-top: 12px;
+}
+
+// Meerkeuzevraag
+
+.quiz {
+  display: flex;
+  flex-direction: column;
+  max-width: 36rem;
+
+  & + & {
+    padding-top: 20px;
+    border-top: 1px solid var(--color-line);
+  }
+}
+
+.options {
+  @include reset-list;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.shake {
+  animation: shake 320ms var(--ease-out);
+}
+
+.option {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  width: 100%;
+  min-height: 44px;
+  padding: 8px 12px 8px 8px;
+  border: 1px solid var(--color-line-strong);
+  border-radius: var(--radius-sm);
+  background: var(--color-surface);
+  color: var(--color-ink);
+  font-size: 12px;
+  line-height: 1.45;
+  text-align: left;
+  cursor: pointer;
+  transition:
+    border-color var(--duration) var(--ease-out),
+    background-color var(--duration) var(--ease-out),
+    color var(--duration) var(--ease-out),
+    opacity var(--duration) var(--ease-out);
+  @include focus-ring;
+
+  &:hover:not([aria-disabled]) {
+    border-color: var(--color-brand);
+    background: var(--color-canvas);
+
+    .marker {
+      border-color: var(--color-brand);
+      color: var(--color-brand);
+    }
+  }
+
+  &[aria-disabled] {
+    cursor: default;
+  }
+}
+
+.marker {
+  display: flex;
+  flex-shrink: 0;
+  align-items: center;
+  justify-content: center;
+  width: 26px;
+  height: 26px;
+  border: 1px solid var(--color-line-strong);
+  border-radius: 999px;
+  color: var(--color-body);
+  font-size: 11px;
+  font-weight: 600;
+  transition:
+    background-color var(--duration) var(--ease-out),
+    border-color var(--duration) var(--ease-out),
+    color var(--duration) var(--ease-out);
+
+  svg {
+    width: 13px;
+    height: 13px;
+    stroke-width: 3;
+    animation: pop var(--duration-slow) var(--ease-out) both;
+  }
+}
+
+.optionLabel {
+  flex: 1;
+  min-width: 0;
+}
+
+.optionWrong {
+  border-color: var(--color-danger-soft);
+  background: var(--color-danger-soft);
+  color: var(--color-body);
+
+  .marker {
+    border-color: transparent;
+    background: var(--color-danger);
+    color: #fff;
+  }
+}
+
+.optionRight {
+  border-color: var(--color-brand);
+  background: var(--color-brand-soft);
+
+  .marker {
+    border-color: transparent;
+    background: var(--color-brand);
+    color: #fff;
+  }
+}
+
+.optionMuted:not(.optionWrong) {
+  opacity: 0.55;
+}

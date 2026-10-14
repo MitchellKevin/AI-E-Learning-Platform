@@ -1,0 +1,189 @@
+@use "mixins" as *;
+
+@include motion-keyframes;
+
+.card {
+  @include card;
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+}
+
+.danger {
+  border-color: color-mix(in srgb, var(--color-danger) 28%, var(--color-line));
+}
+
+.head {
+  padding: 20px 20px 0;
+
+  @include from($sm) {
+    padding: 28px 32px 0;
+  }
+}
+
+.title {
+  font-size: 18px;
+  letter-spacing: -0.01em;
+
+  .danger & {
+    color: var(--color-danger);
+  }
+}
+
+.description {
+  max-width: 36rem;
+  margin-top: 6px;
+  font-size: 13px;
+  line-height: 1.55;
+  color: var(--color-body);
+}
+
+.body {
+  padding: 4px 20px 8px;
+
+  @include from($sm) {
+    padding: 8px 32px 12px;
+  }
+}
+
+// Blokken binnen een kaart
+
+.group {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  padding-block: 20px;
+
+  & + & {
+    border-top: 1px solid var(--color-line);
+  }
+
+  @include from($sm) {
+    padding-block: 24px;
+  }
+}
+
+.inline {
+  @include from($md) {
+    display: grid;
+    grid-template-columns: minmax(0, 220px) minmax(0, 1fr);
+    gap: 32px;
+  }
+}
+
+.groupText {
+  min-width: 0;
+}
+
+.groupTitle {
+  font-size: 14px;
+  font-weight: 600;
+}
+
+.groupDescription {
+  margin-top: 4px;
+  font-size: 12px;
+  line-height: 1.55;
+  color: var(--color-muted);
+
+  a {
+    border-radius: var(--radius-sm);
+    color: var(--color-brand);
+    text-decoration: underline;
+    @include focus-ring;
+  }
+}
+
+.groupBody {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  min-width: 0;
+}
+
+// Opslaan-balk: plakt onderaan in beeld zolang het formulier zichtbaar is.
+
+.footer {
+  position: sticky;
+  bottom: 0;
+  z-index: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  padding: 14px 20px;
+  border-top: 1px solid var(--color-line);
+  border-radius: 0 0 var(--radius) var(--radius);
+  background: var(--color-surface);
+  transition:
+    background-color var(--duration) var(--ease-out),
+    box-shadow var(--duration) var(--ease-out);
+
+  @include from($sm) {
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-between;
+    padding: 14px 32px;
+  }
+}
+
+.footerDirty {
+  background: color-mix(in srgb, var(--color-warning-soft) 55%, var(--color-surface));
+  box-shadow: 0 -6px 16px rgb(15 23 42 / 0.06);
+}
+
+.status {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  min-height: 20px;
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--color-ink);
+}
+
+.dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 999px;
+  background: var(--color-warning);
+  box-shadow: 0 0 0 3px var(--color-warning-soft);
+  animation: pop var(--duration-slow) var(--ease-out) both;
+}
+
+.saved {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  color: var(--color-success);
+  animation: fade-in var(--duration-slow) var(--ease-out) both;
+
+  svg {
+    width: 16px;
+    height: 16px;
+  }
+}
+
+.idle {
+  font-weight: 400;
+  color: var(--color-muted);
+}
+
+// Op mobiel naast elkaar op volle breedte, zodat de balk laag blijft.
+.buttons {
+  display: flex;
+  gap: 8px;
+
+  > * {
+    flex: 1;
+  }
+
+  @include from($sm) {
+    > * {
+      flex: none;
+    }
+  }
+}
+
+.resetButton {
+  animation: fade-in var(--duration) var(--ease-out) both;
+}

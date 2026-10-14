@@ -1,0 +1,345 @@
+@use "mixins" as *;
+
+@include motion-keyframes;
+
+// Kop
+
+.hero {
+  background: var(--color-surface);
+  border-bottom: 1px solid var(--color-line);
+}
+
+.heroInner {
+  @include container;
+  display: flex;
+  flex-direction: column;
+  gap: 32px;
+  padding-block: 40px;
+
+  @include from($lg) {
+    flex-direction: row;
+    align-items: flex-end;
+    justify-content: space-between;
+  }
+}
+
+.heroText {
+  max-width: 34rem;
+  @include stagger-children(3);
+}
+
+.title {
+  margin-block: 16px;
+  font-size: 36px;
+  letter-spacing: -0.02em;
+  outline: none;
+
+  @include from($sm) {
+    font-size: 48px;
+  }
+}
+
+.lead {
+  font-size: 15px;
+  line-height: 1.6;
+  color: var(--color-body);
+}
+
+.facts {
+  flex-shrink: 0;
+  @include enter(2);
+
+  @include from($lg) {
+    width: 480px;
+  }
+}
+
+// Layout
+
+.grid {
+  @include container;
+  display: grid;
+  gap: 32px;
+  padding-block: 40px 96px;
+
+  @include from($lg) {
+    grid-template-columns: minmax(0, 1fr) 300px;
+    align-items: start;
+  }
+}
+
+.main {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  min-width: 0;
+  @include stagger-children(4, $offset: 2);
+}
+
+.cardTitle {
+  font-size: 18px;
+}
+
+.cardText {
+  margin-top: 6px;
+  font-size: 13px;
+  line-height: 1.6;
+  color: var(--color-body);
+
+  strong {
+    font-weight: 600;
+    color: var(--color-ink);
+  }
+}
+
+// Vergrendeld
+
+.lockedCard {
+  padding: 24px;
+}
+
+.lockedHead {
+  display: flex;
+  align-items: flex-start;
+  gap: 16px;
+}
+
+.lockIcon {
+  display: flex;
+  flex-shrink: 0;
+  align-items: center;
+  justify-content: center;
+  width: 40px;
+  height: 40px;
+  border: 1px solid var(--color-line-strong);
+  border-radius: 999px;
+  color: var(--color-body);
+  transition:
+    background-color var(--duration) var(--ease-out),
+    border-color var(--duration) var(--ease-out),
+    color var(--duration) var(--ease-out);
+
+  svg {
+    width: 18px;
+    height: 18px;
+    animation: pop var(--duration-slow) var(--ease-out) both;
+  }
+
+  &.unlocked {
+    border-color: transparent;
+    background: var(--color-brand);
+    color: #fff;
+  }
+}
+
+.lockedBar {
+  height: 6px;
+  margin-top: 20px;
+}
+
+.requirements {
+  @include reset-list;
+  margin-top: 16px;
+  border-top: 1px solid var(--color-line);
+}
+
+.requirement {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding-block: 10px;
+  border-bottom: 1px solid var(--color-line);
+  font-size: 13px;
+}
+
+.reqCheck {
+  display: flex;
+  flex-shrink: 0;
+  align-items: center;
+  justify-content: center;
+  width: 18px;
+  height: 18px;
+  border: 1px solid var(--color-line-strong);
+  border-radius: 999px;
+
+  svg {
+    width: 12px;
+    height: 12px;
+  }
+
+  &.complete {
+    border-color: transparent;
+    background: var(--color-brand);
+    color: #fff;
+  }
+}
+
+.reqTitle {
+  flex: 1;
+  min-width: 0;
+}
+
+.reqCount {
+  font-size: 12px;
+  font-variant-numeric: tabular-nums;
+  color: var(--color-body);
+}
+
+.continue {
+  margin-top: 20px;
+}
+
+.demo {
+  margin-top: 20px;
+  padding-top: 16px;
+  border-top: 1px dashed var(--color-line-strong);
+}
+
+// Regels
+
+.rulesCard {
+  padding: 24px;
+}
+
+.rulesHead {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.rules {
+  @include reset-list;
+  display: grid;
+  gap: 20px;
+  margin-top: 20px;
+  @include stagger-children(6, $offset: 3);
+
+  @include from($md) {
+    grid-template-columns: 1fr 1fr;
+    gap: 24px 32px;
+  }
+}
+
+.rule {
+  display: flex;
+  align-items: flex-start;
+  gap: 14px;
+}
+
+.ruleIcon {
+  display: flex;
+  flex-shrink: 0;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  border-radius: var(--radius-sm);
+  background: var(--color-brand-soft);
+  color: var(--color-brand);
+
+  svg {
+    width: 16px;
+    height: 16px;
+  }
+}
+
+.ruleTitle {
+  font-size: 14px;
+  font-weight: 600;
+}
+
+.ruleText {
+  margin-top: 4px;
+  font-size: 13px;
+  line-height: 1.55;
+  color: var(--color-body);
+}
+
+.start {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 12px 20px;
+  margin-top: 28px;
+  padding-top: 24px;
+  border-top: 1px solid var(--color-line);
+}
+
+.startNote {
+  font-size: 12px;
+  color: var(--color-body);
+}
+
+// Zijbalk
+
+.aside {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  @include stagger-children(2, $offset: 3);
+}
+
+.sideCard {
+  padding: 20px;
+}
+
+.topics {
+  @include reset-list;
+  margin-top: 16px;
+}
+
+.topic {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding-block: 8px;
+  font-size: 13px;
+
+  & + & {
+    border-top: 1px solid var(--color-line);
+  }
+}
+
+.topicIcon {
+  display: flex;
+  flex-shrink: 0;
+  align-items: center;
+  justify-content: center;
+  width: 28px;
+  height: 28px;
+  border: 1px solid var(--color-line-strong);
+  border-radius: 999px;
+
+  svg {
+    width: 14px;
+    height: 14px;
+  }
+}
+
+.attempts {
+  @include reset-list;
+  margin-top: 12px;
+}
+
+.attempt {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding-block: 10px;
+
+  & + & {
+    border-top: 1px solid var(--color-line);
+  }
+}
+
+.attemptTitle {
+  font-size: 13px;
+  font-weight: 600;
+}
+
+.attemptDate {
+  margin-top: 2px;
+  font-size: 12px;
+  color: var(--color-body);
+}

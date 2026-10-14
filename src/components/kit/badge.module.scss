@@ -1,0 +1,67 @@
+@use "mixins" as *;
+
+.badge {
+  --fg: var(--color-body);
+  --bg: var(--color-track);
+  display: inline-flex;
+  flex-shrink: 0;
+  align-items: center;
+  gap: 6px;
+  height: 24px;
+  padding-inline: 10px;
+  border-radius: 999px;
+  background: var(--bg);
+  color: var(--fg);
+  font-size: 12px;
+  font-weight: 600;
+  line-height: 1;
+  white-space: nowrap;
+}
+
+.sm {
+  gap: 4px;
+  height: 20px;
+  padding-inline: 8px;
+  font-size: 11px;
+}
+
+.neutral {
+  --fg: var(--color-body);
+  --bg: var(--color-track);
+}
+
+.brand {
+  --fg: var(--color-brand);
+  --bg: var(--color-brand-soft);
+}
+
+.success {
+  --fg: var(--color-success);
+  --bg: var(--color-success-soft);
+}
+
+.warning {
+  --fg: var(--color-warning);
+  --bg: var(--color-warning-soft);
+}
+
+.danger {
+  --fg: var(--color-danger);
+  --bg: var(--color-danger-soft);
+}
+
+.dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 999px;
+  background: currentColor;
+}
+
+.icon {
+  display: flex;
+
+  svg {
+    width: 12px;
+    height: 12px;
+  }
+}

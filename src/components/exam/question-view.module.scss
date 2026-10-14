@@ -1,0 +1,228 @@
+@use "mixins" as *;
+
+@include motion-keyframes;
+
+// Elke vraag komt rustig binnen; de opties kort na elkaar.
+.question {
+  min-width: 0;
+  @include stagger-children(5, fade-up, var(--duration-slow));
+}
+
+.meta {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px 12px;
+}
+
+.number {
+  @include eyebrow;
+  color: var(--color-brand);
+}
+
+.topic {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 12px;
+  color: var(--color-body);
+
+  svg {
+    width: 14px;
+    height: 14px;
+  }
+}
+
+.prompt {
+  margin-top: 16px;
+  font-size: 22px;
+  font-weight: 500;
+  line-height: 1.35;
+  letter-spacing: -0.01em;
+  text-wrap: pretty;
+  outline: none;
+
+  @include from($sm) {
+    font-size: 26px;
+  }
+}
+
+.instruction {
+  margin-top: 8px;
+  font-size: 13px;
+  color: var(--color-body);
+}
+
+.context {
+  margin: 20px 0 0;
+  padding: 14px 16px;
+  border: 1px solid var(--color-line);
+  border-left: 3px solid var(--color-brand);
+  border-radius: var(--radius-sm);
+  background: var(--color-canvas);
+}
+
+.contextLabel {
+  @include eyebrow;
+  margin-bottom: 6px;
+  font-size: 10px;
+  color: var(--color-brand);
+}
+
+.contextBody {
+  margin: 0;
+  font-size: 13px;
+  line-height: 1.65;
+  color: var(--color-ink);
+  white-space: pre-line;
+}
+
+// Opties
+
+.choices {
+  min-width: 0;
+  margin: 24px 0 0;
+  padding: 0;
+  border: none;
+}
+
+.options {
+  @include reset-list;
+  display: grid;
+  gap: 10px;
+}
+
+.option {
+  @include card;
+  display: flex;
+  align-items: flex-start;
+  gap: 14px;
+  padding: 14px 16px;
+  border-color: var(--color-line-strong);
+  cursor: pointer;
+  transition:
+    border-color var(--duration) var(--ease-out),
+    box-shadow var(--duration) var(--ease-out),
+    background-color var(--duration) var(--ease-out);
+
+  &:hover {
+    border-color: var(--color-brand);
+  }
+
+  &:has(.input:focus-visible) {
+    outline: 2px solid var(--color-brand);
+    outline-offset: 2px;
+  }
+
+  &.selected {
+    border-color: var(--color-brand);
+    background: var(--color-brand-soft);
+    box-shadow: 0 0 0 1px var(--color-brand);
+  }
+}
+
+// Native input blijft voor toetsenbord en screenreader, maar is onzichtbaar.
+.input {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  margin: 0;
+  opacity: 0;
+  pointer-events: none;
+}
+
+.marker {
+  display: flex;
+  flex-shrink: 0;
+  align-items: center;
+  justify-content: center;
+  width: 26px;
+  height: 26px;
+  border: 1px solid var(--color-line-strong);
+  border-radius: 999px;
+  background: var(--color-surface);
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--color-body);
+  transition:
+    background-color var(--duration) var(--ease-out),
+    border-color var(--duration) var(--ease-out),
+    color var(--duration) var(--ease-out),
+    transform var(--duration) var(--ease-spring);
+
+  svg {
+    width: 14px;
+    height: 14px;
+    animation: pop var(--duration-slow) var(--ease-out) both;
+  }
+
+  &.square {
+    border-radius: var(--radius-sm);
+  }
+
+  .option:hover & {
+    border-color: var(--color-brand);
+    color: var(--color-brand);
+  }
+
+  .option:active & {
+    transform: scale(0.92);
+  }
+
+  .selected & {
+    border-color: transparent;
+    background: var(--color-brand);
+    color: #fff;
+  }
+
+  .selected:hover & {
+    color: #fff;
+  }
+}
+
+.optionLabel {
+  flex: 1;
+  min-width: 0;
+  padding-top: 3px;
+  font-size: 14px;
+  line-height: 1.5;
+  color: var(--color-ink);
+}
+
+// Open vraag
+
+.open {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  margin-top: 24px;
+}
+
+.aiBadge {
+  align-self: flex-start;
+}
+
+.wordCount {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin-top: -4px;
+  font-size: 12px;
+  font-variant-numeric: tabular-nums;
+  color: var(--color-body);
+  transition: color var(--duration) var(--ease-out);
+
+  svg {
+    width: 14px;
+    height: 14px;
+    animation: pop var(--duration-slow) var(--ease-out) both;
+  }
+
+  &.enough {
+    color: var(--color-success);
+  }
+}
+
+.wordGoal {
+  color: var(--color-muted);
+}

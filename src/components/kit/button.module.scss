@@ -1,0 +1,177 @@
+@use "mixins" as *;
+
+// Pilvormige knop, in lijn met ArrowButton en de deelknoppen op het certificaat.
+.button {
+  --height: 40px;
+  --pad: 18px;
+  --icon: 16px;
+  position: relative;
+  display: inline-flex;
+  flex-shrink: 0;
+  align-items: center;
+  justify-content: center;
+  height: var(--height);
+  padding-inline: var(--pad);
+  border: 1px solid transparent;
+  border-radius: 999px;
+  font-size: 13px;
+  font-weight: 600;
+  line-height: 1;
+  white-space: nowrap;
+  text-decoration: none;
+  cursor: pointer;
+  user-select: none;
+  transition:
+    background-color var(--duration) var(--ease-out),
+    border-color var(--duration) var(--ease-out),
+    color var(--duration) var(--ease-out),
+    box-shadow var(--duration) var(--ease-out),
+    transform var(--duration-fast) var(--ease-out);
+
+  &:focus-visible {
+    outline: 2px solid var(--color-brand);
+    outline-offset: 2px;
+  }
+
+  &:active:not(:disabled, [aria-disabled="true"]) {
+    transform: scale(0.97);
+  }
+
+  &:disabled,
+  &[aria-disabled="true"] {
+    cursor: not-allowed;
+    opacity: 0.5;
+  }
+
+  // Tijdens laden niet vervaagd: de spinner maakt de status al duidelijk.
+  &.loading {
+    cursor: progress;
+    opacity: 1;
+  }
+}
+
+.content {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  min-width: 0;
+  transition: opacity var(--duration) var(--ease-out);
+
+  .loading & {
+    opacity: 0;
+  }
+}
+
+.label {
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.icon {
+  display: flex;
+  flex-shrink: 0;
+  transition: transform var(--duration) var(--ease-out);
+
+  svg {
+    width: var(--icon);
+    height: var(--icon);
+  }
+}
+
+// Pijl na het label schuift een tikje mee bij hover.
+.button:hover:not(:disabled) .iconRight {
+  transform: translateX(2px);
+}
+
+.spinner {
+  position: absolute;
+  inset: 0;
+  margin: auto;
+}
+
+// Maten
+
+.sm {
+  --height: 32px;
+  --pad: 14px;
+  --icon: 14px;
+  font-size: 12px;
+
+  .content {
+    gap: 6px;
+  }
+}
+
+.md {
+  --height: 40px;
+}
+
+.lg {
+  --height: 48px;
+  --pad: 24px;
+  --icon: 18px;
+  font-size: 15px;
+}
+
+.fullWidth {
+  display: flex;
+  width: 100%;
+}
+
+.iconOnly {
+  width: var(--height);
+  padding: 0;
+}
+
+// Varianten
+
+.primary {
+  background: var(--color-brand);
+  color: #fff;
+
+  &:hover:not(:disabled, .loading) {
+    background: var(--color-brand-hover);
+  }
+}
+
+.dark {
+  background: var(--color-ink);
+  color: #fff;
+
+  &:hover:not(:disabled, .loading) {
+    background: var(--color-ink-hover);
+  }
+}
+
+.secondary {
+  border-color: var(--color-line-strong);
+  background: var(--color-surface);
+  color: var(--color-ink);
+
+  &:hover:not(:disabled, .loading) {
+    border-color: var(--color-ink);
+  }
+}
+
+.ghost {
+  background: transparent;
+  color: var(--color-body);
+
+  &:hover:not(:disabled, .loading) {
+    background: var(--color-canvas);
+    color: var(--color-ink);
+  }
+}
+
+.danger {
+  background: var(--color-danger);
+  color: #fff;
+
+  &:hover:not(:disabled, .loading) {
+    background: var(--color-danger-hover);
+  }
+
+  &:focus-visible {
+    outline-color: var(--color-danger);
+  }
+}

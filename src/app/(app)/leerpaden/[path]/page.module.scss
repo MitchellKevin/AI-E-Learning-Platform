@@ -1,0 +1,574 @@
+@use "mixins" as *;
+
+@include motion-keyframes;
+
+// Kop
+
+.hero {
+  background: var(--color-surface);
+  border-bottom: 1px solid var(--color-line);
+}
+
+.heroInner {
+  @include container;
+  display: flex;
+  flex-direction: column;
+  gap: 32px;
+  padding-block: 40px;
+
+  @include from($lg) {
+    flex-direction: row;
+    align-items: flex-start;
+    justify-content: space-between;
+  }
+}
+
+.heroText {
+  max-width: 36rem;
+  // Kruimelpad, titel, intro en tags komen kort na elkaar binnen
+  @include stagger-children(4);
+}
+
+.title {
+  margin-block: 16px;
+  font-size: 48px;
+  letter-spacing: -0.02em;
+}
+
+.lead {
+  margin-bottom: 20px;
+  font-size: 15px;
+  line-height: 1.6;
+  color: var(--color-body);
+}
+
+.progressCard {
+  width: 100%;
+  padding: 20px;
+  border-color: var(--color-line-strong);
+  background: var(--color-canvas);
+  @include enter(2);
+
+  @include from($lg) {
+    width: 288px;
+  }
+}
+
+.progressHead {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  font-size: 12px;
+  color: var(--color-body);
+}
+
+.percent {
+  font-size: 30px;
+  font-weight: 500;
+  color: var(--color-brand);
+}
+
+.progressBar {
+  height: 6px;
+  margin-top: 16px;
+}
+
+.progressText {
+  margin-block: 12px 20px;
+  font-size: 12px;
+  color: var(--color-body);
+}
+
+// Layout
+
+.grid {
+  @include container;
+  display: grid;
+  gap: 32px;
+  padding-block: 40px 96px;
+
+  @include from($lg) {
+    grid-template-columns: minmax(0, 1fr) 264px;
+  }
+}
+
+.sectionTitle {
+  font-size: 18px;
+}
+
+.topics {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  margin-top: 20px;
+  @include stagger-children(6, $offset: 2);
+
+  > :nth-child(n + 7) {
+    animation-delay: calc(var(--stagger) * 8);
+  }
+}
+
+// Onderwerp (details/summary-accordion)
+
+.topic {
+  @include card;
+  transition: border-color var(--duration) var(--ease-out);
+
+  &[open],
+  &:has(> .summary:hover) {
+    border-color: var(--color-line-strong);
+  }
+
+  // Vloeiend open/dicht waar de browser het ondersteunt; anders gewoon direct
+  @supports (interpolate-size: allow-keywords) {
+    interpolate-size: allow-keywords;
+
+    &::details-content {
+      block-size: 0;
+      overflow: clip;
+      // Ruimte voor de focus-ring van de eerste hoofdstukrij
+      overflow-clip-margin: 4px;
+      opacity: 0;
+      transition:
+        block-size var(--duration-slow) var(--ease-out),
+        opacity var(--duration) var(--ease-out),
+        content-visibility var(--duration-slow) allow-discrete;
+    }
+
+    &[open]::details-content {
+      block-size: auto;
+      opacity: 1;
+    }
+  }
+}
+
+.summary {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+  padding: 20px;
+  border-radius: var(--radius);
+  cursor: pointer;
+  list-style: none;
+  @include focus-ring;
+
+  &::-webkit-details-marker {
+    display: none;
+  }
+}
+
+.topicIcon {
+  display: flex;
+  flex-shrink: 0;
+  align-items: center;
+  justify-content: center;
+  width: 40px;
+  height: 40px;
+  border: 1px solid var(--color-line-strong);
+  border-radius: 999px;
+  transition:
+    border-color var(--duration) var(--ease-out),
+    color var(--duration) var(--ease-out);
+
+  svg {
+    width: 18px;
+    height: 18px;
+    transition: transform var(--duration) var(--ease-spring);
+  }
+
+  .summary:hover & {
+    border-color: var(--color-brand);
+    color: var(--color-brand);
+
+    svg {
+      transform: scale(1.1);
+    }
+  }
+
+  &.done {
+    border-color: transparent;
+    background: var(--color-brand);
+    color: #fff;
+
+    .summary:hover & {
+      color: #fff;
+    }
+  }
+
+  &.active {
+    border-color: var(--color-brand);
+  }
+}
+
+.topicText {
+  flex: 1;
+  min-width: 0;
+}
+
+.topicTitle {
+  font-size: 16px;
+  transition: color var(--duration) var(--ease-out);
+
+  .summary:hover & {
+    color: var(--color-brand);
+  }
+}
+
+.topicMeta {
+  margin-top: 2px;
+  font-size: 12px;
+  color: var(--color-body);
+}
+
+.topicStatus {
+  display: none;
+  flex-shrink: 0;
+  width: 144px;
+  text-align: right;
+
+  @include from($sm) {
+    display: block;
+  }
+}
+
+.statusLabel {
+  @include eyebrow;
+  display: block;
+  margin-bottom: 8px;
+  font-size: 10px;
+  color: var(--color-body);
+
+  &.highlight {
+    color: var(--color-brand);
+  }
+}
+
+.chevron {
+  flex-shrink: 0;
+  width: 16px;
+  height: 16px;
+  color: var(--color-body);
+  transition:
+    transform var(--duration-slow) var(--ease-out),
+    color var(--duration) var(--ease-out);
+
+  .summary:hover & {
+    color: var(--color-ink);
+  }
+
+  .topic[open] & {
+    transform: rotate(180deg);
+  }
+}
+
+// Hoofdstukken
+
+.chapters {
+  @include reset-list;
+  margin: 0 20px 8px;
+  border-top: 1px solid var(--color-line);
+
+  @include from($sm) {
+    margin-left: 80px;
+  }
+
+  li + li {
+    border-top: 1px solid var(--color-line);
+  }
+
+  // Zonder vloeiende details-overgang faden de rijen kort na elkaar in bij openen
+  @supports not (interpolate-size: allow-keywords) {
+    .topic[open] & {
+      @include stagger-children(5, fade-in, var(--duration));
+
+      > :nth-child(n + 6) {
+        animation-delay: calc(var(--stagger) * 5);
+      }
+    }
+  }
+}
+
+.chapter {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  padding-block: 12px;
+  border-radius: var(--radius-sm);
+  font-size: 12px;
+  transition: color var(--duration-fast) var(--ease-out);
+  @include focus-ring;
+
+  &:hover {
+    color: var(--color-brand);
+  }
+}
+
+.check {
+  display: flex;
+  flex-shrink: 0;
+  align-items: center;
+  justify-content: center;
+  width: 18px;
+  height: 18px;
+  border: 1px solid var(--color-line-strong);
+  border-radius: 999px;
+  transition: border-color var(--duration-fast) var(--ease-out);
+
+  svg {
+    width: 12px;
+    height: 12px;
+  }
+
+  .chapter:hover & {
+    border-color: var(--color-brand);
+  }
+
+  &.done {
+    border-color: transparent;
+    background: var(--color-brand);
+    color: #fff;
+  }
+
+  // Vinkje ploept in bij openen van het onderwerp
+  .topic[open] &.done svg {
+    animation: pop var(--duration) var(--ease-out) both;
+    animation-delay: calc(var(--stagger) * 2);
+  }
+
+  &.active {
+    border-color: var(--color-brand);
+  }
+}
+
+.chapterTitle {
+  flex: 1;
+  transition: transform var(--duration) var(--ease-out);
+
+  .chapter:hover & {
+    transform: translateX(2px);
+  }
+
+  &.active {
+    font-weight: 600;
+    color: var(--color-brand);
+  }
+}
+
+.chapterMeta {
+  font-size: 11px;
+  color: var(--color-body);
+}
+
+// Zijbalk
+
+.aside {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  @include stagger-children(3, $offset: 3);
+}
+
+.sideCard {
+  padding: 20px;
+}
+
+.sideText {
+  margin-top: 12px;
+  font-size: 12px;
+  line-height: 1.6;
+  color: var(--color-body);
+
+  a {
+    font-weight: 500;
+    color: var(--color-brand);
+  }
+}
+
+.routeCurrent {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-top: 16px;
+  padding: 12px;
+  border-radius: var(--radius-sm);
+  background: var(--color-brand);
+  color: #fff;
+  font-size: 14px;
+  font-weight: 600;
+
+  span:last-child {
+    font-size: 11px;
+    font-weight: 400;
+  }
+}
+
+.routeLine {
+  width: 1px;
+  height: 12px;
+  margin-inline: auto;
+  background: var(--color-line-strong);
+  transform-origin: top;
+  // Lijnen tekenen zich na binnenkomst van de kaart
+  animation: grow-y var(--duration-slow) var(--ease-out) both;
+  animation-delay: calc(var(--stagger) * 4);
+
+  & ~ & {
+    animation-delay: calc(var(--stagger) * 6);
+  }
+}
+
+.routeLabel {
+  @include eyebrow;
+  @include enter(5, fade-in);
+  font-size: 10px;
+  text-align: center;
+  color: var(--color-body);
+}
+
+.routeOptions {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px;
+  // Binnenkomst op de wrapper, zodat de hover-lift op de opties zelf blijft werken
+  @include enter(7);
+}
+
+.routeOption {
+  padding: 12px;
+  border: 1px solid var(--color-line-strong);
+  border-radius: var(--radius-sm);
+  @include hover-lift;
+  @include focus-ring;
+
+  &:hover {
+    border-color: var(--color-brand);
+  }
+
+  strong {
+    display: block;
+    font-size: 14px;
+    line-height: 1.3;
+  }
+
+  span {
+    display: block;
+    margin-top: 4px;
+    font-size: 10px;
+    color: var(--color-body);
+  }
+}
+
+.goals {
+  margin: 12px 0 0;
+  padding-left: 16px;
+  font-size: 12px;
+  line-height: 1.6;
+  color: var(--color-body);
+
+  li + li {
+    margin-top: 8px;
+  }
+}
+
+.certificate {
+  padding: 20px;
+  border: 1px dashed var(--color-line-strong);
+  border-radius: var(--radius);
+  transition: border-color var(--duration) var(--ease-out);
+
+  &:hover {
+    border-color: var(--color-brand);
+  }
+
+  &.certificateDone {
+    border-style: solid;
+    border-color: transparent;
+    background: var(--color-success-soft);
+  }
+}
+
+.certificateHead {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+}
+
+// Status van de eindtoets: vergrendeld, open of behaald
+.examStatus {
+  @include eyebrow;
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  height: 22px;
+  padding-inline: 8px;
+  border-radius: 999px;
+  font-size: 9px;
+  white-space: nowrap;
+  @include enter(5, pop);
+
+  svg {
+    width: 11px;
+    height: 11px;
+  }
+
+  &.locked {
+    border: 1px solid var(--color-line-strong);
+    color: var(--color-body);
+  }
+
+  &.open {
+    background: var(--color-brand-soft);
+    color: var(--color-brand);
+  }
+
+  &.passed {
+    background: var(--color-success);
+    color: #fff;
+  }
+}
+
+.examFacts {
+  @include reset-list;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px 12px;
+  margin-top: 12px;
+  font-size: 11px;
+  color: var(--color-muted);
+
+  li + li::before {
+    content: "·";
+    margin-right: 12px;
+  }
+}
+
+.examLocked {
+  margin-top: 12px;
+  font-size: 11px;
+  font-weight: 500;
+  color: var(--color-body);
+}
+
+.examLink {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  margin-top: 16px;
+  border-radius: var(--radius-sm);
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--color-brand);
+  @include focus-ring;
+
+  svg {
+    width: 14px;
+    height: 14px;
+    transition: transform var(--duration) var(--ease-out);
+  }
+
+  &:hover svg,
+  .certificate:hover & svg {
+    transform: translateX(3px);
+  }
+}

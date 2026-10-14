@@ -1,0 +1,226 @@
+@use "mixins" as *;
+
+@include motion-keyframes;
+
+.figure {
+  min-width: 0;
+}
+
+.plot {
+  position: relative;
+  padding-top: 20px; // ruimte voor de waarde boven de hoogste kolom
+}
+
+// Rasterlijnen: bovengrens, helft en nul.
+.grid {
+  position: absolute;
+  top: 20px;
+  right: 0;
+  left: 0;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  height: var(--h);
+  pointer-events: none;
+}
+
+.gridLine {
+  position: relative;
+  height: 0;
+  border-top: 1px dashed var(--color-line);
+
+  &:last-child {
+    border-top-style: solid;
+    border-top-color: var(--color-line-strong);
+  }
+}
+
+.gridLabel {
+  position: absolute;
+  top: -7px;
+  left: 0;
+  font-size: 10px;
+  line-height: 1;
+  color: var(--color-muted);
+  font-variant-numeric: tabular-nums;
+}
+
+.columns {
+  @include reset-list;
+  position: relative;
+  display: grid;
+  grid-auto-columns: minmax(0, 1fr);
+  grid-auto-flow: column;
+  gap: 2px;
+  margin-left: 32px;
+}
+
+.column {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  min-width: 0;
+  border-radius: var(--radius-sm);
+  outline: none;
+  cursor: default;
+
+  &:focus-visible {
+    box-shadow: 0 0 0 2px var(--color-brand);
+  }
+}
+
+.track {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+  align-items: center;
+  width: 100%;
+  height: var(--h);
+}
+
+.bar {
+  width: min(70%, 28px);
+  height: calc(var(--h) * var(--v));
+  min-height: 2px;
+  border-radius: 4px 4px 0 0;
+  background: var(--color-bar);
+  transform-origin: bottom;
+  animation: grow-y 600ms var(--ease-out) both;
+  animation-delay: calc(var(--stagger) * var(--i, 0));
+  transition: background-color var(--duration) var(--ease-out);
+
+  &.current {
+    background: var(--color-brand);
+  }
+
+  &.empty {
+    background: var(--color-line);
+  }
+
+  .column:hover &,
+  .column:focus-visible & {
+    background: var(--color-brand-hover);
+  }
+}
+
+.value {
+  margin-bottom: 4px;
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--color-ink);
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+  animation: fade-in var(--duration-slow) var(--ease-out) both;
+  animation-delay: calc(var(--stagger) * var(--i, 0) + 300ms);
+}
+
+.x {
+  max-width: 100%;
+  margin-top: 8px;
+  overflow: hidden;
+  font-size: 10px;
+  color: var(--color-muted);
+  text-overflow: clip;
+  white-space: nowrap;
+}
+
+// Veel kolommen op een smal scherm: alleen elk tweede label (de laatste altijd).
+@media (max-width: #{$md - 1px}) {
+  .dense .x {
+    max-width: none;
+    overflow: visible;
+  }
+
+  .dense .column:nth-last-child(even) .x {
+    visibility: hidden;
+  }
+}
+
+// Tooltip boven de kolom, alleen bij hover of focus.
+.tip {
+  position: absolute;
+  bottom: calc(100% - 12px);
+  left: 50%;
+  z-index: 2;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  padding: 8px 10px;
+  border: 1px solid var(--color-line);
+  border-radius: var(--radius);
+  background: var(--color-surface);
+  box-shadow: var(--shadow-popover);
+  font-size: 11px;
+  color: var(--color-muted);
+  white-space: nowrap;
+  opacity: 0;
+  pointer-events: none;
+  transform: translate(-50%, 4px);
+  transition:
+    opacity var(--duration-fast) var(--ease-out),
+    transform var(--duration-fast) var(--ease-out);
+
+  strong {
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--color-ink);
+    font-variant-numeric: tabular-nums;
+  }
+
+  .edgeStart & {
+    left: 0;
+    transform: translate(0, 4px);
+  }
+
+  .edgeEnd & {
+    right: 0;
+    left: auto;
+    transform: translate(0, 4px);
+  }
+
+  .column:hover &,
+  .column:focus-visible & {
+    opacity: 1;
+    transform: translate(-50%, 0);
+  }
+
+  .edgeStart.column:hover &,
+  .edgeStart.column:focus-visible &,
+  .edgeEnd.column:hover &,
+  .edgeEnd.column:focus-visible & {
+    transform: translate(0, 0);
+  }
+}
+
+.caption {
+  margin-top: 16px;
+  font-size: 12px;
+  line-height: 1.5;
+  color: var(--color-body);
+}
+
+.details {
+  margin-top: 12px;
+}
+
+.summary {
+  display: inline-flex;
+  border-radius: var(--radius-sm);
+  font-size: 12px;
+  font-weight: 500;
+  color: var(--color-brand);
+  cursor: pointer;
+  @include focus-ring;
+
+  &:hover {
+    text-decoration: underline;
+  }
+}
+
+.table {
+  margin-top: 12px;
+  border: 1px solid var(--color-line);
+  border-radius: var(--radius);
+}

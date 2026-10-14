@@ -1,0 +1,287 @@
+@use "mixins" as *;
+
+@include motion-keyframes;
+
+// Kop
+
+.hero {
+  background: var(--color-surface);
+  border-bottom: 1px solid var(--color-line);
+}
+
+.heroInner {
+  @include container;
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+  padding-block: 40px;
+
+  @include from($md) {
+    flex-direction: row;
+    align-items: flex-end;
+    justify-content: space-between;
+  }
+}
+
+.identity {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  min-width: 0;
+
+  @include from($sm) {
+    flex-direction: row;
+    align-items: center;
+    gap: 24px;
+  }
+}
+
+.avatar {
+  display: flex;
+  flex-shrink: 0;
+  align-self: flex-start;
+  padding: 4px;
+  border: 1px solid var(--color-line);
+  border-radius: 999px;
+  @include enter(0, pop);
+
+  @include from($sm) {
+    align-self: center;
+  }
+
+  > span {
+    color: var(--color-brand);
+  }
+}
+
+.identityText {
+  min-width: 0;
+  @include stagger-children(3, fade-up, var(--duration-slow), 1);
+}
+
+.eyebrow {
+  @include eyebrow;
+  color: var(--color-brand);
+}
+
+.title {
+  margin-top: 8px;
+  font-size: 32px;
+  line-height: 1.15;
+  letter-spacing: -0.02em;
+  overflow-wrap: anywhere;
+
+  @include from($sm) {
+    font-size: 40px;
+  }
+}
+
+.meta {
+  @include reset-list;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px 18px;
+  margin-top: 12px;
+  font-size: 13px;
+  color: var(--color-body);
+
+  li {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+  }
+
+  svg {
+    flex-shrink: 0;
+    width: 15px;
+    height: 15px;
+    color: var(--color-muted);
+  }
+}
+
+.actions {
+  display: flex;
+  flex-shrink: 0;
+  flex-wrap: wrap;
+  gap: 8px;
+  @include enter(3, fade-in);
+}
+
+// Inhoud
+
+.content {
+  @include container;
+  padding-block: 32px 96px;
+}
+
+.stats {
+  @include enter(2);
+}
+
+.grid {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: 40px 24px;
+  margin-top: 40px;
+
+  @include from($lg) {
+    grid-template-columns: minmax(0, 1fr) 300px;
+    align-items: start;
+  }
+}
+
+.main {
+  display: flex;
+  flex-direction: column;
+  gap: 40px;
+  min-width: 0;
+}
+
+.aside {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  @include stagger-children(2, fade-up, var(--duration-slow), 4);
+
+  @include from($lg) {
+    // Op desktop gelijk met de eerste kaart onder de sectiekop.
+    padding-top: 37px;
+  }
+}
+
+.sideCard {
+  padding: 20px;
+}
+
+.sideHead {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.sideTitle {
+  font-size: 16px;
+}
+
+.sideMeta {
+  font-size: 12px;
+  color: var(--color-muted);
+}
+
+.sideText {
+  margin-top: 12px;
+  font-size: 13px;
+  line-height: 1.55;
+  color: var(--color-body);
+}
+
+.sideLink {
+  display: inline-block;
+  margin-top: 14px;
+  border-radius: var(--radius-sm);
+  font-size: 12px;
+  font-weight: 500;
+  color: var(--color-brand);
+  @include focus-ring;
+
+  &:hover {
+    text-decoration: underline;
+  }
+}
+
+.certList {
+  @include reset-list;
+  margin-top: 12px;
+
+  li + li {
+    border-top: 1px solid var(--color-line);
+  }
+}
+
+.certItem {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding-block: 10px;
+  border-radius: var(--radius-sm);
+  @include focus-ring;
+
+  &:hover strong {
+    color: var(--color-brand);
+  }
+
+  &:hover .certChevron {
+    transform: translateX(3px);
+    color: var(--color-brand);
+  }
+}
+
+.certIcon {
+  display: flex;
+  flex-shrink: 0;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  border-radius: var(--radius-sm);
+  background: var(--color-brand);
+  color: #fff;
+
+  svg {
+    width: 16px;
+    height: 16px;
+  }
+}
+
+.certText {
+  flex: 1;
+  min-width: 0;
+
+  strong {
+    display: block;
+    font-size: 13px;
+    font-weight: 500;
+    transition: color var(--duration-fast) var(--ease-out);
+  }
+
+  small {
+    font-size: 11px;
+    color: var(--color-body);
+  }
+}
+
+.certChevron {
+  flex-shrink: 0;
+  width: 16px;
+  height: 16px;
+  color: var(--color-muted);
+  transition:
+    transform var(--duration) var(--ease-out),
+    color var(--duration) var(--ease-out);
+}
+
+.visibility {
+  display: flex;
+  gap: 10px;
+  margin-top: 12px;
+  font-size: 13px;
+  line-height: 1.55;
+  color: var(--color-body);
+
+  svg {
+    flex-shrink: 0;
+    width: 16px;
+    height: 16px;
+    margin-top: 2px;
+    color: var(--color-brand);
+  }
+
+  &.hidden svg {
+    color: var(--color-muted);
+  }
+}
+
+.badges {
+  margin-top: 56px;
+}

@@ -1,0 +1,451 @@
+@use "mixins" as *;
+
+@include motion-keyframes;
+
+@keyframes float {
+  50% {
+    transform: translateY(-6px);
+  }
+}
+
+.visual {
+  position: relative;
+  padding-block: 28px 36px;
+  font-size: 11px;
+  color: var(--color-ink);
+  user-select: none;
+
+  @include from($sm) {
+    padding-inline: 16px 24px;
+  }
+}
+
+// App-venster
+
+.windowWrap {
+  @include enter(2);
+}
+
+.window {
+  overflow: hidden;
+  border: 1px solid var(--color-line-strong);
+  border-radius: 12px;
+  background: var(--color-canvas);
+  box-shadow:
+    0 30px 60px -20px rgb(15 23 42 / 0.18),
+    0 2px 6px rgb(15 23 42 / 0.05);
+}
+
+.bar {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  height: 40px;
+  padding-inline: 12px;
+  border-bottom: 1px solid var(--color-line);
+  background: var(--color-surface);
+}
+
+.logo {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  margin-right: 6px;
+  font-size: 11px;
+  font-weight: 500;
+}
+
+.logoText {
+  display: none;
+
+  @include from($sm) {
+    display: inline;
+  }
+}
+
+.mark {
+  padding: 3px 6px;
+  border-radius: 999px;
+  background: var(--color-brand);
+  color: #fff;
+  font-size: 8px;
+  font-weight: 700;
+}
+
+.navPill {
+  padding: 4px 8px;
+  border-radius: 999px;
+  color: var(--color-body);
+  font-size: 10px;
+
+  &.active {
+    background: var(--color-brand-soft);
+    color: var(--color-brand);
+    font-weight: 600;
+  }
+
+  &.wide {
+    display: none;
+
+    @include from($sm) {
+      display: inline;
+    }
+  }
+}
+
+.avatar {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 22px;
+  height: 22px;
+  margin-left: auto;
+  border-radius: 999px;
+  background: var(--color-brand-soft);
+  font-size: 8px;
+  font-weight: 600;
+}
+
+.body {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  padding: 16px;
+
+  @include from($sm) {
+    padding: 20px;
+  }
+}
+
+.eyebrow {
+  @include eyebrow;
+  font-size: 8px;
+  color: var(--color-brand);
+}
+
+.hello {
+  margin-top: -6px;
+  font-size: 18px;
+  font-weight: 500;
+  letter-spacing: -0.02em;
+}
+
+.stats {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  border: 1px solid var(--color-line);
+  border-radius: var(--radius);
+  background: var(--color-surface);
+}
+
+.stat {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 0;
+  padding: 8px 10px;
+
+  & + & {
+    border-left: 1px solid var(--color-line);
+  }
+}
+
+.statValue {
+  font-size: 14px;
+  font-weight: 500;
+
+  &.accent {
+    color: var(--color-brand);
+  }
+}
+
+.statLabel {
+  overflow: hidden;
+  font-size: 8px;
+  color: var(--color-body);
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+// "Verder waar je gebleven was"
+
+.resume {
+  overflow: hidden;
+  border: 1px solid var(--color-line);
+  border-radius: var(--radius);
+  background: var(--color-surface);
+}
+
+.resumeTrack {
+  height: 4px;
+  background: var(--color-track);
+}
+
+.resumeFill {
+  width: 60%;
+  height: 100%;
+  background: var(--color-brand);
+  transform-origin: left;
+  animation: grow-x 900ms var(--ease-out) both;
+  animation-delay: 500ms;
+}
+
+.resumeBody {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 12px;
+}
+
+.resumeText {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  min-width: 0;
+}
+
+.small {
+  overflow: hidden;
+  font-size: 8px;
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  text-overflow: ellipsis;
+  text-transform: uppercase;
+  white-space: nowrap;
+  color: var(--color-body);
+}
+
+.resumeTitle {
+  font-size: 13px;
+  font-weight: 500;
+  line-height: 1.3;
+}
+
+.tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
+  margin-top: 2px;
+}
+
+.tag {
+  padding: 2px 6px;
+  border: 1px solid var(--color-line-strong);
+  border-radius: 999px;
+  font-size: 7px;
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--color-body);
+
+  &.brand {
+    border-color: transparent;
+    background: var(--color-brand-soft);
+    color: var(--color-brand);
+  }
+}
+
+.fakeButton {
+  display: none;
+  flex-shrink: 0;
+  align-items: center;
+
+  @media (min-width: 400px) {
+    display: flex;
+  }
+}
+
+.fakeLabel {
+  padding: 6px 10px;
+  border-radius: 999px;
+  background: var(--color-brand);
+  color: #fff;
+  font-size: 9px;
+  font-weight: 600;
+}
+
+.fakeArrow {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 22px;
+  height: 22px;
+  margin-left: -3px;
+  border-radius: 999px;
+  background: var(--color-ink);
+  color: #fff;
+
+  svg {
+    width: 10px;
+    height: 10px;
+  }
+}
+
+.paths {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 8px;
+}
+
+.path {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  min-width: 0;
+  padding: 10px;
+  border: 1px solid var(--color-line);
+  border-radius: var(--radius);
+  background: var(--color-surface);
+}
+
+.pathTitle {
+  overflow: hidden;
+  font-size: 11px;
+  font-weight: 500;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.track {
+  height: 3px;
+  margin-top: 4px;
+  overflow: hidden;
+  border-radius: 999px;
+  background: var(--color-track);
+}
+
+.fill {
+  display: block;
+  height: 100%;
+  border-radius: inherit;
+  background: var(--color-brand);
+  transform-origin: left;
+  animation: grow-x 900ms var(--ease-out) both;
+  animation-delay: 650ms;
+}
+
+// Zwevende kaartjes: binnenkomst op de wrapper, zweven op het kaartje zelf.
+
+.certWrap,
+.feedbackWrap {
+  position: absolute;
+  z-index: 1;
+}
+
+.certWrap {
+  bottom: 4px;
+  left: 8px;
+  @include enter(6);
+
+  @include from($sm) {
+    left: -8px;
+  }
+}
+
+.feedbackWrap {
+  top: 0;
+  right: 8px;
+  max-width: 230px;
+  @include enter(8);
+
+  @include from($sm) {
+    right: 0;
+  }
+
+  @include from($lg) {
+    top: 56px;
+    right: -16px;
+  }
+}
+
+.float {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  padding: 10px 14px 10px 10px;
+  border: 1px solid var(--color-line);
+  border-radius: 10px;
+  background: var(--color-surface);
+  box-shadow: var(--shadow-popover);
+  animation: float 6s var(--ease-in-out) infinite;
+  animation-delay: 1.2s;
+
+  > span:last-child {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    min-width: 0;
+  }
+}
+
+.feedback {
+  animation-duration: 7s;
+  animation-delay: 1.8s;
+}
+
+.floatIcon {
+  display: flex;
+  flex-shrink: 0;
+  align-items: center;
+  justify-content: center;
+  width: 30px;
+  height: 30px;
+  border-radius: 999px;
+  background: var(--color-brand);
+  color: #fff;
+
+  svg {
+    width: 15px;
+    height: 15px;
+  }
+
+  &.soft {
+    background: var(--color-brand-soft);
+    color: var(--color-brand);
+  }
+}
+
+.floatTitle {
+  font-size: 12px;
+  font-weight: 600;
+}
+
+.floatText {
+  font-size: 11px;
+  line-height: 1.4;
+  color: var(--color-body);
+}
+
+.feedback .floatText {
+  display: none;
+
+  @include from($sm) {
+    display: block;
+  }
+}
+
+.meter {
+  display: flex;
+  align-items: center;
+  gap: 3px;
+  margin-top: 4px;
+}
+
+.dot {
+  width: 14px;
+  height: 4px;
+  border-radius: 999px;
+  background: var(--color-track);
+
+  &.on {
+    background: var(--color-success);
+  }
+}
+
+.meterLabel {
+  margin-left: 4px;
+  font-size: 10px;
+  font-weight: 600;
+  color: var(--color-success);
+}

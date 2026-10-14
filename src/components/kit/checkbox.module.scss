@@ -1,0 +1,114 @@
+@use "mixins" as *;
+
+@include motion-keyframes;
+
+.checkbox {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  font-size: 14px;
+}
+
+.control {
+  position: relative;
+  display: flex;
+  flex-shrink: 0;
+  width: 18px;
+  height: 18px;
+  margin-top: 1px;
+}
+
+// Het echte vinkvakje ligt onzichtbaar bovenop het getekende vakje.
+.input {
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  width: 100%;
+  height: 100%;
+  margin: 0;
+  opacity: 0;
+  cursor: pointer;
+
+  &:disabled {
+    cursor: not-allowed;
+  }
+}
+
+.box {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  height: 100%;
+  border: 1px solid var(--color-line-strong);
+  border-radius: var(--radius-sm);
+  background: var(--color-surface);
+  color: #fff;
+  transition:
+    background-color var(--duration) var(--ease-out),
+    border-color var(--duration) var(--ease-out);
+
+  .input:hover:not(:disabled) + & {
+    border-color: var(--color-brand);
+  }
+
+  .input:focus-visible + & {
+    outline: 2px solid var(--color-brand);
+    outline-offset: 2px;
+  }
+
+  .input.invalid + & {
+    border-color: var(--color-danger);
+  }
+
+  .input:checked + &,
+  .input:indeterminate + & {
+    border-color: var(--color-brand);
+    background: var(--color-brand);
+  }
+
+  .input:disabled + & {
+    opacity: 0.5;
+  }
+}
+
+.mark {
+  width: 12px;
+  height: 12px;
+  stroke-width: 3;
+  opacity: 0;
+  transform: scale(0.6);
+  transition:
+    opacity var(--duration-fast) var(--ease-out),
+    transform var(--duration) var(--ease-spring);
+
+  .input:checked + .box &,
+  .input:indeterminate + .box & {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+.text {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 0;
+}
+
+.label {
+  line-height: 1.4;
+  color: var(--color-ink);
+  cursor: pointer;
+
+  .disabled & {
+    color: var(--color-muted);
+    cursor: not-allowed;
+  }
+}
+
+.description {
+  font-size: 12px;
+  line-height: 1.5;
+  color: var(--color-muted);
+}

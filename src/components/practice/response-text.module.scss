@@ -1,0 +1,93 @@
+@use "mixins" as *;
+
+@keyframes blink {
+  50% {
+    opacity: 0;
+  }
+}
+
+.root {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  min-width: 0;
+  font-size: 14px;
+  line-height: 1.65;
+  color: var(--color-body);
+  overflow-wrap: anywhere;
+
+  strong {
+    font-weight: 600;
+    color: var(--color-ink);
+  }
+
+  :not(pre) > code {
+    padding: 1px 5px;
+    border-radius: var(--radius-sm);
+    background: var(--color-canvas);
+    font-size: 12px;
+    color: var(--color-ink);
+  }
+}
+
+.heading {
+  margin-top: 4px;
+  font-size: 15px;
+  font-weight: 600;
+  color: var(--color-ink);
+
+  &:first-child {
+    margin-top: 0;
+  }
+}
+
+.paragraph {
+  white-space: pre-line;
+}
+
+.quote {
+  margin: 0;
+  padding: 2px 0 2px 12px;
+  border-left: 2px solid var(--color-brand);
+  font-style: italic;
+}
+
+.list {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  margin: 0;
+  padding-left: 20px;
+
+  li::marker {
+    color: var(--color-muted);
+  }
+}
+
+.code {
+  margin: 0;
+  padding: 14px 16px;
+  overflow-x: auto;
+  border-radius: var(--radius-sm);
+  background: var(--color-ink);
+  color: #e2e8f0;
+  font-size: 12px;
+  line-height: 1.6;
+  white-space: pre;
+  overflow-wrap: normal;
+
+  .caret {
+    background: #e2e8f0;
+  }
+}
+
+.caret {
+  display: inline-block;
+  width: 7px;
+  height: 1.1em;
+  margin-left: 2px;
+  border-radius: 1px;
+  background: var(--color-brand);
+  vertical-align: text-bottom;
+  animation: blink 1s steps(1) infinite;
+}

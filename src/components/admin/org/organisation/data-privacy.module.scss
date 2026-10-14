@@ -1,0 +1,77 @@
+@use "mixins" as *;
+
+.rows {
+  margin: 0;
+}
+
+.row {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  padding-block: 18px;
+
+  &:first-child {
+    padding-top: 0;
+  }
+
+  &:last-child {
+    padding-bottom: 0;
+  }
+
+  & + & {
+    border-top: 1px solid var(--color-line);
+  }
+
+  @include from($md) {
+    display: grid;
+    grid-template-columns: 200px minmax(0, 1fr);
+    gap: 24px;
+  }
+}
+
+.term {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--color-ink);
+
+  @include from($md) {
+    align-self: start;
+    padding-top: 1px;
+  }
+
+  svg {
+    flex-shrink: 0;
+    width: 16px;
+    height: 16px;
+    color: var(--color-muted);
+  }
+}
+
+.value {
+  min-width: 0;
+  margin: 0;
+}
+
+.valueTitle {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px;
+  font-size: 14px;
+  font-weight: 500;
+}
+
+.valueText {
+  max-width: 34rem;
+  margin-top: 4px;
+  font-size: 12px;
+  line-height: 1.55;
+  color: var(--color-muted);
+}
+
+.download {
+  margin-top: 12px;
+}

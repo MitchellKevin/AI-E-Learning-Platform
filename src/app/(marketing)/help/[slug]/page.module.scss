@@ -1,0 +1,158 @@
+@use "mixins" as *;
+
+@include motion-keyframes;
+
+.meta {
+  @include reset-list;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px 20px;
+  font-size: 13px;
+  color: var(--color-muted);
+
+  li {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+  }
+
+  svg {
+    width: 14px;
+    height: 14px;
+  }
+}
+
+.content {
+  @include container;
+  display: flex;
+  flex-direction: column;
+  gap: 64px;
+  padding-block: 40px 96px;
+
+  @include from($md) {
+    padding-top: 56px;
+  }
+}
+
+.layout {
+  display: grid;
+  gap: 40px;
+
+  @include from($lg) {
+    grid-template-columns: minmax(0, 1fr) 280px;
+    align-items: start;
+    gap: 64px;
+  }
+}
+
+.article {
+  min-width: 0;
+  @include enter(2);
+}
+
+.feedback {
+  max-width: 42rem;
+  margin-top: 48px;
+}
+
+.aside {
+  display: flex;
+  flex-direction: column;
+  gap: 32px;
+  @include enter(4, fade-in);
+
+  @include from($lg) {
+    position: sticky;
+    top: 96px;
+  }
+
+  // Op mobiel staat de zijbalk onder het artikel; dan heeft een inhoudsopgave geen zin.
+  > nav {
+    display: none;
+
+    @include from($lg) {
+      display: block;
+    }
+  }
+}
+
+// Gerelateerd
+
+.related {
+  @include reset-list;
+  display: grid;
+  gap: 12px;
+
+  @include from($md) {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+
+  // Binnenkomst op de li, hover-lift op de link (niet op hetzelfde element).
+  @include stagger-children(3, fade-up, var(--duration-slow), 4);
+}
+
+.relatedCard {
+  @include card;
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  padding: 20px;
+  @include hover-lift;
+  @include focus-ring;
+
+  &:hover {
+    border-color: var(--color-line-strong);
+  }
+}
+
+.relatedCategory {
+  @include eyebrow;
+  font-size: 10px;
+  color: var(--color-brand);
+}
+
+.relatedTitle {
+  margin-top: 8px;
+  font-size: 16px;
+  font-weight: 500;
+  line-height: 1.35;
+  letter-spacing: -0.01em;
+  color: var(--color-ink);
+}
+
+.relatedSummary {
+  margin-top: 6px;
+  font-size: 13px;
+  line-height: 1.6;
+  color: var(--color-body);
+}
+
+.relatedMore {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  margin-top: auto;
+  padding-top: 16px;
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--color-brand);
+
+  svg {
+    width: 14px;
+    height: 14px;
+    transition: transform var(--duration) var(--ease-out);
+  }
+
+  .relatedCard:hover & svg {
+    transform: translateX(3px);
+  }
+}
+
+// Niet gevonden
+
+.notFoundActions {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 8px;
+}

@@ -1,0 +1,363 @@
+@use "mixins" as *;
+
+@include motion-keyframes;
+
+// Certificaat landt met een lichte schaal; de ring tekent zich daarna één keer.
+@keyframes card-in {
+  from {
+    opacity: 0;
+    transform: translateY(8px) scale(0.98);
+  }
+}
+
+// Registreren zodat de hoek van de conic-mask animeerbaar is. Zonder support: volle ring.
+@property --ring-sweep {
+  syntax: "<angle>";
+  inherits: false;
+  initial-value: 360deg;
+}
+
+@keyframes ring-draw {
+  from {
+    --ring-sweep: 0deg;
+    opacity: 0;
+    transform: rotate(-30deg);
+  }
+}
+
+.main {
+  @include container;
+  padding-block: 40px 96px;
+}
+
+.title {
+  margin-block: 12px;
+  font-size: 36px;
+  letter-spacing: -0.02em;
+}
+
+.intro {
+  @include stagger-children(3);
+}
+
+.lead {
+  max-width: 32rem;
+  font-size: 15px;
+  line-height: 1.6;
+  color: var(--color-body);
+}
+
+.grid {
+  display: grid;
+  gap: 24px;
+  margin-top: 32px;
+
+  @include from($lg) {
+    grid-template-columns: minmax(0, 1fr) 272px;
+    align-items: start;
+  }
+}
+
+// Certificaat
+
+.frame {
+  padding: 12px;
+  box-shadow: 0 8px 24px rgb(15 23 42 / 0.06);
+  animation: card-in var(--duration-slow) var(--ease-out) both;
+  animation-delay: calc(var(--stagger) * 3);
+}
+
+.certificate {
+  position: relative;
+  overflow: hidden;
+  padding: 40px 24px;
+  border: 2px solid var(--color-brand);
+  border-radius: var(--radius-sm);
+
+  @include from($sm) {
+    padding: 48px 52px 40px;
+  }
+}
+
+.ring {
+  position: absolute;
+  top: -80px;
+  right: -60px;
+  width: 220px;
+  height: 220px;
+  border: 28px solid var(--color-brand-soft);
+  border-radius: 999px;
+  mask: conic-gradient(from 90deg, #000 var(--ring-sweep), transparent 0);
+  animation: ring-draw 1s var(--ease-out) both;
+  animation-delay: calc(var(--stagger) * 6);
+}
+
+.logo {
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 15px;
+  font-weight: 500;
+
+  span {
+    padding: 3px 8px;
+    border-radius: 999px;
+    background: var(--color-brand);
+    color: #fff;
+    font-size: 11px;
+    font-weight: 700;
+  }
+}
+
+.kicker {
+  margin-top: 32px;
+  font-size: 10px;
+  color: var(--color-brand);
+}
+
+.declare {
+  margin-top: 8px;
+  font-size: 13px;
+  color: var(--color-body);
+}
+
+.name {
+  margin-top: 12px;
+  font-size: 44px;
+  font-weight: 500;
+  letter-spacing: -0.02em;
+}
+
+.statement {
+  max-width: 30rem;
+  margin-top: 12px;
+  font-size: 14px;
+  line-height: 1.6;
+  color: var(--color-body);
+
+  strong {
+    color: var(--color-ink);
+  }
+}
+
+.facts {
+  display: grid;
+  gap: 16px;
+  margin: 28px 0 0;
+  padding-top: 24px;
+  border-top: 1px solid var(--color-line);
+
+  @include from($sm) {
+    grid-template-columns: repeat(3, 1fr);
+  }
+}
+
+.facts dt,
+.number dt {
+  @include eyebrow;
+  font-size: 9px;
+  color: var(--color-body);
+}
+
+.facts dd,
+.number dd {
+  margin: 6px 0 0;
+  font-size: 13px;
+  font-weight: 500;
+}
+
+.footer {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 24px;
+  margin-top: 36px;
+}
+
+.signature {
+  width: 180px;
+
+  p {
+    padding-bottom: 6px;
+    border-bottom: 1px solid var(--color-body);
+    font-family: Georgia, serif;
+    font-size: 20px;
+    font-style: italic;
+  }
+
+  span {
+    display: block;
+    margin-top: 6px;
+    font-size: 11px;
+    color: var(--color-body);
+  }
+}
+
+.number {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+
+  dl {
+    margin: 0;
+  }
+}
+
+.seal {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 52px;
+  height: 52px;
+  border-radius: 999px;
+  background: var(--color-brand);
+  color: #fff;
+  // Zegel ploft erop zodra het certificaat staat.
+  @include enter(11, pop);
+
+  svg {
+    width: 24px;
+    height: 24px;
+  }
+}
+
+// Zijbalk
+
+.aside {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  @include stagger-children(3, fade-up, var(--duration-slow), 4);
+}
+
+.sideCard {
+  padding: 20px;
+}
+
+.sideTitle {
+  margin-bottom: 16px;
+  font-size: 17px;
+}
+
+.list {
+  @include reset-list;
+
+  li {
+    border-top: 1px solid var(--color-line);
+  }
+}
+
+.listItem {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding-block: 12px;
+
+  strong {
+    display: block;
+    font-size: 13px;
+    font-weight: 500;
+    transition: color var(--duration-fast) var(--ease-out);
+  }
+
+  &:is(a):hover strong {
+    color: var(--color-brand);
+  }
+
+  small {
+    font-size: 11px;
+    color: var(--color-body);
+  }
+}
+
+.listIcon {
+  display: flex;
+  flex-shrink: 0;
+  align-items: center;
+  justify-content: center;
+  width: 28px;
+  height: 28px;
+  border-radius: var(--radius-sm);
+  background: var(--color-canvas);
+  color: var(--color-muted);
+
+  svg {
+    width: 15px;
+    height: 15px;
+  }
+
+  &.earned {
+    background: var(--color-brand);
+    color: #fff;
+  }
+}
+
+.next {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 24px 20px;
+  border-radius: var(--radius-sm);
+  background: var(--color-brand);
+  color: #fff;
+  transition: background-color var(--duration) var(--ease-out);
+
+  &:hover {
+    background: var(--color-brand-hover);
+  }
+
+  &:hover svg {
+    transform: translateX(3px);
+  }
+
+  strong {
+    font-size: 15px;
+    font-weight: 600;
+  }
+
+  svg {
+    width: 18px;
+    height: 18px;
+    transition: transform var(--duration) var(--ease-out);
+  }
+}
+
+.nextEyebrow {
+  margin-bottom: 4px;
+  font-size: 9px;
+  color: rgb(255 255 255 / 0.8);
+}
+
+// Alleen het certificaat printen ("Download als PDF").
+@media print {
+  // Animaties uit, zodat niets halverwege (onzichtbaar) op papier komt.
+  .main,
+  .main * {
+    animation: none !important;
+    transition: none !important;
+  }
+
+  .intro,
+  .aside {
+    display: none;
+  }
+
+  .main,
+  .grid {
+    margin: 0;
+    padding: 0;
+    display: block;
+  }
+
+  .frame {
+    border: none;
+    box-shadow: none;
+  }
+
+  .certificate {
+    print-color-adjust: exact;
+    -webkit-print-color-adjust: exact;
+  }
+}

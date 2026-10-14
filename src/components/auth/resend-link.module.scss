@@ -1,0 +1,22 @@
+@use "mixins" as *;
+
+@include motion-keyframes;
+
+.row {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px 16px;
+}
+
+.countdown {
+  font-size: 12px;
+  color: var(--color-muted);
+  @include enter(0, fade-in, var(--duration));
+}
+
+.time {
+  font-variant-numeric: tabular-nums;
+  color: var(--color-body);
+  font-weight: 600;
+}

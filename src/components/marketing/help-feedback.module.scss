@@ -1,0 +1,68 @@
+@use "mixins" as *;
+
+@include motion-keyframes;
+
+.card {
+  @include card;
+  padding: 20px;
+
+  @include from($sm) {
+    padding: 20px 24px;
+  }
+}
+
+.ask {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px 20px;
+}
+
+.title {
+  font-size: 16px;
+}
+
+.buttons {
+  display: flex;
+  gap: 8px;
+}
+
+.form {
+  display: grid;
+  gap: 12px;
+  margin-top: 20px;
+  padding-top: 20px;
+  border-top: 1px solid var(--color-line);
+  @include enter(0, fade-up, var(--duration));
+}
+
+.formActions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 8px;
+}
+
+.thanks {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  font-size: 14px;
+  line-height: 1.6;
+  color: var(--color-body);
+  outline: none;
+  @include enter(0, fade-in, var(--duration));
+
+  strong {
+    font-weight: 600;
+    color: var(--color-ink);
+  }
+}
+
+.thanksIcon {
+  flex-shrink: 0;
+  width: 22px;
+  height: 22px;
+  color: var(--color-success);
+  animation: pop var(--duration-slow) var(--ease-out) both;
+}

@@ -1,0 +1,144 @@
+$sm: 640px;
+$md: 768px;
+$lg: 1024px;
+
+@mixin from($bp) {
+  @media (min-width: $bp) {
+    @content;
+  }
+}
+
+@mixin container {
+  max-width: var(--container);
+  margin-inline: auto;
+  padding-inline: var(--gutter);
+}
+
+@mixin card {
+  background: var(--color-surface);
+  border: 1px solid var(--color-line);
+  border-radius: var(--radius);
+}
+
+@mixin eyebrow {
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+
+@mixin reset-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+// Motion
+//
+// CSS Modules maken keyframe-namen lokaal per module. Gebruik daarom in een module eerst
+// `@include motion-keyframes;` (top-level, één keer) en daarna de mixins hieronder.
+
+@mixin motion-keyframes {
+  @keyframes fade-up {
+    from {
+      opacity: 0;
+      transform: translateY(8px);
+    }
+  }
+
+  @keyframes fade-in {
+    from {
+      opacity: 0;
+    }
+  }
+
+  @keyframes pop {
+    0% {
+      transform: scale(0.6);
+      opacity: 0;
+    }
+    60% {
+      transform: scale(1.12);
+      opacity: 1;
+    }
+    100% {
+      transform: scale(1);
+    }
+  }
+
+  @keyframes shake {
+    20%,
+    60% {
+      transform: translateX(-4px);
+    }
+    40%,
+    80% {
+      transform: translateX(4px);
+    }
+  }
+
+  @keyframes grow-x {
+    from {
+      transform: scaleX(0);
+    }
+  }
+
+  @keyframes grow-y {
+    from {
+      transform: scaleY(0);
+    }
+  }
+}
+
+// Binnenkomst-animatie; $index geeft een gestaggerde vertraging.
+@mixin enter($index: 0, $name: fade-up, $duration: var(--duration-slow)) {
+  animation: $name $duration var(--ease-out) both;
+  animation-delay: calc(var(--stagger) * #{$index});
+}
+
+// Stagger voor lijst-/grid-kinderen: @include stagger-children(8);
+@mixin stagger-children($count, $name: fade-up, $duration: var(--duration-slow), $offset: 0) {
+  > * {
+    animation: $name $duration var(--ease-out) both;
+  }
+
+  @for $i from 1 through $count {
+    > :nth-child(#{$i}) {
+      animation-delay: calc(var(--stagger) * #{$i - 1 + $offset});
+    }
+  }
+}
+
+// Subtiele lift bij hover voor klikbare kaarten.
+@mixin hover-lift {
+  transition:
+    transform var(--duration) var(--ease-out),
+    box-shadow var(--duration) var(--ease-out),
+    border-color var(--duration) var(--ease-out);
+
+  &:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 16px rgb(15 23 42 / 0.08);
+  }
+
+  &:active {
+    transform: translateY(0);
+    transition-duration: var(--duration-fast);
+  }
+}
+
+// Indrukeffect voor knoppen.
+@mixin press {
+  transition: transform var(--duration-fast) var(--ease-out);
+
+  &:active:not(:disabled) {
+    transform: scale(0.97);
+  }
+}
+
+@mixin focus-ring {
+  &:focus-visible {
+    outline: 2px solid var(--color-brand);
+    outline-offset: 2px;
+  }
+}

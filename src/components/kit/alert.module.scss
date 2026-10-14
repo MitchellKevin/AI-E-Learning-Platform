@@ -1,0 +1,82 @@
+@use "mixins" as *;
+
+@include motion-keyframes;
+
+.alert {
+  --fg: var(--color-brand);
+  --bg: var(--color-brand-soft);
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-start;
+  gap: 12px;
+  padding: 14px 16px;
+  border: 1px solid color-mix(in srgb, var(--fg) 18%, transparent);
+  border-radius: var(--radius);
+  background: var(--bg);
+  @include enter(0, fade-in, var(--duration));
+}
+
+.info {
+  --fg: var(--color-brand);
+  --bg: var(--color-brand-soft);
+}
+
+.success {
+  --fg: var(--color-success);
+  --bg: var(--color-success-soft);
+}
+
+.warning {
+  --fg: var(--color-warning);
+  --bg: var(--color-warning-soft);
+}
+
+.danger {
+  --fg: var(--color-danger);
+  --bg: var(--color-danger-soft);
+}
+
+.icon {
+  display: flex;
+  flex-shrink: 0;
+  margin-top: 1px;
+  color: var(--fg);
+
+  svg {
+    width: 18px;
+    height: 18px;
+  }
+}
+
+.text {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  gap: 4px;
+  min-width: min(100%, 14rem);
+}
+
+.title {
+  font-size: 14px;
+  font-weight: 600;
+  line-height: 1.4;
+  color: var(--color-ink);
+}
+
+.body {
+  font-size: 13px;
+  line-height: 1.6;
+  color: var(--color-body);
+
+  a {
+    color: var(--fg);
+    font-weight: 600;
+    text-decoration: underline;
+    text-underline-offset: 2px;
+  }
+}
+
+.action {
+  flex-shrink: 0;
+  align-self: center;
+}

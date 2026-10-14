@@ -1,0 +1,26 @@
+.skip {
+  position: fixed;
+  top: 8px;
+  left: 8px;
+  z-index: var(--z-toast);
+  padding: 10px 16px;
+  border-radius: 999px;
+  background: var(--color-ink);
+  color: #fff;
+  font-size: 13px;
+  font-weight: 500;
+  box-shadow: var(--shadow-popover);
+  // Buiten beeld tot hij focus krijgt.
+  transform: translateY(calc(-100% - 16px));
+  transition: transform var(--duration) var(--ease-out);
+
+  &:focus-visible {
+    transform: none;
+    outline: 2px solid var(--color-brand);
+    outline-offset: 2px;
+  }
+}
+
+.region:focus {
+  outline: none;
+}

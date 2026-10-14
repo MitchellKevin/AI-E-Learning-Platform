@@ -1,0 +1,101 @@
+@use "mixins" as *;
+
+@include motion-keyframes;
+
+.list {
+  @include reset-list;
+  @include card;
+  overflow: hidden;
+}
+
+.item {
+  --progress-delay: calc(var(--stagger) * (var(--i, 0) + 5) + 200ms);
+  animation: fade-up var(--duration-slow) var(--ease-out) both;
+  animation-delay: calc(var(--stagger) * (var(--i, 0) + 4));
+
+  & + & {
+    border-top: 1px solid var(--color-line);
+  }
+}
+
+.row {
+  position: relative;
+  display: block;
+  padding: 16px 44px 16px 16px;
+  transition: background-color var(--duration) var(--ease-out);
+
+  @include from($sm) {
+    padding: 18px 52px 18px 24px;
+  }
+
+  &:hover {
+    background: var(--color-canvas);
+  }
+
+  &:focus-visible {
+    outline: 2px solid var(--color-brand);
+    outline-offset: -2px;
+  }
+}
+
+.head {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 6px 12px;
+}
+
+.title {
+  font-size: 15px;
+  font-weight: 500;
+
+  .row:hover & {
+    color: var(--color-brand);
+  }
+}
+
+.badges {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.bar {
+  margin-top: 12px;
+}
+
+.foot {
+  display: flex;
+  justify-content: space-between;
+  margin-top: 8px;
+  font-size: 12px;
+  color: var(--color-body);
+}
+
+.percent {
+  font-weight: 600;
+  font-variant-numeric: tabular-nums;
+}
+
+.chevron {
+  position: absolute;
+  top: 50%;
+  right: 16px;
+  width: 18px;
+  height: 18px;
+  margin-top: -9px;
+  color: var(--color-muted);
+  transition:
+    transform var(--duration) var(--ease-out),
+    color var(--duration) var(--ease-out);
+
+  @include from($sm) {
+    right: 20px;
+  }
+
+  .row:hover & {
+    color: var(--color-brand);
+    transform: translateX(3px);
+  }
+}

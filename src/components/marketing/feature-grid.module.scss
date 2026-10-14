@@ -1,0 +1,316 @@
+@use "mixins" as *;
+
+@include motion-keyframes;
+
+.grid {
+  @include reset-list;
+  display: grid;
+  gap: 16px;
+  margin-top: 40px;
+  @include stagger-children(6);
+
+  @include from($md) {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  @include from($lg) {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+}
+
+.item {
+  min-width: 0;
+}
+
+.wide {
+  @include from($md) {
+    grid-column: 1 / -1;
+  }
+
+  @include from($lg) {
+    grid-column: span 2;
+  }
+}
+
+.full {
+  grid-column: 1 / -1;
+}
+
+.card {
+  @include card;
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  padding: 24px;
+  transition:
+    border-color var(--duration) var(--ease-out),
+    box-shadow var(--duration) var(--ease-out);
+
+  &:hover {
+    border-color: var(--color-line-strong);
+    box-shadow: 0 6px 16px rgb(15 23 42 / 0.06);
+  }
+}
+
+.icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 36px;
+  height: 36px;
+  border-radius: var(--radius);
+  background: var(--color-brand-soft);
+  color: var(--color-brand);
+
+  svg {
+    width: 18px;
+    height: 18px;
+  }
+
+  &.success {
+    background: var(--color-success-soft);
+    color: var(--color-success);
+  }
+}
+
+.title {
+  margin-top: 18px;
+  font-size: 17px;
+  font-weight: 500;
+  letter-spacing: -0.01em;
+}
+
+.text {
+  max-width: 36rem;
+  margin-top: 8px;
+  font-size: 14px;
+  line-height: 1.6;
+  color: var(--color-body);
+}
+
+.visual {
+  margin-top: auto;
+  padding-top: 24px;
+}
+
+// AI-tutor
+
+.chat {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  font-size: 12px;
+  line-height: 1.45;
+}
+
+.bubble {
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+  max-width: 92%;
+  padding: 10px 12px;
+  border: 1px solid var(--color-line);
+  border-radius: 12px 12px 12px 4px;
+  background: var(--color-canvas);
+  color: var(--color-body);
+
+  svg {
+    flex-shrink: 0;
+    width: 14px;
+    height: 14px;
+    margin-top: 1px;
+    color: var(--color-brand);
+  }
+
+  &.me {
+    align-self: flex-end;
+    border-color: transparent;
+    border-radius: 12px 12px 4px;
+    background: var(--color-brand);
+    color: #fff;
+  }
+}
+
+// Voortgang
+
+.bars {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  padding: 14px;
+  border: 1px solid var(--color-line);
+  border-radius: var(--radius);
+  background: var(--color-canvas);
+}
+
+.barRow {
+  display: grid;
+  grid-template-columns: 64px minmax(0, 1fr) 32px;
+  align-items: center;
+  gap: 10px;
+  font-size: 11px;
+  color: var(--color-body);
+}
+
+.barTrack {
+  height: 6px;
+  overflow: hidden;
+  border-radius: 999px;
+  background: var(--color-track);
+}
+
+.barFill {
+  display: block;
+  height: 100%;
+  border-radius: inherit;
+  background: var(--color-brand);
+  transform-origin: left;
+  animation: grow-x 900ms var(--ease-out) both;
+  animation-delay: 400ms;
+}
+
+.barValue {
+  font-variant-numeric: tabular-nums;
+  text-align: right;
+}
+
+// Certificaat
+
+.verify {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px 14px;
+  border: 1px solid var(--color-line);
+  border-radius: var(--radius);
+  background: var(--color-canvas);
+}
+
+.verifyIcon {
+  display: flex;
+  flex-shrink: 0;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  border-radius: 999px;
+  background: var(--color-success-soft);
+  color: var(--color-success);
+
+  svg {
+    width: 16px;
+    height: 16px;
+  }
+}
+
+.verifyText {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 0;
+}
+
+.verifyTitle {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--color-success);
+}
+
+.verifyMeta {
+  overflow: hidden;
+  font-family: var(--font-jetbrains), ui-monospace, monospace;
+  font-size: 11px;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  color: var(--color-body);
+}
+
+// Single sign-on
+
+.sso {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.ssoPill {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  height: 32px;
+  padding: 0 12px 0 8px;
+  border: 1px solid var(--color-line-strong);
+  border-radius: 999px;
+  background: var(--color-surface);
+  font-size: 12px;
+  font-weight: 500;
+  color: var(--color-ink);
+}
+
+.ssoMark {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 16px;
+  height: 16px;
+  font-size: 12px;
+  font-weight: 700;
+  line-height: 1;
+}
+
+.google {
+  color: var(--color-brand);
+}
+
+// Vier vlakjes als neutraal tekstloos logo.
+.microsoft {
+  width: 12px;
+  height: 12px;
+  background:
+    linear-gradient(var(--color-surface), var(--color-surface)) center / 100% 2px no-repeat,
+    linear-gradient(var(--color-surface), var(--color-surface)) center / 2px 100% no-repeat,
+    var(--color-muted);
+}
+
+// Privacy-strook over de volle breedte
+
+.privacy {
+  display: grid;
+  gap: 24px;
+
+  @include from($lg) {
+    grid-template-columns: minmax(0, 1fr) auto;
+    align-items: center;
+    gap: 48px;
+  }
+}
+
+.privacyList {
+  @include reset-list;
+  display: grid;
+  gap: 8px;
+
+  @include from($sm) {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  li {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 10px 14px;
+    border: 1px solid var(--color-line);
+    border-radius: var(--radius);
+    background: var(--color-canvas);
+    font-size: 13px;
+    font-weight: 500;
+    white-space: nowrap;
+  }
+
+  svg {
+    flex-shrink: 0;
+    width: 15px;
+    height: 15px;
+    color: var(--color-success);
+  }
+}

@@ -1,0 +1,132 @@
+@use "mixins" as *;
+
+@include motion-keyframes;
+
+.link {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  border-radius: var(--radius-sm);
+  font-size: 12px;
+  font-weight: 500;
+  color: var(--color-brand);
+  @include focus-ring;
+
+  svg {
+    width: 14px;
+    height: 14px;
+  }
+
+  &:hover {
+    text-decoration: underline;
+  }
+}
+
+.grid {
+  @include reset-list;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: 12px;
+
+  @include from($md) {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+
+  @include stagger-children(3, fade-up, var(--duration-slow), 2);
+}
+
+.cell {
+  display: flex;
+}
+
+.plan {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  padding: 20px;
+  border: 1px solid var(--color-line);
+  border-radius: var(--radius);
+  background: var(--color-surface);
+}
+
+.current {
+  border-color: var(--color-brand);
+  background: color-mix(in srgb, var(--color-brand-soft) 45%, var(--color-surface));
+  box-shadow: 0 0 0 1px var(--color-brand);
+}
+
+.head {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px;
+}
+
+.name {
+  font-size: 18px;
+}
+
+.tagline {
+  margin-top: 6px;
+  font-size: 12px;
+  line-height: 1.55;
+  color: var(--color-body);
+}
+
+.price {
+  margin-top: 16px;
+  font-size: 22px;
+  font-weight: 500;
+  letter-spacing: -0.01em;
+  font-variant-numeric: tabular-nums;
+
+  span {
+    font-size: 12px;
+    font-weight: 400;
+    letter-spacing: 0;
+    color: var(--color-muted);
+  }
+}
+
+.seats {
+  margin-top: 2px;
+  font-size: 12px;
+  color: var(--color-muted);
+}
+
+.features {
+  @include reset-list;
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  gap: 8px;
+  margin-block: 16px 20px;
+  font-size: 12px;
+  line-height: 1.45;
+  color: var(--color-body);
+
+  li {
+    display: flex;
+    gap: 8px;
+  }
+
+  svg {
+    flex-shrink: 0;
+    width: 14px;
+    height: 14px;
+    margin-top: 1px;
+    color: var(--color-brand);
+  }
+}
+
+.action {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.note {
+  font-size: 12px;
+  line-height: 1.45;
+  color: var(--color-muted);
+}

@@ -1,0 +1,81 @@
+@use "mixins" as *;
+
+.toc {
+  font-size: 13px;
+}
+
+.title {
+  @include eyebrow;
+  margin-bottom: 12px;
+  color: var(--color-muted);
+}
+
+// Lijn links als "rail"; de actieve sectie krijgt een blauw stukje.
+.list {
+  @include reset-list;
+  border-left: 1px solid var(--color-line);
+}
+
+.link {
+  position: relative;
+  display: block;
+  margin-left: -1px;
+  padding: 6px 0 6px 14px;
+  border-left: 2px solid transparent;
+  border-radius: 0 var(--radius-sm) var(--radius-sm) 0;
+  line-height: 1.45;
+  color: var(--color-body);
+  transition:
+    color var(--duration-fast) var(--ease-out),
+    border-color var(--duration) var(--ease-out);
+
+  &:hover {
+    color: var(--color-ink);
+    border-left-color: var(--color-line-strong);
+  }
+
+  &[aria-current] {
+    border-left-color: var(--color-brand);
+    font-weight: 500;
+    color: var(--color-brand);
+  }
+
+  &:focus-visible {
+    outline: 2px solid var(--color-brand);
+    outline-offset: 0;
+  }
+}
+
+// Nummering via een teller; de lege alt-tekst houdt het nummer stil voor screenreaders.
+.numbered {
+  counter-reset: toc;
+
+  .link {
+    display: flex;
+    gap: 10px;
+    counter-increment: toc;
+
+    &::before {
+      content: counter(toc, decimal-leading-zero);
+      content: counter(toc, decimal-leading-zero) / "";
+      flex-shrink: 0;
+      min-width: 1.5em;
+      font-size: 11px;
+      font-weight: 600;
+      line-height: 19px;
+      font-variant-numeric: tabular-nums;
+      color: var(--color-muted);
+      transition: color var(--duration-fast) var(--ease-out);
+    }
+
+    &[aria-current]::before {
+      color: var(--color-brand);
+    }
+  }
+}
+
+@media print {
+  .toc {
+    display: none;
+  }
+}

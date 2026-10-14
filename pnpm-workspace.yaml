@@ -1,0 +1,6 @@
+allowBuilds:
+  unrs-resolver: true
+  sharp: true
+  mongodb-memory-server: true
+  esbuild: true
+  '@parcel/watcher': set this to true or false

@@ -1,0 +1,157 @@
+@use "mixins" as *;
+
+// Gedeelde omlijsting voor tekstveld, tekstvak en keuzelijst.
+.control {
+  display: flex;
+  align-items: center;
+  width: 100%;
+  min-height: 40px;
+  border: 1px solid var(--color-line-strong);
+  border-radius: var(--radius);
+  background: var(--color-surface);
+  color: var(--color-ink);
+  font-size: 14px;
+  transition:
+    border-color var(--duration) var(--ease-out),
+    box-shadow var(--duration) var(--ease-out);
+
+  &:hover:not(.disabled, :disabled) {
+    border-color: var(--color-muted);
+  }
+
+  &:focus-within {
+    border-color: var(--color-brand);
+    box-shadow: 0 0 0 3px var(--color-brand-soft);
+  }
+
+  &.invalid {
+    border-color: var(--color-danger);
+  }
+
+  &.invalid:focus-within {
+    box-shadow: 0 0 0 3px var(--color-danger-soft);
+  }
+
+  &.disabled,
+  &:disabled {
+    background: var(--color-canvas);
+    color: var(--color-muted);
+    cursor: not-allowed;
+  }
+}
+
+.input {
+  flex: 1;
+  min-width: 0;
+  height: 38px;
+  padding-inline: 12px;
+  border: none;
+  border-radius: inherit;
+  background: none;
+  outline: none;
+
+  &::placeholder {
+    color: var(--color-muted);
+  }
+
+  &:disabled {
+    cursor: not-allowed;
+  }
+
+  .icon + & {
+    padding-left: 8px;
+  }
+}
+
+.icon {
+  display: flex;
+  flex-shrink: 0;
+  padding-left: 12px;
+  color: var(--color-muted);
+
+  svg {
+    width: 16px;
+    height: 16px;
+  }
+}
+
+.suffix {
+  display: flex;
+  flex-shrink: 0;
+  align-items: center;
+  gap: 4px;
+  padding-right: 12px;
+  font-size: 13px;
+  color: var(--color-muted);
+}
+
+// Tekstvak
+
+.textarea {
+  display: block;
+  padding: 10px 12px;
+  font-size: 14px;
+  line-height: 21px;
+  resize: vertical;
+  outline: none;
+
+  &::placeholder {
+    color: var(--color-muted);
+  }
+
+  &:focus {
+    border-color: var(--color-brand);
+    box-shadow: 0 0 0 3px var(--color-brand-soft);
+  }
+
+  &.invalid:focus {
+    border-color: var(--color-danger);
+    box-shadow: 0 0 0 3px var(--color-danger-soft);
+  }
+}
+
+.autoResize {
+  overflow-y: auto;
+  resize: none;
+}
+
+// Keuzelijst
+
+.selectControl {
+  position: relative;
+}
+
+.select {
+  flex: 1;
+  min-width: 0;
+  height: 38px;
+  padding: 0 36px 0 12px;
+  border: none;
+  border-radius: inherit;
+  background: none;
+  outline: none;
+  appearance: none;
+  cursor: pointer;
+
+  &:disabled {
+    cursor: not-allowed;
+  }
+
+  // Placeholder-optie in de kleur van een placeholder.
+  &:has(option[value=""]:checked) {
+    color: var(--color-muted);
+  }
+
+  option {
+    color: var(--color-ink);
+  }
+}
+
+.chevron {
+  position: absolute;
+  right: 12px;
+  width: 16px;
+  height: 16px;
+  color: var(--color-muted);
+  pointer-events: none;
+}

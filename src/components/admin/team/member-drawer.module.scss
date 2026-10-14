@@ -1,0 +1,296 @@
+@use "mixins" as *;
+
+@include motion-keyframes;
+
+.detail {
+  display: flex;
+  flex-direction: column;
+  gap: 28px;
+  @include stagger-children(5, fade-up, var(--duration-slow), 1);
+}
+
+.profile {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+.profileText {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 6px;
+  min-width: 0;
+}
+
+.email {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  max-width: 100%;
+  overflow: hidden;
+  border-radius: var(--radius-sm);
+  font-size: 13px;
+  color: var(--color-brand);
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  @include focus-ring;
+
+  svg {
+    flex-shrink: 0;
+    width: 14px;
+    height: 14px;
+  }
+
+  &:hover {
+    text-decoration: underline;
+  }
+}
+
+.lastActive {
+  font-size: 12px;
+  color: var(--color-muted);
+}
+
+.stats {
+  @include card;
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  margin: 0;
+}
+
+.stat {
+  padding: 14px 12px;
+
+  & + & {
+    border-left: 1px solid var(--color-line);
+  }
+
+  dt {
+    font-size: 11px;
+    color: var(--color-body);
+  }
+
+  dd {
+    margin: 4px 0 0;
+    font-size: 18px;
+    font-weight: 500;
+    color: var(--color-ink);
+    font-variant-numeric: tabular-nums;
+  }
+}
+
+.section {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.sectionTitle {
+  @include eyebrow;
+  color: var(--color-muted);
+}
+
+.empty {
+  font-size: 13px;
+  color: var(--color-body);
+}
+
+// Leerpaden
+
+.paths {
+  @include reset-list;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.path {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.pathHead {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.pathTitle {
+  font-size: 14px;
+  font-weight: 500;
+  color: var(--color-ink);
+}
+
+.pathMeta {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  gap: 4px 12px;
+  font-size: 12px;
+  color: var(--color-muted);
+  font-variant-numeric: tabular-nums;
+}
+
+.risk {
+  font-weight: 600;
+  color: var(--color-warning);
+}
+
+// Tijdlijn
+
+.timeline {
+  @include reset-list;
+  display: flex;
+  flex-direction: column;
+}
+
+.event {
+  position: relative;
+  display: grid;
+  grid-template-columns: 24px minmax(0, 1fr) auto;
+  gap: 12px;
+  padding-bottom: 16px;
+
+  // Verticale lijn tussen de iconen.
+  &:not(:last-child)::before {
+    content: "";
+    position: absolute;
+    top: 26px;
+    bottom: 2px;
+    left: 11px;
+    width: 1px;
+    background: var(--color-line);
+  }
+}
+
+.eventIcon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 24px;
+  height: 24px;
+  border-radius: 999px;
+  background: var(--color-canvas);
+  color: var(--color-muted);
+
+  svg {
+    width: 14px;
+    height: 14px;
+  }
+
+  .chapter & {
+    background: var(--color-brand-soft);
+    color: var(--color-brand);
+  }
+
+  .certificate & {
+    background: var(--color-success-soft);
+    color: var(--color-success);
+  }
+
+  .exam & {
+    background: var(--color-danger-soft);
+    color: var(--color-danger);
+  }
+}
+
+.eventText {
+  min-width: 0;
+  padding-top: 2px;
+}
+
+.eventLabel {
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--color-ink);
+}
+
+.eventDetail {
+  margin-top: 2px;
+  font-size: 12px;
+  color: var(--color-muted);
+}
+
+.eventDate {
+  padding-top: 3px;
+  font-size: 11px;
+  color: var(--color-muted);
+  white-space: nowrap;
+}
+
+// Certificaten
+
+.certificates {
+  @include reset-list;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.certificate {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px;
+  border: 1px solid var(--color-line);
+  border-radius: var(--radius);
+}
+
+.certificateIcon {
+  display: flex;
+  flex-shrink: 0;
+  align-items: center;
+  justify-content: center;
+  width: 36px;
+  height: 36px;
+  border-radius: 999px;
+  background: var(--color-brand);
+  color: #fff;
+
+  svg {
+    width: 18px;
+    height: 18px;
+  }
+}
+
+.certificateText {
+  flex: 1;
+  min-width: 0;
+}
+
+.certificateTitle {
+  font-size: 14px;
+  font-weight: 500;
+  color: var(--color-ink);
+}
+
+.certificateMeta {
+  margin-top: 2px;
+  font-size: 11px;
+  color: var(--color-muted);
+  overflow-wrap: anywhere;
+}
+
+.certificateLink {
+  display: inline-flex;
+  flex-shrink: 0;
+  align-items: center;
+  gap: 4px;
+  border-radius: var(--radius-sm);
+  font-size: 12px;
+  font-weight: 500;
+  color: var(--color-brand);
+  @include focus-ring;
+
+  svg {
+    width: 12px;
+    height: 12px;
+  }
+
+  &:hover {
+    text-decoration: underline;
+  }
+}

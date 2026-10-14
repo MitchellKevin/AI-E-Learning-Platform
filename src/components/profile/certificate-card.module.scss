@@ -1,0 +1,187 @@
+@use "mixins" as *;
+
+.card {
+  @include card;
+  position: relative;
+  isolation: isolate;
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  padding: 10px;
+  @include hover-lift;
+
+  // Focus van de titellink zichtbaar op de hele kaart.
+  &:has(.link:focus-visible) {
+    outline: 2px solid var(--color-brand);
+    outline-offset: 2px;
+  }
+}
+
+.frame {
+  padding: 20px;
+  border: 2px solid var(--color-brand);
+  border-radius: var(--radius-sm);
+}
+
+// Decoratieve ring zoals op het grote certificaat, achter de inhoud en binnen het kader.
+.ringClip {
+  position: absolute;
+  inset: 12px;
+  z-index: -1;
+  overflow: hidden;
+  border-radius: var(--radius-sm);
+  pointer-events: none;
+}
+
+.ring {
+  position: absolute;
+  top: -56px;
+  right: -48px;
+  width: 140px;
+  height: 140px;
+  border: 18px solid var(--color-brand-soft);
+  border-radius: 999px;
+  transition: transform var(--duration-slow) var(--ease-out);
+
+  .card:hover & {
+    transform: rotate(-20deg) scale(1.05);
+  }
+}
+
+.top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.logo {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 13px;
+  font-weight: 500;
+
+  span {
+    padding: 2px 7px;
+    border-radius: 999px;
+    background: var(--color-brand);
+    color: #fff;
+    font-size: 10px;
+    font-weight: 700;
+  }
+}
+
+.seal {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  border-radius: 999px;
+  background: var(--color-brand);
+  color: #fff;
+
+  svg {
+    width: 16px;
+    height: 16px;
+  }
+}
+
+.kicker {
+  @include eyebrow;
+  margin-top: 24px;
+  font-size: 10px;
+  color: var(--color-brand);
+}
+
+.title {
+  margin-top: 6px;
+  font-size: 22px;
+  letter-spacing: -0.01em;
+}
+
+// Strekt zich uit over de hele kaart.
+.link {
+  outline: none;
+
+  &::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    border-radius: var(--radius);
+  }
+}
+
+.holder {
+  margin-top: 4px;
+  font-size: 13px;
+  color: var(--color-body);
+}
+
+.facts {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 12px;
+  margin: 20px 0 0;
+  padding-top: 16px;
+  border-top: 1px solid var(--color-line);
+
+  dt {
+    @include eyebrow;
+    font-size: 9px;
+    color: var(--color-muted);
+  }
+
+  dd {
+    margin: 4px 0 0;
+    font-size: 12px;
+    font-weight: 500;
+  }
+}
+
+.number {
+  grid-column: 1 / -1;
+
+  dd {
+    font-family: var(--font-jetbrains), ui-monospace, monospace;
+    font-size: 11px;
+    overflow-wrap: anywhere;
+  }
+}
+
+.footer {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  padding: 12px 6px 2px;
+  font-size: 12px;
+}
+
+.open {
+  font-weight: 600;
+  color: var(--color-brand);
+}
+
+.verify {
+  position: relative;
+  z-index: 1;
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  border-radius: var(--radius-sm);
+  color: var(--color-body);
+  transition: color var(--duration-fast) var(--ease-out);
+  @include focus-ring;
+
+  &:hover {
+    color: var(--color-brand);
+    text-decoration: underline;
+  }
+
+  svg {
+    width: 14px;
+    height: 14px;
+  }
+}

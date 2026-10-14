@@ -1,0 +1,181 @@
+@use "mixins" as *;
+
+@include motion-keyframes;
+
+.grid {
+  @include reset-list;
+  display: grid;
+  gap: 16px;
+  @include stagger-children(3, fade-up, var(--duration-slow), 2);
+
+  @include from($lg) {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    align-items: stretch;
+  }
+}
+
+.item {
+  min-width: 0;
+}
+
+.card {
+  @include card;
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  padding: 28px 24px;
+  transition:
+    border-color var(--duration) var(--ease-out),
+    box-shadow var(--duration) var(--ease-out);
+
+  &:hover {
+    border-color: var(--color-line-strong);
+    box-shadow: 0 6px 16px rgb(15 23 42 / 0.06);
+  }
+
+  @include from($md) {
+    padding: 32px 28px;
+  }
+}
+
+// Aanbevolen abonnement: merkblauwe rand en een zachte gloed.
+.highlighted {
+  border-color: var(--color-brand);
+  box-shadow:
+    0 0 0 1px var(--color-brand),
+    0 24px 48px -24px rgb(29 78 216 / 0.35);
+
+  &:hover {
+    border-color: var(--color-brand);
+    box-shadow:
+      0 0 0 1px var(--color-brand),
+      0 24px 48px -20px rgb(29 78 216 / 0.4);
+  }
+}
+
+.head {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px 12px;
+}
+
+.name {
+  font-size: 20px;
+  font-weight: 500;
+  letter-spacing: -0.01em;
+}
+
+.tagline {
+  margin-top: 8px;
+  font-size: 14px;
+  line-height: 1.6;
+  color: var(--color-body);
+
+  // Naast elkaar staan de prijzen zo op dezelfde hoogte.
+  @include from($lg) {
+    min-height: 3.2em;
+  }
+}
+
+.price {
+  margin-top: 24px;
+  padding-top: 24px;
+  border-top: 1px solid var(--color-line);
+}
+
+.amountRow {
+  display: flex;
+  align-items: flex-end;
+  gap: 10px;
+  min-height: 48px;
+}
+
+.amount {
+  font-size: 44px;
+  font-weight: 500;
+  line-height: 1;
+  letter-spacing: -0.03em;
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+  @include enter(0, fade-up, var(--duration));
+}
+
+.unit {
+  padding-bottom: 3px;
+  font-size: 12px;
+  line-height: 1.35;
+  color: var(--color-body);
+}
+
+.billing {
+  margin-top: 12px;
+  font-size: 12px;
+  line-height: 1.45;
+  color: var(--color-muted);
+
+  @include from($lg) {
+    min-height: 2.9em;
+  }
+}
+
+.was {
+  color: var(--color-muted);
+}
+
+.seats {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  align-self: flex-start;
+  margin-top: 16px;
+  padding: 6px 12px;
+  border-radius: 999px;
+  background: var(--color-canvas);
+  font-size: 12px;
+  font-weight: 500;
+  color: var(--color-body);
+
+  svg {
+    width: 14px;
+    height: 14px;
+  }
+}
+
+.cta {
+  margin-top: 24px;
+}
+
+.features {
+  margin-top: 28px;
+}
+
+.featuresIntro {
+  @include eyebrow;
+  color: var(--color-muted);
+}
+
+.list {
+  @include reset-list;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  margin-top: 16px;
+  font-size: 14px;
+  line-height: 1.45;
+  color: var(--color-body);
+
+  li {
+    display: flex;
+    align-items: flex-start;
+    gap: 10px;
+  }
+
+  svg {
+    flex-shrink: 0;
+    width: 16px;
+    height: 16px;
+    margin-top: 1px;
+    color: var(--color-brand);
+  }
+}

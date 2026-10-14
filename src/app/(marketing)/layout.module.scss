@@ -1,0 +1,12 @@
+// Ankers (#product, #leerpaden) landen onder de vaste header, en scrollen er soepel heen.
+:global(html):has(.content) {
+  scroll-behavior: smooth;
+}
+
+.content {
+  outline: none;
+
+  :global([id]) {
+    scroll-margin-top: 88px;
+  }
+}

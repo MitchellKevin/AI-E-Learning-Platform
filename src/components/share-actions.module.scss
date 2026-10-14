@@ -1,0 +1,110 @@
+@use "mixins" as *;
+
+@include motion-keyframes;
+
+.actions {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+%button {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  height: 40px;
+  border-radius: 999px;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  transition:
+    background-color var(--duration) var(--ease-out),
+    border-color var(--duration) var(--ease-out),
+    color var(--duration) var(--ease-out),
+    transform var(--duration-fast) var(--ease-out);
+
+  svg {
+    width: 15px;
+    height: 15px;
+    transition: transform var(--duration) var(--ease-out);
+  }
+
+  &:active:not(:disabled) {
+    transform: scale(0.97);
+  }
+}
+
+.primary {
+  @extend %button;
+  border: none;
+  background: var(--color-brand);
+  color: #fff;
+
+  &:hover {
+    background: var(--color-brand-hover);
+  }
+
+  // Download-pijl zakt een tikje.
+  &:hover svg {
+    transform: translateY(2px);
+  }
+}
+
+.secondary {
+  @extend %button;
+  border: 1px solid var(--color-line-strong);
+  background: var(--color-surface);
+
+  &:hover {
+    border-color: var(--color-ink);
+  }
+
+  &.copied {
+    border-color: var(--color-brand);
+    color: var(--color-brand);
+  }
+}
+
+.icon {
+  display: flex;
+}
+
+.iconIn {
+  animation: fade-in var(--duration) var(--ease-out) both;
+}
+
+.iconPop {
+  animation: pop var(--duration-slow) var(--ease-out) both;
+}
+
+// Labels liggen op elkaar zodat de knop niet verspringt.
+.labels {
+  display: inline-grid;
+}
+
+.label {
+  grid-area: 1 / 1;
+  text-align: center;
+  opacity: 0;
+  transform: translateY(4px);
+  visibility: hidden;
+  transition:
+    opacity var(--duration) var(--ease-out),
+    transform var(--duration) var(--ease-out),
+    visibility 0s linear var(--duration);
+}
+
+.labelActive {
+  opacity: 1;
+  transform: none;
+  visibility: visible;
+  transition-delay: 0s;
+}
+
+.note {
+  margin-top: 2px;
+  font-size: 11px;
+  line-height: 1.5;
+  color: var(--color-body);
+}

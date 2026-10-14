@@ -1,0 +1,13 @@
+// Eindwaarde en tellende waarde op elkaar, zodat de breedte tijdens het tellen niet verspringt.
+.root {
+  display: inline-grid;
+  font-variant-numeric: tabular-nums;
+
+  > * {
+    grid-area: 1 / 1;
+  }
+}
+
+.final {
+  opacity: 0;
+}

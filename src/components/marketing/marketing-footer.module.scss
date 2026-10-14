@@ -1,0 +1,103 @@
+@use "mixins" as *;
+
+.footer {
+  border-top: 1px solid var(--color-line);
+  background: var(--color-surface);
+}
+
+.inner {
+  @include container;
+  padding-block: 56px 32px;
+}
+
+.top {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 40px 24px;
+
+  @include from($md) {
+    grid-template-columns: minmax(0, 1.6fr) repeat(3, minmax(0, 1fr));
+    gap: 32px;
+  }
+}
+
+.brand {
+  grid-column: 1 / -1;
+
+  @include from($md) {
+    grid-column: auto;
+    padding-right: 32px;
+  }
+}
+
+.logo {
+  display: inline-flex;
+}
+
+.pitch {
+  max-width: 22rem;
+  margin-top: 16px;
+  font-size: 13px;
+  line-height: 1.6;
+  color: var(--color-body);
+}
+
+.note {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  margin-top: 20px;
+  padding: 6px 12px;
+  border-radius: 999px;
+  background: var(--color-success-soft);
+  color: var(--color-success);
+  font-size: 12px;
+  font-weight: 600;
+
+  svg {
+    width: 14px;
+    height: 14px;
+  }
+}
+
+.column {
+  min-width: 0;
+}
+
+.columnTitle {
+  @include eyebrow;
+  color: var(--color-muted);
+}
+
+.links {
+  @include reset-list;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  margin-top: 16px;
+}
+
+.link {
+  border-radius: var(--radius-sm);
+  color: var(--color-body);
+  font-size: 13px;
+  overflow-wrap: anywhere;
+  transition: color var(--duration-fast) var(--ease-out);
+  @include focus-ring;
+
+  &:hover {
+    color: var(--color-brand);
+  }
+}
+
+.bottom {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  gap: 8px 24px;
+  margin-top: 48px;
+  padding-top: 24px;
+  border-top: 1px solid var(--color-line);
+  font-size: 12px;
+  color: var(--color-muted);
+}

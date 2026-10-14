@@ -1,0 +1,7 @@
+@use "mixins" as *;
+
+@include motion-keyframes;
+
+.root {
+  @include enter(0);
+}

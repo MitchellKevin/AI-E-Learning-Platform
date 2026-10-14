@@ -1,0 +1,104 @@
+@use "mixins" as *;
+
+.panel {
+  @include card;
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+}
+
+.danger {
+  border-color: color-mix(in srgb, var(--color-danger) 28%, var(--color-line));
+}
+
+.head {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  padding: 20px 20px 0;
+
+  @include from($sm) {
+    flex-direction: row;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 24px;
+    padding: 24px 28px 0;
+  }
+}
+
+// Kaart met alleen een kop (bv. een knop rechts): ook onderaan ruimte.
+.head:last-child {
+  padding-bottom: 20px;
+
+  @include from($sm) {
+    padding-bottom: 24px;
+  }
+}
+
+.titles {
+  min-width: 0;
+}
+
+.title {
+  font-size: 18px;
+  letter-spacing: -0.01em;
+
+  .danger & {
+    color: var(--color-danger);
+  }
+}
+
+.description {
+  max-width: 40rem;
+  margin-top: 6px;
+  font-size: 13px;
+  line-height: 1.55;
+  color: var(--color-body);
+
+  a {
+    border-radius: var(--radius-sm);
+    color: var(--color-brand);
+    text-decoration: underline;
+    @include focus-ring;
+  }
+}
+
+.actions {
+  display: flex;
+  flex-shrink: 0;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px;
+}
+
+.body {
+  min-width: 0;
+  padding: 20px;
+
+  @include from($sm) {
+    padding: 20px 28px 24px;
+  }
+}
+
+.flush {
+  padding: 16px 0 0;
+
+  @include from($sm) {
+    padding: 20px 0 0;
+  }
+}
+
+.footer {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  padding: 14px 20px;
+  border-top: 1px solid var(--color-line);
+
+  @include from($sm) {
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-between;
+    padding: 14px 28px;
+  }
+}

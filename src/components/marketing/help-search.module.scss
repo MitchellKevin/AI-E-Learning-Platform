@@ -1,0 +1,177 @@
+@use "mixins" as *;
+
+@include motion-keyframes;
+
+.search {
+  width: 100%;
+  max-width: 640px;
+  margin-inline: auto;
+  text-align: left;
+}
+
+// Groter veld dan de standaard 40px; dubbele class wint van de kit-stijl.
+.search .control {
+  min-height: 52px;
+  border-radius: 999px;
+  box-shadow: var(--shadow-sm);
+  font-size: 15px;
+}
+
+.search .input {
+  height: 50px;
+
+  &::-webkit-search-cancel-button {
+    appearance: none;
+  }
+}
+
+.shortcut {
+  display: none;
+  padding-right: 6px;
+
+  @include from($md) {
+    display: flex;
+  }
+}
+
+// Zoeksuggesties
+
+.suggestions {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: center;
+  gap: 8px 10px;
+  margin-top: 16px;
+  @include enter(1, fade-in);
+}
+
+.suggestionsLabel {
+  @include eyebrow;
+  color: var(--color-muted);
+}
+
+.suggestionList {
+  @include reset-list;
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 6px;
+}
+
+.suggestion {
+  height: 28px;
+  padding-inline: 12px;
+  border: 1px solid var(--color-line-strong);
+  border-radius: 999px;
+  background: var(--color-surface);
+  font-size: 12px;
+  color: var(--color-body);
+  cursor: pointer;
+  transition:
+    border-color var(--duration-fast) var(--ease-out),
+    color var(--duration-fast) var(--ease-out),
+    background-color var(--duration-fast) var(--ease-out),
+    transform var(--duration-fast) var(--ease-out);
+  @include focus-ring;
+
+  &:active {
+    transform: scale(0.97);
+  }
+
+  &:hover {
+    border-color: var(--color-brand);
+    background: var(--color-brand-soft);
+    color: var(--color-brand);
+  }
+}
+
+// Resultaten
+
+.results {
+  margin-top: 16px;
+  @include enter(0, fade-up, var(--duration));
+}
+
+.count {
+  @include eyebrow;
+  margin-bottom: 8px;
+  padding-inline: 4px;
+  color: var(--color-muted);
+}
+
+.list {
+  @include reset-list;
+  @include card;
+  overflow: hidden;
+  box-shadow: var(--shadow-sm);
+}
+
+.result {
+  animation: fade-in var(--duration) var(--ease-out) both;
+
+  & + & {
+    border-top: 1px solid var(--color-line);
+  }
+}
+
+.resultLink {
+  position: relative;
+  display: grid;
+  gap: 2px;
+  padding: 14px 48px 14px 18px;
+  outline: none;
+  transition: background-color var(--duration-fast) var(--ease-out);
+
+  &:hover,
+  &:focus-visible {
+    background: var(--color-canvas);
+  }
+
+  &:focus-visible {
+    box-shadow: inset 0 0 0 2px var(--color-brand);
+  }
+}
+
+.resultCategory {
+  @include eyebrow;
+  font-size: 10px;
+  color: var(--color-brand);
+}
+
+.resultTitle {
+  font-size: 15px;
+  font-weight: 500;
+  color: var(--color-ink);
+}
+
+.resultSummary {
+  font-size: 13px;
+  line-height: 1.5;
+  color: var(--color-body);
+}
+
+.resultArrow {
+  position: absolute;
+  top: 50%;
+  right: 18px;
+  width: 16px;
+  height: 16px;
+  color: var(--color-muted);
+  translate: 0 -50%;
+  transition:
+    transform var(--duration) var(--ease-out),
+    color var(--duration) var(--ease-out);
+
+  .resultLink:hover &,
+  .resultLink:focus-visible & {
+    transform: translateX(3px);
+    color: var(--color-brand);
+  }
+}
+
+.mark {
+  border-radius: 2px;
+  background: color-mix(in srgb, var(--color-brand) 14%, transparent);
+  color: inherit;
+}

@@ -1,0 +1,95 @@
+@use "mixins" as *;
+
+@include motion-keyframes;
+
+.card {
+  @include card;
+  padding: 20px;
+}
+
+.title {
+  font-size: 16px;
+  letter-spacing: -0.01em;
+}
+
+.list {
+  @include reset-list;
+  margin-top: 12px;
+  @include stagger-children(5, fade-in, var(--duration), 3);
+}
+
+.rule {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding-block: 10px;
+
+  & + & {
+    border-top: 1px solid var(--color-line);
+  }
+}
+
+.icon {
+  display: flex;
+  flex-shrink: 0;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  border-radius: 999px;
+  background: var(--color-brand-soft);
+  color: var(--color-brand);
+
+  svg {
+    width: 16px;
+    height: 16px;
+  }
+}
+
+.text {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  min-width: 0;
+}
+
+.label {
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--color-ink);
+}
+
+.description {
+  margin-top: 2px;
+  font-size: 11px;
+  line-height: 1.4;
+  color: var(--color-muted);
+}
+
+.points {
+  flex-shrink: 0;
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--color-brand);
+  font-variant-numeric: tabular-nums;
+}
+
+.foot {
+  margin-top: 8px;
+  padding-top: 14px;
+  border-top: 1px solid var(--color-line);
+  font-size: 12px;
+  line-height: 1.5;
+  color: var(--color-body);
+}
+
+.link {
+  border-radius: var(--radius-sm);
+  font-weight: 500;
+  color: var(--color-brand);
+  @include focus-ring;
+
+  &:hover {
+    text-decoration: underline;
+  }
+}

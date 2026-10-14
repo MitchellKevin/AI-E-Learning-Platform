@@ -1,0 +1,175 @@
+@use "mixins" as *;
+
+@include motion-keyframes;
+
+.wrap {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  min-width: 0;
+}
+
+// Zoeken, filters en export op één rij (op mobiel onder elkaar).
+
+.toolbar {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 8px;
+
+  @include from($md) {
+    grid-template-columns: minmax(0, 1fr) 180px 200px auto;
+    align-items: center;
+  }
+}
+
+.search {
+  grid-column: 1 / -1;
+
+  @include from($md) {
+    grid-column: auto;
+  }
+}
+
+.filter {
+  min-width: 0;
+}
+
+.export {
+  grid-column: 1 / -1;
+
+  @include from($md) {
+    grid-column: auto;
+  }
+}
+
+.meta {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  min-height: 32px;
+}
+
+.count {
+  font-size: 13px;
+  color: var(--color-body);
+  font-variant-numeric: tabular-nums;
+}
+
+// Balk met bulkacties zodra er iets geselecteerd is.
+
+.bulk {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 10px 12px 10px 16px;
+  border: 1px solid var(--color-brand);
+  border-radius: var(--radius);
+  background: var(--color-brand-soft);
+  @include enter(0, fade-up, var(--duration));
+}
+
+.bulkCount {
+  font-size: 13px;
+  color: var(--color-ink);
+
+  strong {
+    font-weight: 600;
+    font-variant-numeric: tabular-nums;
+  }
+}
+
+.bulkHidden {
+  color: var(--color-body);
+}
+
+.bulkActions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+// Cellen
+
+.person {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  min-width: 0;
+}
+
+.personText {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  min-width: 0;
+}
+
+.name {
+  padding: 0;
+  border: none;
+  border-radius: var(--radius-sm);
+  background: none;
+  color: var(--color-ink);
+  font-size: 14px;
+  font-weight: 500;
+  text-align: left;
+  cursor: pointer;
+  @include focus-ring;
+
+  &:hover {
+    color: var(--color-brand);
+    text-decoration: underline;
+    text-underline-offset: 3px;
+  }
+}
+
+.role {
+  margin-top: 2px;
+  font-size: 12px;
+  color: var(--color-muted);
+}
+
+.path {
+  display: block;
+  font-size: 13px;
+  color: var(--color-ink);
+}
+
+.deadline {
+  display: block;
+  margin-top: 2px;
+  font-size: 11px;
+  color: var(--color-muted);
+}
+
+.atRisk {
+  font-weight: 600;
+  color: var(--color-warning);
+}
+
+.progress {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  min-width: 120px;
+}
+
+.progressBar {
+  flex: 1;
+}
+
+.percent {
+  width: 36px;
+  font-size: 12px;
+  font-weight: 500;
+  text-align: right;
+  color: var(--color-ink);
+  font-variant-numeric: tabular-nums;
+}
+
+.stale {
+  color: var(--color-danger);
+}

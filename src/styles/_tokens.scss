@@ -1,0 +1,52 @@
+// Design tokens uit het ontwerp. Als CSS custom properties zodat ze ook runtime bruikbaar zijn.
+
+:root {
+  --color-brand: #1d4ed8;
+  --color-brand-hover: #1e40af;
+  --color-brand-soft: #e8eefc;
+  --color-ink: #0f172a;
+  --color-body: #334155;
+  --color-muted: #64748b;
+  --color-line: #e2e8f0;
+  --color-line-strong: #cbd5e1;
+  --color-canvas: #f3f6fb;
+  --color-surface: #ffffff;
+  --color-track: #e5e9f0;
+  --color-bar: #cbd5e1;
+  --color-ink-hover: #1e293b;
+
+  // Statuskleuren in hetzelfde rustige palet: tekst/rand + zachte achtergrond.
+  --color-success: #15803d;
+  --color-success-soft: #e7f5ec;
+  --color-warning: #b45309;
+  --color-warning-soft: #fdf2e1;
+  --color-danger: #c42b2b;
+  --color-danger-hover: #a51f1f;
+  --color-danger-soft: #fdecec;
+
+  // Schaduwen en lagen voor zwevende elementen (menu's, dialogen, toasts).
+  --shadow-sm: 0 1px 2px rgb(15 23 42 / 0.05);
+  --shadow-popover: 0 12px 32px rgb(15 23 42 / 0.12), 0 2px 6px rgb(15 23 42 / 0.06);
+  --shadow-dialog: 0 24px 64px rgb(15 23 42 / 0.2), 0 4px 12px rgb(15 23 42 / 0.08);
+  --z-sticky: 20;
+  --z-popover: 50;
+  --z-toast: 100;
+
+  --radius: 8px;
+  --radius-sm: 4px;
+  --container: 1100px;
+  --gutter: 16px;
+
+  // Motion
+  --ease-out: cubic-bezier(0.22, 1, 0.36, 1);
+  --ease-in-out: cubic-bezier(0.65, 0, 0.35, 1);
+  --ease-spring: cubic-bezier(0.34, 1.56, 0.64, 1);
+  --duration-fast: 120ms;
+  --duration: 200ms;
+  --duration-slow: 420ms;
+  --stagger: 50ms;
+
+  @media (min-width: 640px) {
+    --gutter: 32px;
+  }
+}

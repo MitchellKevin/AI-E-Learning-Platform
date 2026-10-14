@@ -1,0 +1,35 @@
+@use "mixins" as *;
+
+@include motion-keyframes;
+
+.content {
+  @include container;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: 24px;
+  padding-block: 24px 96px;
+
+  @include from($lg) {
+    grid-template-columns: 240px minmax(0, 1fr);
+    gap: 40px;
+    align-items: start;
+    padding-top: 40px;
+  }
+}
+
+.aside {
+  min-width: 0;
+
+  @include from($lg) {
+    position: sticky;
+    top: 24px;
+  }
+}
+
+.panel {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  min-width: 0;
+  @include stagger-children(4, fade-up, var(--duration-slow), 3);
+}

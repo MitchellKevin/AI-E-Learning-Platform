@@ -1,0 +1,255 @@
+@use "mixins" as *;
+
+@include motion-keyframes;
+
+.main {
+  width: 100%;
+  max-width: calc(640px + var(--gutter) * 2);
+  margin-inline: auto;
+  padding: 48px var(--gutter) 80px;
+
+  @include from($sm) {
+    padding-top: 72px;
+  }
+}
+
+.card {
+  @include card;
+  overflow: hidden;
+  box-shadow: 0 8px 24px rgb(15 23 42 / 0.06);
+  @include enter(0);
+}
+
+.status {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  padding: 28px 20px 24px;
+
+  @include from($sm) {
+    padding: 36px 36px 28px;
+  }
+}
+
+.statusIcon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 56px;
+  height: 56px;
+  border-radius: 999px;
+  @include enter(3, pop);
+
+  svg {
+    width: 26px;
+    height: 26px;
+  }
+}
+
+.valid {
+  background: var(--color-success);
+  color: #fff;
+  box-shadow: 0 0 0 8px var(--color-success-soft);
+}
+
+.invalid {
+  background: var(--color-danger-soft);
+  color: var(--color-danger);
+}
+
+.neutral {
+  background: var(--color-brand-soft);
+  color: var(--color-brand);
+}
+
+.eyebrow {
+  @include eyebrow;
+  margin-top: 24px;
+  color: var(--color-brand);
+  @include enter(4, fade-in);
+}
+
+.validText {
+  color: var(--color-success);
+}
+
+.invalidText {
+  color: var(--color-danger);
+}
+
+.title {
+  margin-top: 8px;
+  font-size: 28px;
+  line-height: 1.2;
+  letter-spacing: -0.02em;
+  @include enter(5);
+
+  @include from($sm) {
+    font-size: 32px;
+  }
+}
+
+.lead {
+  margin-top: 10px;
+  font-size: 15px;
+  line-height: 1.6;
+  color: var(--color-body);
+  overflow-wrap: anywhere;
+  @include enter(6);
+
+  strong {
+    font-weight: 600;
+    color: var(--color-ink);
+  }
+}
+
+.mono {
+  font-family: var(--font-jetbrains), ui-monospace, monospace;
+  font-size: 0.9em;
+  color: var(--color-ink);
+  overflow-wrap: anywhere;
+}
+
+// Gegevens van het certificaat
+
+.facts {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  margin: 0;
+  border-top: 1px solid var(--color-line);
+  background: var(--color-canvas);
+  @include stagger-children(6, fade-in, var(--duration-slow), 7);
+
+  @include from($sm) {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  > div {
+    padding: 14px 20px;
+    border-bottom: 1px solid var(--color-line);
+
+    @include from($sm) {
+      padding: 16px 36px;
+
+      &:nth-child(odd) {
+        border-right: 1px solid var(--color-line);
+      }
+    }
+  }
+
+  dt {
+    @include eyebrow;
+    font-size: 10px;
+    color: var(--color-muted);
+  }
+
+  dd {
+    margin: 6px 0 0;
+    font-size: 14px;
+    font-weight: 500;
+    overflow-wrap: anywhere;
+  }
+}
+
+.issuer {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+
+  svg {
+    width: 16px;
+    height: 16px;
+    color: var(--color-brand);
+  }
+}
+
+.body {
+  padding: 24px 20px;
+  @include enter(9, fade-in);
+
+  @include from($sm) {
+    padding: 28px 36px;
+  }
+
+  .status + & {
+    padding-top: 0;
+  }
+}
+
+.subTitle {
+  font-size: 15px;
+  font-weight: 600;
+}
+
+.text {
+  margin-top: 8px;
+  font-size: 14px;
+  line-height: 1.6;
+  color: var(--color-body);
+}
+
+.goals,
+.checks {
+  @include reset-list;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin-top: 14px;
+  font-size: 13px;
+  line-height: 1.5;
+  color: var(--color-body);
+}
+
+.goals li {
+  display: flex;
+  gap: 8px;
+
+  svg {
+    flex-shrink: 0;
+    width: 16px;
+    height: 16px;
+    margin-top: 2px;
+    color: var(--color-success);
+  }
+}
+
+.checks {
+  li {
+    position: relative;
+    padding-left: 18px;
+
+    &::before {
+      content: "";
+      position: absolute;
+      top: 8px;
+      left: 4px;
+      width: 5px;
+      height: 5px;
+      border-radius: 999px;
+      background: var(--color-line-strong);
+    }
+  }
+
+  a {
+    border-radius: var(--radius-sm);
+    color: var(--color-brand);
+    text-decoration: underline;
+    @include focus-ring;
+  }
+}
+
+.lookup {
+  padding: 24px 20px 28px;
+  border-top: 1px solid var(--color-line);
+  background: var(--color-canvas);
+  @include enter(10, fade-in);
+
+  @include from($sm) {
+    padding: 28px 36px 32px;
+  }
+
+  // Direct onder de kop (zoekpagina) geen grijze balk nodig.
+  .status + & {
+    background: none;
+  }
+}

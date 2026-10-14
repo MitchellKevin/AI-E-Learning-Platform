@@ -1,0 +1,300 @@
+@use "mixins" as *;
+
+@include motion-keyframes;
+
+// Korte ring rond het vinkje als een taak net is afgerond.
+@keyframes ring {
+  from {
+    box-shadow: 0 0 0 0 rgb(29 78 216 / 0.35);
+  }
+  to {
+    box-shadow: 0 0 0 6px rgb(29 78 216 / 0);
+  }
+}
+
+@keyframes banner-in {
+  from {
+    opacity: 0;
+    transform: translateY(-6px) scale(0.98);
+  }
+}
+
+.hero {
+  background: var(--color-surface);
+  border-bottom: 1px solid var(--color-line);
+}
+
+.heroInner {
+  @include container;
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+  padding-block: 24px 28px;
+
+  @include from($lg) {
+    flex-direction: row;
+    align-items: flex-start;
+    justify-content: space-between;
+  }
+
+  // Titelblok en voortgang komen kort na elkaar binnen.
+  @include stagger-children(2);
+}
+
+.title {
+  margin-block: 12px 16px;
+  font-size: 28px;
+  letter-spacing: -0.01em;
+}
+
+.progress {
+  flex-shrink: 0;
+  width: 100%;
+  padding-top: 24px;
+
+  @include from($lg) {
+    width: 192px;
+  }
+}
+
+.progressHead {
+  display: flex;
+  justify-content: space-between;
+  font-size: 11px;
+  color: var(--color-body);
+
+  strong {
+    color: var(--color-ink);
+  }
+}
+
+.count {
+  animation: fade-in var(--duration-slow) var(--ease-out) both;
+}
+
+.progressBar {
+  height: 6px;
+  margin-top: 10px;
+}
+
+.body {
+  max-width: 656px;
+  margin-inline: auto;
+  padding: 28px var(--gutter) 96px;
+}
+
+.completeBanner {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 12px;
+  padding: 14px 18px;
+  border-radius: var(--radius);
+  background: var(--color-brand);
+  color: #fff;
+  font-size: 14px;
+  font-weight: 500;
+  animation: banner-in var(--duration-slow) var(--ease-out) both;
+}
+
+.bannerIcon {
+  flex-shrink: 0;
+  width: 18px;
+  height: 18px;
+  animation: pop var(--duration-slow) var(--ease-out) 120ms both;
+}
+
+.tasks {
+  @include reset-list;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  @include stagger-children(8, fade-up, var(--duration-slow), 1);
+}
+
+.task {
+  @include card;
+  overflow: hidden;
+  transition: border-color var(--duration) var(--ease-out);
+
+  &.open {
+    border-color: var(--color-line-strong);
+  }
+}
+
+.taskHead {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  width: 100%;
+  padding: 14px 16px;
+  border: none;
+  background: none;
+  text-align: left;
+  cursor: pointer;
+  transition: background-color var(--duration) var(--ease-out);
+
+  &:hover {
+    background: var(--color-canvas);
+  }
+
+  // Binnen de kaart (overflow: hidden) valt een outline erbuiten weg, dus naar binnen.
+  &:focus-visible {
+    outline: 2px solid var(--color-brand);
+    outline-offset: -2px;
+  }
+}
+
+.check {
+  display: flex;
+  flex-shrink: 0;
+  align-items: center;
+  justify-content: center;
+  width: 20px;
+  height: 20px;
+  border: 1px solid var(--color-line-strong);
+  border-radius: 999px;
+  transition:
+    background-color var(--duration) var(--ease-out),
+    border-color var(--duration) var(--ease-out);
+
+  svg {
+    width: 12px;
+    height: 12px;
+    stroke-width: 3;
+  }
+
+  &.done {
+    border-color: transparent;
+    background: var(--color-brand);
+    color: #fff;
+  }
+
+  &.justDone {
+    animation: ring var(--duration-slow) var(--ease-out) 80ms;
+
+    svg {
+      animation: pop var(--duration-slow) var(--ease-out) both;
+    }
+  }
+
+  .open &:not(.done) {
+    border-color: var(--color-brand);
+  }
+}
+
+.taskNumber {
+  @include eyebrow;
+  flex-shrink: 0;
+  width: 44px;
+  font-size: 9px;
+  color: var(--color-body);
+}
+
+.taskTitle {
+  flex: 1;
+  font-size: 14px;
+}
+
+.chevron {
+  width: 16px;
+  height: 16px;
+  flex-shrink: 0;
+  transition: transform var(--duration) var(--ease-out);
+
+  .open & {
+    transform: rotate(180deg);
+  }
+}
+
+// Accordeon: grid-rij van 0fr naar 1fr. Dicht is het paneel visibility: hidden, dus niet
+// focusbaar en niet voorgelezen; die wissel gebeurt pas na het inklappen.
+.panel {
+  display: grid;
+  grid-template-rows: 0fr;
+  visibility: hidden;
+  transition:
+    grid-template-rows var(--duration-slow) var(--ease-out),
+    visibility 0s linear var(--duration-slow);
+
+  .open & {
+    grid-template-rows: 1fr;
+    visibility: visible;
+    transition:
+      grid-template-rows var(--duration-slow) var(--ease-out),
+      visibility 0s;
+  }
+}
+
+.panelInner {
+  min-height: 0;
+  overflow: hidden;
+}
+
+.taskBody {
+  padding: 16px 16px 20px;
+  border-top: 1px solid var(--color-line);
+  opacity: 0;
+  transform: translateY(-4px);
+  transition:
+    opacity var(--duration) var(--ease-out),
+    transform var(--duration) var(--ease-out);
+
+  .open & {
+    opacity: 1;
+    transform: none;
+    transition-duration: var(--duration-slow);
+    transition-delay: 80ms;
+  }
+
+  @include from($sm) {
+    padding-left: 76px;
+  }
+}
+
+.pager {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+  margin-top: 16px;
+}
+
+.pagerLink {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  height: 36px;
+  padding-inline: 14px;
+  border: 1px solid var(--color-line-strong);
+  border-radius: 999px;
+  font-size: 12px;
+  font-weight: 500;
+  transition:
+    border-color var(--duration) var(--ease-out),
+    transform var(--duration-fast) var(--ease-out);
+  @include focus-ring;
+
+  &:hover {
+    border-color: var(--color-ink);
+  }
+
+  &:active {
+    transform: scale(0.97);
+  }
+
+  svg {
+    flex-shrink: 0;
+    width: 14px;
+    height: 14px;
+    transition: transform var(--duration) var(--ease-out);
+  }
+
+  // Pijl schuift een stukje in de richting van de link.
+  &.prev:hover svg {
+    transform: translateX(-3px);
+  }
+
+  &.next:hover svg {
+    transform: translateX(3px);
+  }
+}

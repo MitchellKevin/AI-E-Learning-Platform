@@ -1,0 +1,103 @@
+@use "mixins" as *;
+
+@include motion-keyframes;
+
+.card {
+  @include card;
+  padding: 20px;
+}
+
+.title {
+  font-size: 16px;
+  letter-spacing: -0.01em;
+}
+
+.description {
+  margin-top: 4px;
+  font-size: 12px;
+  line-height: 1.5;
+  color: var(--color-body);
+}
+
+.list {
+  @include reset-list;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  margin-top: 20px;
+}
+
+.team {
+  --delay: calc(var(--stagger) * var(--i, 0) + 160ms);
+  animation: fade-in var(--duration) var(--ease-out) both;
+  animation-delay: var(--delay);
+}
+
+.label {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 8px;
+  font-size: 13px;
+}
+
+.name {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 6px;
+  min-width: 0;
+  font-weight: 500;
+  color: var(--color-ink);
+}
+
+.mineTag {
+  @include eyebrow;
+  font-size: 10px;
+  color: var(--color-brand);
+}
+
+.value {
+  font-weight: 600;
+  color: var(--color-ink);
+  font-variant-numeric: tabular-nums;
+}
+
+.track {
+  height: 8px;
+  margin-top: 6px;
+  overflow: hidden;
+  border-radius: 999px;
+  background: var(--color-track);
+}
+
+// Groeit vanaf links; bij een andere periode schuift de breedte mee.
+.fill {
+  height: 100%;
+  border-radius: 999px;
+  background: var(--color-bar);
+  transform-origin: left center;
+  transition: width var(--duration-slow) var(--ease-out);
+  animation: grow-x 700ms var(--ease-out) both;
+  animation-delay: var(--delay);
+
+  .mine & {
+    background: var(--color-brand);
+  }
+}
+
+.members {
+  display: block;
+  margin-top: 4px;
+  font-size: 11px;
+  color: var(--color-muted);
+}
+
+.summary {
+  margin-top: 20px;
+  padding-top: 16px;
+  border-top: 1px solid var(--color-line);
+  font-size: 12px;
+  line-height: 1.5;
+  color: var(--color-body);
+}

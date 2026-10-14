@@ -1,0 +1,135 @@
+@use "mixins" as *;
+
+.card {
+  @include card;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  padding: 24px;
+}
+
+.full {
+  @include from($md) {
+    flex-direction: row;
+    align-items: flex-start;
+    gap: 24px;
+    padding: 32px;
+  }
+}
+
+.compact {
+  gap: 14px;
+  padding: 20px;
+  background: var(--color-canvas);
+  border-color: var(--color-line-strong);
+}
+
+.icon {
+  display: flex;
+  flex-shrink: 0;
+  align-items: center;
+  justify-content: center;
+  width: 44px;
+  height: 44px;
+  border-radius: 999px;
+  background: var(--color-brand-soft);
+  color: var(--color-brand);
+
+  svg {
+    width: 20px;
+    height: 20px;
+  }
+
+  .compact & {
+    display: none;
+  }
+}
+
+.text {
+  flex: 1;
+  min-width: 0;
+}
+
+.title {
+  font-size: 20px;
+  letter-spacing: -0.01em;
+
+  .compact & {
+    font-size: 16px;
+  }
+}
+
+.lead {
+  max-width: 32rem;
+  margin-top: 6px;
+  font-size: 14px;
+  line-height: 1.6;
+  color: var(--color-body);
+
+  .compact & {
+    font-size: 13px;
+  }
+}
+
+.meta {
+  display: grid;
+  gap: 12px;
+  margin: 16px 0 0;
+  font-size: 14px;
+
+  @include from($sm) {
+    .full & {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+  }
+
+  dt {
+    @include eyebrow;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    color: var(--color-muted);
+
+    svg {
+      width: 13px;
+      height: 13px;
+    }
+  }
+
+  dd {
+    margin: 4px 0 0;
+    color: var(--color-ink);
+    overflow-wrap: anywhere;
+  }
+
+  a {
+    border-radius: 2px;
+    font-weight: 500;
+    color: var(--color-brand);
+    @include focus-ring;
+
+    &:hover {
+      text-decoration: underline;
+    }
+  }
+}
+
+.hours {
+  display: block;
+  margin-top: 2px;
+  font-size: 12px;
+  color: var(--color-muted);
+}
+
+.actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+
+  .full & {
+    @include from($md) {
+      flex-direction: column;
+      align-items: stretch;
+    }
+  }
+}

@@ -1,0 +1,65 @@
+@use "mixins" as *;
+
+@include motion-keyframes;
+
+.field {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  min-width: 0;
+}
+
+.labelRow {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.label {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--color-ink);
+}
+
+.optional {
+  font-weight: 400;
+  color: var(--color-muted);
+}
+
+.action {
+  font-size: 12px;
+
+  a {
+    color: var(--color-brand);
+    font-weight: 500;
+  }
+
+  a:hover {
+    text-decoration: underline;
+  }
+}
+
+.description {
+  margin-top: -2px;
+  font-size: 12px;
+  line-height: 1.5;
+  color: var(--color-muted);
+}
+
+.error {
+  display: flex;
+  align-items: flex-start;
+  gap: 6px;
+  font-size: 12px;
+  line-height: 1.4;
+  color: var(--color-danger);
+  @include enter(0, fade-up, var(--duration));
+
+  svg {
+    flex-shrink: 0;
+    width: 14px;
+    height: 14px;
+    margin-top: 1px;
+  }
+}

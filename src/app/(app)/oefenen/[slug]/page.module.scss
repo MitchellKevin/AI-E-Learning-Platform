@@ -1,0 +1,37 @@
+@use "mixins" as *;
+
+.content {
+  @include container;
+  padding-block: 32px 96px;
+}
+
+// Laden
+
+.loadingBand {
+  border-bottom: 1px solid var(--color-line);
+  background: var(--color-surface);
+}
+
+.loadingHead {
+  @include container;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  padding-block: 40px;
+}
+
+.loadingGrid {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: 32px;
+
+  @include from($lg) {
+    grid-template-columns: minmax(0, 360px) minmax(0, 1fr);
+  }
+}
+
+.loadingColumn {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}

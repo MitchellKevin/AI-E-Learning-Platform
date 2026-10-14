@@ -1,0 +1,250 @@
+@use "mixins" as *;
+
+@include motion-keyframes;
+
+.panel {
+  @include card;
+  padding: 20px;
+  @include enter(0);
+
+  @include from($sm) {
+    padding: 24px;
+  }
+}
+
+.head {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 16px;
+}
+
+.title {
+  font-size: 16px;
+  letter-spacing: -0.01em;
+  outline: none;
+}
+
+.summary {
+  margin-top: 4px;
+  font-size: 13px;
+  line-height: 1.55;
+  color: var(--color-body);
+}
+
+.total {
+  display: flex;
+  flex-shrink: 0;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 4px;
+}
+
+.score {
+  font-size: 32px;
+  font-weight: 500;
+  line-height: 1;
+  letter-spacing: -0.02em;
+  animation: pop var(--duration-slow) var(--ease-out) both;
+
+  &.good {
+    color: var(--color-success);
+  }
+
+  &.fair {
+    color: var(--color-brand);
+  }
+
+  &.weak {
+    color: var(--color-warning);
+  }
+}
+
+.outOf {
+  margin-left: 2px;
+  font-size: 14px;
+  color: var(--color-muted);
+}
+
+.delta {
+  display: inline-flex;
+  align-items: center;
+  padding: 1px 6px;
+  border-radius: 999px;
+  font-size: 11px;
+  font-weight: 600;
+  font-variant-numeric: tabular-nums;
+
+  &.up {
+    background: var(--color-success-soft);
+    color: var(--color-success);
+  }
+
+  &.down {
+    background: var(--color-warning-soft);
+    color: var(--color-warning);
+  }
+}
+
+// Totaalbalk met een streepje op de norm
+
+.norm {
+  margin-top: 20px;
+  padding: 14px 16px;
+  border-radius: var(--radius);
+  background: var(--color-canvas);
+}
+
+.normTrack {
+  position: relative;
+  height: 8px;
+  border-radius: 999px;
+  background: var(--color-track);
+}
+
+.normFill {
+  height: 100%;
+  border-radius: inherit;
+  background: var(--color-brand);
+  transform-origin: left;
+  animation: grow-x var(--duration-slow) var(--ease-out) both;
+
+  &.passed {
+    background: var(--color-success);
+  }
+}
+
+.normMarker {
+  position: absolute;
+  top: -4px;
+  width: 2px;
+  height: 16px;
+  margin-left: -1px;
+  border-radius: 1px;
+  background: var(--color-ink);
+}
+
+.normText {
+  margin-top: 10px;
+  font-size: 12px;
+  color: var(--color-body);
+
+  strong {
+    font-weight: 600;
+    color: var(--color-ink);
+  }
+}
+
+// Per onderdeel
+
+.list {
+  @include reset-list;
+  display: flex;
+  flex-direction: column;
+  margin-top: 8px;
+}
+
+.item {
+  padding-block: 16px;
+  border-bottom: 1px solid var(--color-line);
+  animation: fade-up var(--duration-slow) var(--ease-out) both;
+  animation-delay: calc(var(--stagger) * (var(--i) + 2));
+
+  &:last-child {
+    padding-bottom: 0;
+    border-bottom: 0;
+  }
+}
+
+.row {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.label {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 0;
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--color-ink);
+}
+
+.description {
+  font-size: 12px;
+  font-weight: 400;
+  color: var(--color-muted);
+}
+
+.itemScore {
+  display: flex;
+  flex-shrink: 0;
+  align-items: center;
+  gap: 8px;
+  font-size: 14px;
+  font-weight: 600;
+  font-variant-numeric: tabular-nums;
+  color: var(--color-ink);
+}
+
+.track {
+  height: 6px;
+  margin-top: 10px;
+  overflow: hidden;
+  border-radius: 999px;
+  background: var(--color-track);
+}
+
+.fill {
+  height: 100%;
+  border-radius: inherit;
+  transform-origin: left;
+  animation: grow-x var(--duration-slow) var(--ease-out) both;
+  animation-delay: calc(var(--stagger) * (var(--i) + 3));
+
+  &.good {
+    background: var(--color-success);
+  }
+
+  &.fair {
+    background: var(--color-brand);
+  }
+
+  &.weak {
+    background: var(--color-warning);
+  }
+}
+
+.tip {
+  display: flex;
+  gap: 8px;
+  margin-top: 10px;
+  font-size: 13px;
+  line-height: 1.55;
+  color: var(--color-body);
+
+  svg {
+    flex-shrink: 0;
+    width: 15px;
+    height: 15px;
+    margin-top: 3px;
+    color: var(--color-warning);
+  }
+
+  &.tipGood {
+    color: var(--color-muted);
+
+    svg {
+      color: var(--color-success);
+    }
+  }
+}
+
+.footer {
+  margin-top: 20px;
+  padding-top: 20px;
+  border-top: 1px solid var(--color-line);
+}

@@ -1,0 +1,65 @@
+@use "mixins" as *;
+
+@include motion-keyframes;
+
+// Ronde omlijnde knop in de header (zoeken, meldingen, menu).
+// Dubbele class zodat hij wint van de kale trigger-styling uit de kit.
+.iconButton.iconButton {
+  position: relative;
+  display: inline-flex;
+  flex-shrink: 0;
+  align-items: center;
+  justify-content: center;
+  width: 36px;
+  height: 36px;
+  padding: 0;
+  border: 1px solid var(--color-line-strong);
+  border-radius: 999px;
+  background: var(--color-surface);
+  color: var(--color-ink);
+  cursor: pointer;
+  transition:
+    background-color var(--duration) var(--ease-out),
+    border-color var(--duration) var(--ease-out),
+    color var(--duration) var(--ease-out),
+    transform var(--duration-fast) var(--ease-out);
+
+  &:hover {
+    border-color: var(--color-muted);
+    background: var(--color-canvas);
+  }
+
+  &:active {
+    transform: scale(0.94);
+  }
+
+  &[aria-expanded="true"] {
+    border-color: var(--color-brand);
+    background: var(--color-brand-soft);
+    color: var(--color-brand);
+  }
+
+  &:focus-visible {
+    outline: 2px solid var(--color-brand);
+    outline-offset: 2px;
+  }
+
+  svg {
+    width: 16px;
+    height: 16px;
+  }
+}
+
+// Ongelezen-stip rechtsboven op de bel.
+.dot {
+  position: absolute;
+  top: 6px;
+  right: 7px;
+  width: 8px;
+  height: 8px;
+  border-radius: 999px;
+  background: var(--color-brand);
+  box-shadow: 0 0 0 2px var(--color-surface);
+  animation: pop var(--duration-slow) var(--ease-out) both;
+  animation-delay: 300ms;
+}

@@ -1,0 +1,120 @@
+@use "mixins" as *;
+
+@include motion-keyframes;
+
+.main {
+  min-width: 0;
+}
+
+// Witte band met organisatie en subnavigatie
+
+.band {
+  background: var(--color-surface);
+  border-bottom: 1px solid var(--color-line);
+}
+
+.bandInner {
+  @include container;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  padding-block: 28px 20px;
+
+  @include from($md) {
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-between;
+  }
+}
+
+.org {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  min-width: 0;
+  @include enter(0);
+}
+
+.orgMark {
+  display: flex;
+  flex-shrink: 0;
+  align-items: center;
+  justify-content: center;
+  width: 44px;
+  height: 44px;
+  border-radius: var(--radius);
+  background: var(--color-ink);
+  color: #fff;
+  font-size: 14px;
+  font-weight: 600;
+  letter-spacing: 0.02em;
+}
+
+.orgText {
+  min-width: 0;
+}
+
+.eyebrow {
+  @include eyebrow;
+  color: var(--color-brand);
+}
+
+.orgName {
+  margin-top: 2px;
+  overflow: hidden;
+  font-size: 20px;
+  font-weight: 500;
+  letter-spacing: -0.01em;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  color: var(--color-ink);
+}
+
+.orgMeta {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px 12px;
+  font-size: 13px;
+  color: var(--color-body);
+  @include enter(1, fade-in);
+}
+
+.seatsLeft {
+  color: var(--color-muted);
+}
+
+.navWrap {
+  @include container;
+  @include enter(1, fade-in);
+}
+
+// De band heeft al een onderrand; de actieve lijn valt daar precies op.
+.navWrap .nav {
+  border-bottom: none;
+}
+
+// Scheiding tussen teamlead-pagina's en organisatiebeheer.
+.navWrap li:nth-child(5) {
+  position: relative;
+  margin-left: 8px;
+
+  &::before {
+    content: "";
+    position: absolute;
+    top: 14px;
+    bottom: 14px;
+    left: -16px;
+    width: 1px;
+    background: var(--color-line);
+  }
+}
+
+.content {
+  @include container;
+  display: flex;
+  flex-direction: column;
+  gap: 32px;
+  min-width: 0;
+  padding-block: 40px 96px;
+}

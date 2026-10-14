@@ -1,0 +1,156 @@
+@use "mixins" as *;
+
+@include motion-keyframes;
+
+// Horizontaal scrollen op smalle schermen, zonder zichtbare scrollbalk.
+.scroller {
+  max-width: 100%;
+  overflow-x: auto;
+  scrollbar-width: none;
+
+  &::-webkit-scrollbar {
+    display: none;
+  }
+}
+
+.list {
+  @include reset-list;
+  display: flex;
+  gap: 4px;
+  min-width: max-content;
+}
+
+.fullWidth {
+  min-width: 100%;
+
+  > .tab {
+    flex: 1;
+    justify-content: center;
+  }
+}
+
+.linkItem {
+  display: flex;
+}
+
+.tab {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 0;
+  border: none;
+  background: none;
+  color: var(--color-body);
+  font-size: 13px;
+  font-weight: 500;
+  white-space: nowrap;
+  cursor: pointer;
+  transition:
+    color var(--duration) var(--ease-out),
+    background-color var(--duration) var(--ease-out);
+
+  &:hover:not(:disabled) {
+    color: var(--color-ink);
+  }
+
+  // Binnen de scrollcontainer valt een outline-offset weg; daarom naar binnen.
+  &:focus-visible {
+    outline: 2px solid var(--color-brand);
+    outline-offset: -2px;
+  }
+
+  &:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+  }
+
+  &.active {
+    color: var(--color-ink);
+    font-weight: 600;
+  }
+}
+
+.icon {
+  display: flex;
+
+  svg {
+    width: 16px;
+    height: 16px;
+  }
+}
+
+.count {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 20px;
+  height: 18px;
+  padding-inline: 6px;
+  border-radius: 999px;
+  background: var(--color-track);
+  color: var(--color-body);
+  font-size: 11px;
+  font-weight: 600;
+
+  .active & {
+    background: var(--color-brand-soft);
+    color: var(--color-brand);
+  }
+}
+
+// Onderstreept: lijn onder de hele lijst, blauwe lijn onder de actieve tab.
+.underline {
+  border-bottom: 1px solid var(--color-line);
+
+  .list {
+    gap: 24px;
+  }
+
+  .tab {
+    height: 44px;
+    border-radius: var(--radius-sm) var(--radius-sm) 0 0;
+  }
+
+  .tab.active::after {
+    content: "";
+    position: absolute;
+    right: 0;
+    bottom: 0;
+    left: 0;
+    height: 2px;
+    border-radius: 2px 2px 0 0;
+    background: var(--color-brand);
+    animation: grow-x var(--duration-slow) var(--ease-out) both;
+  }
+}
+
+// Pillen, zoals de hoofdnavigatie.
+.pill {
+  .tab {
+    height: 36px;
+    padding-inline: 14px;
+    border-radius: 999px;
+  }
+
+  // Neutrale tint werkt op zowel wit als de canvas-achtergrond.
+  .tab:hover:not(:disabled, .active) {
+    background: rgb(15 23 42 / 0.05);
+  }
+
+  .tab.active {
+    background: var(--color-brand-soft);
+    color: var(--color-brand);
+  }
+}
+
+.panel {
+  padding-top: 24px;
+  border-radius: var(--radius-sm);
+  animation: fade-in var(--duration) var(--ease-out) both;
+
+  &:focus-visible {
+    outline: 2px solid var(--color-brand);
+    outline-offset: 4px;
+  }
+}

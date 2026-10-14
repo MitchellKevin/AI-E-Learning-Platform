@@ -1,0 +1,292 @@
+@use "mixins" as *;
+
+@include motion-keyframes;
+
+.calculator {
+  @include card;
+  display: grid;
+  overflow: hidden;
+  margin-top: 40px;
+  @include enter(1);
+
+  @include from($lg) {
+    grid-template-columns: minmax(0, 1.1fr) minmax(0, 0.9fr);
+  }
+}
+
+// Invoer
+
+.inputs {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+  min-width: 0;
+  padding: 24px;
+
+  @include from($md) {
+    padding: 36px;
+  }
+}
+
+.group {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.groupLabel {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--color-ink);
+}
+
+.seatsField {
+  padding-top: 24px;
+  border-top: 1px solid var(--color-line);
+}
+
+.seatsRow {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.number {
+  flex: 1;
+  min-width: 0;
+
+  input {
+    font-variant-numeric: tabular-nums;
+  }
+}
+
+// Schuifregelaar met gevuld spoor tot de duim.
+.range {
+  --track: 6px;
+  --thumb: 22px;
+  width: 100%;
+  height: var(--thumb);
+  margin: 16px 0 0;
+  background: none;
+  cursor: pointer;
+  appearance: none;
+
+  &:focus-visible {
+    outline: none;
+  }
+
+  &::-webkit-slider-runnable-track {
+    height: var(--track);
+    border-radius: 999px;
+    background: linear-gradient(to right, var(--color-brand) var(--fill), var(--color-track) var(--fill));
+  }
+
+  &::-moz-range-track {
+    height: var(--track);
+    border-radius: 999px;
+    background: var(--color-track);
+  }
+
+  &::-moz-range-progress {
+    height: var(--track);
+    border-radius: 999px;
+    background: var(--color-brand);
+  }
+
+  &::-webkit-slider-thumb {
+    width: var(--thumb);
+    height: var(--thumb);
+    margin-top: calc((var(--track) - var(--thumb)) / 2);
+    border: 2px solid var(--color-brand);
+    border-radius: 999px;
+    background: var(--color-surface);
+    box-shadow: var(--shadow-sm);
+    transition:
+      transform var(--duration-fast) var(--ease-out),
+      box-shadow var(--duration-fast) var(--ease-out);
+    appearance: none;
+  }
+
+  &::-moz-range-thumb {
+    width: var(--thumb);
+    height: var(--thumb);
+    box-sizing: border-box;
+    border: 2px solid var(--color-brand);
+    border-radius: 999px;
+    background: var(--color-surface);
+    box-shadow: var(--shadow-sm);
+  }
+
+  &:active::-webkit-slider-thumb {
+    transform: scale(1.1);
+  }
+
+  &:focus-visible::-webkit-slider-thumb {
+    box-shadow: 0 0 0 4px var(--color-brand-soft);
+    outline: 2px solid var(--color-brand);
+    outline-offset: 2px;
+  }
+
+  &:focus-visible::-moz-range-thumb {
+    outline: 2px solid var(--color-brand);
+    outline-offset: 2px;
+  }
+}
+
+.scale {
+  display: flex;
+  justify-content: space-between;
+  margin-top: 6px;
+  font-size: 11px;
+  font-variant-numeric: tabular-nums;
+  color: var(--color-muted);
+}
+
+// Uitkomst
+
+.result {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+  padding: 24px;
+  border-top: 1px solid var(--color-line);
+  background: var(--color-canvas);
+
+  @include from($md) {
+    padding: 36px;
+  }
+
+  @include from($lg) {
+    border-top: 0;
+    border-left: 1px solid var(--color-line);
+  }
+}
+
+.resultEyebrow {
+  @include eyebrow;
+  color: var(--color-brand);
+}
+
+.lines {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  margin: 16px 0 0;
+  font-size: 14px;
+}
+
+.line {
+  display: flex;
+  justify-content: space-between;
+  gap: 16px;
+
+  dt {
+    color: var(--color-body);
+  }
+
+  dd {
+    margin: 0;
+    font-weight: 500;
+    font-variant-numeric: tabular-nums;
+    text-align: right;
+  }
+}
+
+.minimum {
+  font-weight: 400;
+  color: var(--color-muted);
+}
+
+.total {
+  margin-top: 20px;
+  padding-top: 20px;
+  border-top: 1px solid var(--color-line-strong);
+}
+
+.totalLabel {
+  font-size: 13px;
+  font-weight: 600;
+}
+
+.totalValue {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 4px 10px;
+  margin-top: 6px;
+}
+
+.totalAmount {
+  font-size: 40px;
+  font-weight: 500;
+  line-height: 1.1;
+  letter-spacing: -0.03em;
+  font-variant-numeric: tabular-nums;
+  overflow-wrap: anywhere;
+  @include enter(0, fade-up, var(--duration));
+
+  @include from($sm) {
+    font-size: 48px;
+  }
+}
+
+.excl {
+  font-size: 13px;
+  color: var(--color-body);
+}
+
+.vat {
+  margin-top: 6px;
+  font-size: 12px;
+  color: var(--color-muted);
+  font-variant-numeric: tabular-nums;
+}
+
+.savings,
+.savingsLink {
+  align-self: flex-start;
+  margin-top: 16px;
+  padding: 6px 12px;
+  border-radius: 999px;
+  background: var(--color-success-soft);
+  color: var(--color-success);
+  font-size: 12px;
+  font-weight: 600;
+  line-height: 1.4;
+}
+
+.savingsLink {
+  border: 1px dashed currentColor;
+  background: var(--color-surface);
+  text-align: left;
+  cursor: pointer;
+  transition:
+    background-color var(--duration-fast) var(--ease-out),
+    transform var(--duration-fast) var(--ease-out);
+  @include focus-ring;
+
+  &:hover {
+    background: var(--color-success-soft);
+  }
+
+  &:active {
+    transform: scale(0.97);
+  }
+}
+
+.alert {
+  margin-top: 16px;
+}
+
+// Knop onderaan het paneel, ook als de invoerkolom hoger is.
+.footer {
+  margin-top: auto;
+  padding-top: 24px;
+}
+
+.fine {
+  margin-top: 10px;
+  font-size: 12px;
+  text-align: center;
+  color: var(--color-muted);
+}

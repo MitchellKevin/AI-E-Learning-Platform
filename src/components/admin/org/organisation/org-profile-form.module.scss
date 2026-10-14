@@ -1,0 +1,419 @@
+@use "mixins" as *;
+
+@include motion-keyframes;
+
+.form {
+  min-width: 0;
+}
+
+.dirty footer {
+  border-radius: 0 0 var(--radius) var(--radius);
+  background: color-mix(in srgb, var(--color-warning-soft) 55%, var(--color-surface));
+}
+
+.layout {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: 32px;
+
+  @include from($lg) {
+    grid-template-columns: minmax(0, 1fr) 300px;
+    gap: 40px;
+  }
+}
+
+.fields {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  min-width: 0;
+}
+
+.group {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.groupLabel {
+  padding: 0;
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--color-ink);
+}
+
+.help {
+  font-size: 12px;
+  line-height: 1.5;
+  color: var(--color-muted);
+}
+
+.error {
+  font-size: 12px;
+  color: var(--color-danger);
+  @include enter(0, fade-up, var(--duration));
+}
+
+// Logo
+
+.logoRow {
+  display: flex;
+  align-items: flex-start;
+  gap: 16px;
+}
+
+.logo {
+  display: inline-flex;
+  flex-shrink: 0;
+  align-items: center;
+  justify-content: center;
+  width: 64px;
+  height: 64px;
+  overflow: hidden;
+  border-radius: var(--radius);
+  background: var(--brand);
+  font-size: 20px;
+  font-weight: 600;
+  letter-spacing: 0.02em;
+  color: #fff;
+  transition: background-color var(--duration) var(--ease-out);
+
+  img {
+    width: 100%;
+    height: 100%;
+    background: var(--color-surface);
+    object-fit: contain;
+  }
+}
+
+.logoActions {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  min-width: 0;
+}
+
+.logoButtons {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+// Focus op het verborgen bestandsveld zichtbaar maken op het label-als-knop.
+.fileInput:focus-visible + label {
+  outline: 2px solid var(--color-brand);
+  outline-offset: 2px;
+}
+
+.uploadIcon {
+  width: 16px;
+  height: 16px;
+  margin-right: 6px;
+}
+
+// Merkkleur
+
+.colorSet {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  min-width: 0;
+  margin: 0;
+  padding: 0;
+  border: none;
+}
+
+.swatches {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: 4px;
+}
+
+.swatch {
+  position: relative;
+  display: inline-flex;
+  cursor: pointer;
+}
+
+.swatchInput {
+  position: absolute;
+  inset: 0;
+  margin: 0;
+  opacity: 0;
+  cursor: pointer;
+}
+
+.swatchDot {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  border-radius: 999px;
+  box-shadow: inset 0 0 0 1px rgb(15 23 42 / 0.12);
+  color: #fff;
+  transition:
+    transform var(--duration-fast) var(--ease-out),
+    box-shadow var(--duration-fast) var(--ease-out);
+
+  svg {
+    width: 16px;
+    height: 16px;
+    opacity: 0;
+    transform: scale(0.6);
+    transition:
+      opacity var(--duration-fast) var(--ease-out),
+      transform var(--duration) var(--ease-spring);
+  }
+
+  .swatch:hover & {
+    transform: scale(1.08);
+  }
+
+  .swatchInput:checked + & {
+    box-shadow:
+      0 0 0 2px var(--color-surface),
+      0 0 0 4px var(--color-ink);
+
+    svg {
+      opacity: 1;
+      transform: scale(1);
+    }
+  }
+
+  .swatchInput:focus-visible + & {
+    outline: 2px solid var(--color-brand);
+    outline-offset: 4px;
+  }
+}
+
+.custom {
+  position: relative;
+  display: inline-flex;
+  width: 32px;
+  height: 32px;
+  overflow: hidden;
+  border-radius: 999px;
+  background: conic-gradient(#ef4444, #f59e0b, #22c55e, #06b6d4, #3b82f6, #a855f7, #ef4444);
+  cursor: pointer;
+  transition: transform var(--duration-fast) var(--ease-out);
+
+  &:hover {
+    transform: scale(1.08);
+  }
+
+  &:focus-within {
+    outline: 2px solid var(--color-brand);
+    outline-offset: 4px;
+  }
+}
+
+.colorInput {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  margin: 0;
+  padding: 0;
+  border: none;
+  opacity: 0;
+  cursor: pointer;
+}
+
+.hexField {
+  max-width: 180px;
+}
+
+.hexPreview {
+  display: block;
+  width: 14px;
+  height: 14px;
+  border-radius: 4px;
+  box-shadow: inset 0 0 0 1px rgb(15 23 42 / 0.15);
+}
+
+.warning {
+  display: flex;
+  align-items: flex-start;
+  gap: 6px;
+  font-size: 12px;
+  line-height: 1.5;
+  color: var(--color-warning);
+  animation: fade-in var(--duration) var(--ease-out) both;
+
+  svg {
+    flex-shrink: 0;
+    width: 14px;
+    height: 14px;
+    margin-top: 2px;
+  }
+}
+
+// Voorbeeldcertificaat
+
+.previewWrap {
+  margin: 0;
+}
+
+.certificate {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  padding: 20px;
+  overflow: hidden;
+  border: 1px solid var(--color-line);
+  border-top: 6px solid var(--brand);
+  border-radius: var(--radius);
+  background: var(--color-surface);
+  box-shadow: var(--shadow-sm);
+  transition: border-color var(--duration) var(--ease-out);
+
+  // Zachte cirkel rechtsboven in de merkkleur, zoals op het echte certificaat.
+  &::after {
+    content: "";
+    position: absolute;
+    top: -60px;
+    right: -60px;
+    width: 160px;
+    height: 160px;
+    border: 18px solid color-mix(in srgb, var(--brand) 12%, transparent);
+    border-radius: 999px;
+  }
+}
+
+.certTop {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+}
+
+.certLogo {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  overflow: hidden;
+  border-radius: 6px;
+  background: var(--brand);
+  font-size: 11px;
+  font-weight: 600;
+  color: #fff;
+
+  img {
+    width: 100%;
+    height: 100%;
+    background: var(--color-surface);
+    object-fit: contain;
+  }
+}
+
+.certAcademy {
+  position: relative;
+  z-index: 1;
+  font-size: 11px;
+  color: var(--color-body);
+
+  strong {
+    color: var(--brand);
+  }
+}
+
+.certKicker {
+  @include eyebrow;
+  margin-top: 28px;
+  font-size: 9px;
+  color: var(--brand);
+}
+
+.certName {
+  margin-top: 8px;
+  font-size: 22px;
+  font-weight: 500;
+  letter-spacing: -0.02em;
+}
+
+.certText {
+  margin-top: 4px;
+  font-size: 12px;
+  line-height: 1.5;
+  color: var(--color-body);
+}
+
+.certFoot {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  gap: 4px 12px;
+  margin-top: 24px;
+  padding-top: 12px;
+  border-top: 1px solid var(--color-line);
+  font-size: 10px;
+  color: var(--color-muted);
+}
+
+.caption {
+  margin-top: 10px;
+  font-size: 12px;
+  color: var(--color-muted);
+
+  a {
+    border-radius: var(--radius-sm);
+    color: var(--color-brand);
+    @include focus-ring;
+
+    &:hover {
+      text-decoration: underline;
+    }
+  }
+}
+
+// Opslaan-balk
+
+.status {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  min-height: 20px;
+  font-size: 13px;
+  font-weight: 500;
+}
+
+.dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 999px;
+  background: var(--color-warning);
+  box-shadow: 0 0 0 3px var(--color-warning-soft);
+  animation: pop var(--duration-slow) var(--ease-out) both;
+}
+
+.saved {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  color: var(--color-success);
+  animation: fade-in var(--duration-slow) var(--ease-out) both;
+
+  svg {
+    width: 16px;
+    height: 16px;
+  }
+}
+
+.buttons {
+  display: flex;
+  gap: 8px;
+
+  > * {
+    flex: 1;
+  }
+
+  @include from($sm) {
+    > * {
+      flex: none;
+    }
+  }
+}

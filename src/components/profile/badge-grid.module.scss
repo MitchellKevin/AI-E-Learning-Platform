@@ -1,0 +1,134 @@
+@use "mixins" as *;
+
+@include motion-keyframes;
+
+.grid {
+  @include reset-list;
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 12px;
+
+  @include from($md) {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+
+  @include from($lg) {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+  }
+}
+
+// Binnenkomst op het lijstitem, de lift bij hover op de kaart erin.
+.item {
+  --delay: calc(var(--stagger) * (var(--i, 0) + 6));
+  display: flex;
+  animation: fade-up var(--duration-slow) var(--ease-out) both;
+  animation-delay: var(--delay);
+}
+
+.badge {
+  @include card;
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  align-items: flex-start;
+  min-width: 0;
+  padding: 16px;
+  @include hover-lift;
+
+  @include from($sm) {
+    padding: 20px;
+  }
+}
+
+.icon {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 48px;
+  height: 48px;
+  border: 1px dashed var(--color-line-strong);
+  border-radius: 999px;
+  background: var(--color-canvas);
+  color: var(--color-muted);
+  font-size: 13px;
+  font-weight: 600;
+
+  .earned & {
+    border: 1px solid transparent;
+    background: var(--color-brand);
+    color: #fff;
+    animation: pop var(--duration-slow) var(--ease-out) both;
+    animation-delay: calc(var(--delay) + 120ms);
+  }
+}
+
+.lock {
+  position: absolute;
+  right: -4px;
+  bottom: -4px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 20px;
+  height: 20px;
+  border: 2px solid var(--color-surface);
+  border-radius: 999px;
+  background: var(--color-line);
+  color: var(--color-body);
+
+  svg {
+    width: 10px;
+    height: 10px;
+  }
+}
+
+.label {
+  margin-top: 14px;
+  font-size: 14px;
+  font-weight: 500;
+  line-height: 1.35;
+
+  .badge:not(.earned) & {
+    color: var(--color-body);
+  }
+}
+
+.description {
+  flex: 1;
+  margin-top: 4px;
+  font-size: 12px;
+  line-height: 1.5;
+  color: var(--color-muted);
+}
+
+.foot {
+  width: 100%;
+  margin-top: 14px;
+}
+
+.earnedOn {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--color-success);
+
+  svg {
+    flex-shrink: 0;
+    width: 13px;
+    height: 13px;
+  }
+}
+
+.progress {
+  --progress-delay: calc(var(--delay) + 200ms);
+}
+
+.progressText {
+  margin-top: 6px;
+  font-size: 11px;
+  color: var(--color-muted);
+  font-variant-numeric: tabular-nums;
+}

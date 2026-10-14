@@ -1,0 +1,520 @@
+@use "mixins" as *;
+
+@include motion-keyframes;
+
+// Balk bovenin: plakt tijdens het scrollen, met tijd en voortgang.
+
+.bar {
+  position: sticky;
+  top: 0;
+  z-index: var(--z-sticky);
+  background: rgb(255 255 255 / 0.94);
+  border-bottom: 1px solid var(--color-line);
+  backdrop-filter: blur(8px);
+  @include enter(0, fade-in);
+}
+
+.barInner {
+  @include container;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding-block: 12px;
+}
+
+.barText {
+  min-width: 0;
+}
+
+.barEyebrow {
+  @include eyebrow;
+  display: none;
+  overflow: hidden;
+  margin-bottom: 2px;
+  font-size: 10px;
+  color: var(--color-muted);
+  text-overflow: ellipsis;
+  white-space: nowrap;
+
+  @include from($sm) {
+    display: block;
+  }
+}
+
+.barTitle {
+  font-size: 15px;
+  font-weight: 600;
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+
+  span {
+    font-weight: 400;
+    color: var(--color-body);
+  }
+}
+
+.barActions {
+  display: flex;
+  flex-shrink: 0;
+  align-items: center;
+  gap: 8px;
+
+  @include from($sm) {
+    gap: 12px;
+  }
+}
+
+.timer {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  height: 32px;
+  padding-inline: 10px 4px;
+  border: 1px solid var(--color-line);
+  border-radius: 999px;
+  background: var(--color-canvas);
+  font-size: 13px;
+  color: var(--color-ink);
+  transition:
+    background-color var(--duration) var(--ease-out),
+    border-color var(--duration) var(--ease-out),
+    color var(--duration) var(--ease-out);
+
+  > svg {
+    flex-shrink: 0;
+    width: 14px;
+    height: 14px;
+    color: var(--color-muted);
+  }
+
+  &.warning {
+    padding-right: 12px;
+    border-color: transparent;
+    background: var(--color-warning-soft);
+    color: var(--color-warning);
+
+    > svg {
+      color: currentColor;
+    }
+  }
+}
+
+.clock {
+  min-width: 4ch;
+  font-weight: 600;
+  font-variant-numeric: tabular-nums;
+}
+
+.clockHidden {
+  font-size: 12px;
+  color: var(--color-muted);
+
+  @media (max-width: 400px) {
+    display: none;
+  }
+}
+
+.timerToggle {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 24px;
+  height: 24px;
+  padding: 0;
+  border: none;
+  border-radius: 999px;
+  background: transparent;
+  color: var(--color-muted);
+  cursor: pointer;
+  transition:
+    background-color var(--duration-fast) var(--ease-out),
+    color var(--duration-fast) var(--ease-out);
+  @include focus-ring;
+
+  &:hover {
+    background: var(--color-surface);
+    color: var(--color-ink);
+  }
+
+  svg {
+    width: 14px;
+    height: 14px;
+  }
+}
+
+// Voortgang in segmenten: één per vraag.
+.segments {
+  @include container;
+  display: flex;
+  gap: 4px;
+  padding-bottom: 12px;
+}
+
+.segment {
+  flex: 1;
+  height: 4px;
+  overflow: hidden;
+  border-radius: 999px;
+  background: var(--color-track);
+  position: relative;
+
+  &::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    border-radius: inherit;
+    background: var(--color-brand);
+    transform: scaleX(0);
+    transform-origin: left center;
+    transition: transform var(--duration-slow) var(--ease-out);
+  }
+
+  &.filled::after {
+    transform: scaleX(1);
+  }
+
+  &.current {
+    box-shadow: 0 0 0 1px var(--color-brand);
+  }
+}
+
+// Layout
+
+.layout {
+  @include container;
+  display: grid;
+  gap: 24px;
+  padding-block: 32px 96px;
+
+  @include from($lg) {
+    grid-template-columns: minmax(0, 1fr) 280px;
+    align-items: start;
+    gap: 32px;
+    padding-top: 40px;
+  }
+}
+
+.main {
+  min-width: 0;
+}
+
+.questionCard {
+  padding: 24px 20px;
+  @include enter(1);
+
+  @include from($sm) {
+    padding: 32px;
+  }
+}
+
+.pager {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  margin-top: 16px;
+  @include enter(2);
+}
+
+// Op mobiel alleen het vlagicoon; de tekst blijft voor screenreaders.
+.flagText {
+  @media (max-width: 639px) {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+    clip: rect(0 0 0 0);
+    white-space: nowrap;
+  }
+}
+
+// Twee classes, zodat dit de ghost-stijl van de knop overschrijft.
+.pager .flagActive {
+  background: var(--color-warning-soft);
+  color: var(--color-warning);
+}
+
+.flagFilled {
+  fill: currentColor;
+  animation: pop var(--duration-slow) var(--ease-out) both;
+}
+
+// Vragenoverzicht
+
+.aside {
+  @include enter(3);
+
+  @include from($lg) {
+    position: sticky;
+    top: 104px;
+  }
+}
+
+.navCard {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  padding: 20px;
+}
+
+.navHead {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.navTitle {
+  font-size: 16px;
+}
+
+.navCount {
+  font-size: 12px;
+  font-variant-numeric: tabular-nums;
+  color: var(--color-body);
+}
+
+.navGrid {
+  @include reset-list;
+  display: grid;
+  grid-template-columns: repeat(5, minmax(0, 1fr));
+  gap: 8px;
+}
+
+.navItem {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  aspect-ratio: 1;
+  max-height: 48px;
+  padding: 0;
+  border: 1px solid var(--color-line-strong);
+  border-radius: var(--radius-sm);
+  background: var(--color-surface);
+  font: inherit;
+  font-size: 13px;
+  font-weight: 600;
+  font-variant-numeric: tabular-nums;
+  color: var(--color-body);
+  cursor: pointer;
+  transition:
+    background-color var(--duration) var(--ease-out),
+    border-color var(--duration) var(--ease-out),
+    color var(--duration) var(--ease-out),
+    transform var(--duration-fast) var(--ease-out);
+  @include focus-ring;
+
+  &:hover {
+    border-color: var(--color-brand);
+    color: var(--color-brand);
+  }
+
+  &:active {
+    transform: scale(0.95);
+  }
+
+  &.answered {
+    border-color: transparent;
+    background: var(--color-brand-soft);
+    color: var(--color-brand);
+  }
+
+  &.active {
+    border-color: var(--color-brand);
+    box-shadow: 0 0 0 1px var(--color-brand);
+    color: var(--color-brand);
+  }
+}
+
+.navFlag {
+  position: absolute;
+  top: -6px;
+  right: -6px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 18px;
+  height: 18px;
+  border: 2px solid var(--color-surface);
+  border-radius: 999px;
+  background: var(--color-warning);
+  color: #fff;
+  animation: pop var(--duration-slow) var(--ease-out) both;
+
+  svg {
+    width: 9px;
+    height: 9px;
+    fill: currentColor;
+  }
+}
+
+.legend {
+  @include reset-list;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px 16px;
+  font-size: 11px;
+  color: var(--color-body);
+
+  li {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+  }
+}
+
+.legendSwatch {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 12px;
+  height: 12px;
+  border: 1px solid var(--color-line-strong);
+  border-radius: 3px;
+
+  &.answered {
+    border-color: var(--color-brand-soft);
+    background: var(--color-brand-soft);
+    box-shadow: inset 0 0 0 1px var(--color-brand);
+  }
+
+  &.legendFlag {
+    border: none;
+    border-radius: 999px;
+    background: var(--color-warning);
+    color: #fff;
+
+    svg {
+      width: 7px;
+      height: 7px;
+      fill: currentColor;
+    }
+  }
+}
+
+.navNote {
+  margin-top: -6px;
+  font-size: 11px;
+  line-height: 1.5;
+  text-align: center;
+  color: var(--color-muted);
+}
+
+// Bevestigen
+
+.confirm {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.jumpTitle {
+  @include eyebrow;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 10px;
+  color: var(--color-body);
+
+  svg {
+    width: 12px;
+    height: 12px;
+    color: var(--color-warning);
+    fill: currentColor;
+  }
+
+  span {
+    color: var(--color-muted);
+  }
+}
+
+.jump {
+  min-width: 0;
+}
+
+.jumpList {
+  @include reset-list;
+  margin-top: 8px;
+  border: 1px solid var(--color-line);
+  border-radius: var(--radius);
+  overflow: hidden;
+
+  li + li {
+    border-top: 1px solid var(--color-line);
+  }
+}
+
+.jumpItem {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  width: 100%;
+  padding: 10px 12px;
+  border: none;
+  background: var(--color-surface);
+  font: inherit;
+  text-align: left;
+  color: var(--color-ink);
+  cursor: pointer;
+  transition: background-color var(--duration-fast) var(--ease-out);
+
+  &:hover:not(:disabled) {
+    background: var(--color-canvas);
+  }
+
+  &:focus-visible {
+    outline: 2px solid var(--color-brand);
+    outline-offset: -2px;
+  }
+
+  &:disabled {
+    cursor: not-allowed;
+    opacity: 0.6;
+  }
+}
+
+.jumpNumber {
+  display: flex;
+  flex-shrink: 0;
+  align-items: center;
+  justify-content: center;
+  width: 24px;
+  height: 24px;
+  border-radius: var(--radius-sm);
+  background: var(--color-canvas);
+  font-size: 12px;
+  font-weight: 600;
+  font-variant-numeric: tabular-nums;
+}
+
+.jumpPrompt {
+  flex: 1;
+  min-width: 0;
+  overflow: hidden;
+  font-size: 13px;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.jumpArrow {
+  flex-shrink: 0;
+  width: 14px;
+  height: 14px;
+  color: var(--color-muted);
+  transition:
+    transform var(--duration) var(--ease-out),
+    color var(--duration) var(--ease-out);
+
+  .jumpItem:hover & {
+    color: var(--color-brand);
+    transform: translateX(2px);
+  }
+}
+
+.confirmTime {
+  font-size: 12px;
+  color: var(--color-muted);
+}

@@ -1,0 +1,229 @@
+@use "mixins" as *;
+
+@include motion-keyframes;
+
+// Achtergrond van je eigen regel licht op nadat de regel binnen is (zoals op het dashboard).
+@keyframes highlight {
+  from {
+    background-color: var(--color-surface);
+  }
+}
+
+.root {
+  margin-top: 20px;
+}
+
+// Kolommen: rang, wijziging, naam, streak, punten. Zelfde raster voor kop en regels.
+.head,
+.row {
+  display: grid;
+  grid-template-columns: 22px 36px minmax(0, 1fr) 36px 52px;
+  align-items: center;
+  gap: 6px;
+  padding-inline: 10px;
+
+  @include from($sm) {
+    grid-template-columns: 28px 44px minmax(0, 1fr) 64px 80px;
+    gap: 12px;
+    padding-inline: 16px;
+  }
+}
+
+.head {
+  @include eyebrow;
+  padding-block: 0 8px;
+  font-size: 10px;
+  color: var(--color-muted);
+}
+
+.headEnd {
+  text-align: right;
+}
+
+.list {
+  @include reset-list;
+}
+
+.row {
+  --delay: calc(var(--stagger) * var(--i, 0) + 120ms);
+  min-height: 60px;
+  padding-block: 10px;
+  border-top: 1px solid var(--color-line);
+  font-size: 13px;
+  animation: fade-up var(--duration-slow) var(--ease-out) both;
+  animation-delay: var(--delay);
+
+  // Jouw regel blijft in beeld tijdens het scrollen door een lange lijst.
+  &.me {
+    position: sticky;
+    top: 8px;
+    bottom: 8px;
+    z-index: var(--z-sticky);
+    border-top-color: transparent;
+    border-radius: var(--radius);
+    background: var(--color-brand-soft);
+    box-shadow:
+      0 0 0 1px rgb(29 78 216 / 0.18),
+      0 6px 16px rgb(15 23 42 / 0.08);
+    animation-name: fade-up, highlight;
+    animation-duration: var(--duration-slow), 900ms;
+    animation-delay: var(--delay), calc(var(--delay) + 250ms);
+
+    + .row {
+      border-top-color: transparent;
+    }
+  }
+}
+
+.rank {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--color-body);
+  font-variant-numeric: tabular-nums;
+
+  .me & {
+    color: var(--color-brand);
+  }
+}
+
+.change {
+  display: flex;
+  align-items: center;
+  font-size: 11px;
+  font-weight: 600;
+  white-space: nowrap;
+  font-variant-numeric: tabular-nums;
+}
+
+.up {
+  color: var(--color-success);
+}
+
+.down {
+  color: var(--color-danger);
+}
+
+.same {
+  color: var(--color-muted);
+}
+
+// Dubbele klasse wint van de padding van de kit-badge.
+.change .newBadge {
+  padding-inline: 4px;
+  font-size: 10px;
+}
+
+.person {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  min-width: 0;
+}
+
+.avatar {
+  display: flex;
+  flex-shrink: 0;
+
+  .me & {
+    border-radius: 999px;
+    box-shadow: 0 0 0 2px var(--color-brand);
+  }
+}
+
+.who {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+}
+
+.nameLine {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  min-width: 0;
+}
+
+.name {
+  overflow: hidden;
+  font-weight: 500;
+  color: var(--color-ink);
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.youBadge {
+  flex-shrink: 0;
+}
+
+.team {
+  overflow: hidden;
+  font-size: 11px;
+  color: var(--color-muted);
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.streak {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 3px;
+  font-size: 12px;
+  color: var(--color-body);
+  font-variant-numeric: tabular-nums;
+
+  svg {
+    flex-shrink: 0;
+    width: 14px;
+    height: 14px;
+    color: var(--color-warning);
+  }
+
+  &.noStreak svg {
+    color: var(--color-line-strong);
+  }
+}
+
+.points {
+  font-weight: 600;
+  text-align: right;
+  color: var(--color-ink);
+  font-variant-numeric: tabular-nums;
+}
+
+// Puntjes tussen de top en jouw omgeving.
+.gap {
+  display: flex;
+  justify-content: center;
+  gap: 4px;
+  padding-block: 10px;
+  border-top: 1px solid var(--color-line);
+  animation: fade-in var(--duration-slow) var(--ease-out) both;
+  animation-delay: calc(var(--stagger) * 10 + 120ms);
+
+  span {
+    width: 4px;
+    height: 4px;
+    border-radius: 999px;
+    background: var(--color-line-strong);
+  }
+
+  + .row {
+    border-top-color: transparent;
+  }
+}
+
+.more {
+  display: flex;
+  justify-content: center;
+  padding-top: 12px;
+  border-top: 1px solid var(--color-line);
+}
+
+.chevron {
+  transition: rotate var(--duration) var(--ease-out);
+}
+
+.flipped {
+  rotate: 180deg;
+}

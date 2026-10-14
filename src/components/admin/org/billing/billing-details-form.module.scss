@@ -1,0 +1,76 @@
+@use "mixins" as *;
+
+@include motion-keyframes;
+
+.form {
+  min-width: 0;
+}
+
+.grid {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: 20px;
+
+  @include from($sm) {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 20px 16px;
+  }
+}
+
+.full {
+  @include from($sm) {
+    grid-column: 1 / -1;
+  }
+}
+
+// Footer kleurt mee bij wijzigingen, zoals in de instellingen.
+.dirty footer {
+  background: color-mix(in srgb, var(--color-warning-soft) 55%, var(--color-surface));
+  border-radius: 0 0 var(--radius) var(--radius);
+}
+
+.status {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  min-height: 20px;
+  font-size: 13px;
+  font-weight: 500;
+}
+
+.dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 999px;
+  background: var(--color-warning);
+  box-shadow: 0 0 0 3px var(--color-warning-soft);
+  animation: pop var(--duration-slow) var(--ease-out) both;
+}
+
+.saved {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  color: var(--color-success);
+  animation: fade-in var(--duration-slow) var(--ease-out) both;
+
+  svg {
+    width: 16px;
+    height: 16px;
+  }
+}
+
+.buttons {
+  display: flex;
+  gap: 8px;
+
+  > * {
+    flex: 1;
+  }
+
+  @include from($sm) {
+    > * {
+      flex: none;
+    }
+  }
+}

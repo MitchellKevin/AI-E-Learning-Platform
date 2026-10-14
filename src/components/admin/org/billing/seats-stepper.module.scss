@@ -1,0 +1,152 @@
+@use "mixins" as *;
+
+@include motion-keyframes;
+
+.stepperRow {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.stepper {
+  display: flex;
+  align-items: flex-end;
+  gap: 10px;
+}
+
+.inputWrap {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+}
+
+.label {
+  @include eyebrow;
+  font-size: 10px;
+  color: var(--color-muted);
+}
+
+.input {
+  width: 96px;
+  height: 48px;
+  padding: 0 8px;
+  border: 1px solid var(--color-line-strong);
+  border-radius: var(--radius);
+  background: var(--color-surface);
+  font: inherit;
+  font-size: 24px;
+  font-weight: 500;
+  font-variant-numeric: tabular-nums;
+  text-align: center;
+  color: var(--color-ink);
+  appearance: textfield;
+  transition:
+    border-color var(--duration-fast) var(--ease-out),
+    box-shadow var(--duration-fast) var(--ease-out);
+
+  &::-webkit-inner-spin-button,
+  &::-webkit-outer-spin-button {
+    margin: 0;
+    appearance: none;
+  }
+
+  &:focus-visible {
+    border-color: var(--color-brand);
+    outline: none;
+    box-shadow: 0 0 0 3px var(--color-brand-soft);
+  }
+
+  &:disabled {
+    background: var(--color-canvas);
+    color: var(--color-muted);
+  }
+}
+
+.inputInvalid {
+  border-color: var(--color-danger);
+  animation: shake 360ms var(--ease-out);
+
+  &:focus-visible {
+    border-color: var(--color-danger);
+    box-shadow: 0 0 0 3px var(--color-danger-soft);
+  }
+}
+
+.quick {
+  display: flex;
+  gap: 6px;
+}
+
+.range {
+  margin-top: 8px;
+  font-size: 12px;
+  color: var(--color-muted);
+}
+
+.rangeError {
+  color: var(--color-danger);
+}
+
+.preview {
+  display: flex;
+  flex-direction: column;
+  margin: 20px 0 0;
+  padding: 4px 16px;
+  border-radius: var(--radius);
+  background: var(--color-canvas);
+}
+
+.line {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 16px;
+  padding-block: 10px;
+  font-size: 13px;
+
+  & + & {
+    border-top: 1px solid var(--color-line);
+  }
+
+  dt {
+    min-width: 0;
+    color: var(--color-body);
+  }
+
+  dd {
+    margin: 0;
+    font-weight: 500;
+    font-variant-numeric: tabular-nums;
+    white-space: nowrap;
+  }
+}
+
+.total {
+  dt {
+    font-weight: 600;
+    color: var(--color-ink);
+
+    span {
+      display: block;
+      margin-top: 2px;
+      font-size: 12px;
+      font-weight: 400;
+      line-height: 1.5;
+      color: var(--color-muted);
+    }
+  }
+
+  dd {
+    font-size: 18px;
+    color: var(--color-ink);
+    animation: fade-in var(--duration) var(--ease-out);
+  }
+}
+
+.vat {
+  font-size: 12px;
+  color: var(--color-muted);
+}

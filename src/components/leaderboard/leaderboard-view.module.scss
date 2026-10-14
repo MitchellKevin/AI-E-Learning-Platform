@@ -1,0 +1,110 @@
+@use "mixins" as *;
+
+@include motion-keyframes;
+
+// Ranglijst links, teamvergelijking en uitleg rechts (onder elkaar op mobiel).
+.layout {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: 32px;
+  margin-top: 32px;
+
+  @include from($lg) {
+    grid-template-columns: minmax(0, 1fr) 320px;
+    align-items: start;
+    gap: 40px;
+  }
+}
+
+.main {
+  min-width: 0;
+}
+
+.toolbar {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  @include enter(2, fade-in);
+
+  @include from($sm) {
+    flex-direction: row;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+  }
+}
+
+.period {
+  width: 100%;
+
+  @include from($sm) {
+    width: auto;
+  }
+}
+
+.aside {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  min-width: 0;
+  @include stagger-children(3, fade-up, var(--duration-slow), 3);
+}
+
+.board {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+// Geen overflow: hidden, anders werkt de vastgezette eigen regel niet.
+.rankCard {
+  @include card;
+  padding: 20px 6px 8px;
+  @include enter(1);
+
+  @include from($sm) {
+    padding: 24px 8px 12px;
+  }
+}
+
+.rankHead {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  padding-inline: 10px;
+
+  @include from($sm) {
+    flex-direction: row;
+    flex-wrap: wrap;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: 8px 16px;
+    padding-inline: 16px;
+  }
+}
+
+.rankTitle {
+  font-size: 18px;
+  letter-spacing: -0.01em;
+}
+
+.rankPeriod {
+  font-weight: 400;
+  color: var(--color-muted);
+}
+
+.rankMeta {
+  font-size: 12px;
+  color: var(--color-muted);
+}
+
+.podium {
+  margin-top: 28px;
+  padding-inline: 10px;
+  border-bottom: 1px solid var(--color-line);
+
+  @include from($sm) {
+    margin-top: 36px;
+    padding-inline: 16px;
+  }
+}

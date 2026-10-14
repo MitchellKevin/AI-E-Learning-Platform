@@ -1,0 +1,82 @@
+@use "mixins" as *;
+
+@include motion-keyframes;
+
+.band {
+  background: var(--color-surface);
+  border-bottom: 1px solid var(--color-line);
+}
+
+.bandInner {
+  @include container;
+  padding-block: 40px;
+}
+
+.inner {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+
+  @include from($md) {
+    flex-direction: row;
+    align-items: flex-end;
+    justify-content: space-between;
+  }
+}
+
+.text {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  max-width: 40rem;
+  min-width: 0;
+  @include stagger-children(5);
+}
+
+.eyebrow {
+  @include eyebrow;
+  color: var(--color-brand);
+}
+
+.title {
+  font-size: 32px;
+  line-height: 1.15;
+  letter-spacing: -0.02em;
+  overflow-wrap: anywhere;
+
+  :global(nav) + &,
+  .eyebrow + & {
+    margin-top: 12px;
+  }
+}
+
+.md {
+  @include from($sm) {
+    font-size: 36px;
+  }
+}
+
+.lg {
+  @include from($sm) {
+    font-size: 48px;
+  }
+}
+
+.lead {
+  margin-top: 12px;
+  font-size: 15px;
+  line-height: 1.6;
+  color: var(--color-body);
+}
+
+.extra {
+  margin-top: 20px;
+}
+
+.actions {
+  display: flex;
+  flex-shrink: 0;
+  flex-wrap: wrap;
+  gap: 8px;
+  @include enter(2, fade-in);
+}

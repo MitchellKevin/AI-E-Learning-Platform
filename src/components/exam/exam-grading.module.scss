@@ -1,0 +1,134 @@
+@use "mixins" as *;
+
+@include motion-keyframes;
+
+@keyframes pulse {
+  50% {
+    transform: scale(0.6);
+    opacity: 0.5;
+  }
+}
+
+.page {
+  @include container;
+  display: flex;
+  justify-content: center;
+  padding-block: 64px 96px;
+
+  @include from($md) {
+    padding-top: 96px;
+  }
+}
+
+.card {
+  @include card;
+  width: 100%;
+  max-width: 480px;
+  padding: 32px 24px;
+  text-align: center;
+  @include enter(0, pop);
+
+  @include from($sm) {
+    padding: 40px;
+  }
+}
+
+.spinner {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 56px;
+  height: 56px;
+  margin-inline: auto;
+  border-radius: 999px;
+  background: var(--color-brand-soft);
+  color: var(--color-brand);
+}
+
+.eyebrow {
+  @include eyebrow;
+  margin-top: 20px;
+  color: var(--color-muted);
+}
+
+.title {
+  margin-top: 8px;
+  font-size: 24px;
+  font-weight: 500;
+  letter-spacing: -0.01em;
+  outline: none;
+}
+
+.lead {
+  margin-top: 8px;
+  font-size: 13px;
+  color: var(--color-body);
+}
+
+.steps {
+  @include reset-list;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  margin-top: 28px;
+  padding-top: 24px;
+  border-top: 1px solid var(--color-line);
+  text-align: left;
+  @include stagger-children(4, fade-up, var(--duration-slow), 2);
+}
+
+.step {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  font-size: 13px;
+  color: var(--color-muted);
+  transition: color var(--duration) var(--ease-out);
+
+  &.active {
+    font-weight: 500;
+    color: var(--color-ink);
+  }
+
+  &.done {
+    color: var(--color-body);
+  }
+}
+
+.stepIcon {
+  display: flex;
+  flex-shrink: 0;
+  align-items: center;
+  justify-content: center;
+  width: 20px;
+  height: 20px;
+  border: 1px solid var(--color-line-strong);
+  border-radius: 999px;
+  transition:
+    background-color var(--duration) var(--ease-out),
+    border-color var(--duration) var(--ease-out);
+
+  svg {
+    width: 12px;
+    height: 12px;
+    animation: pop var(--duration-slow) var(--ease-out) both;
+  }
+
+  > span {
+    width: 6px;
+    height: 6px;
+    border-radius: 999px;
+    background: var(--color-brand);
+    animation: pulse 1s var(--ease-in-out) infinite;
+  }
+
+  .active & {
+    border-color: var(--color-brand);
+  }
+
+  .done & {
+    border-color: transparent;
+    background: var(--color-brand);
+    color: #fff;
+  }
+}

@@ -1,0 +1,135 @@
+@use "mixins" as *;
+
+.card {
+  @include card;
+  overflow: hidden;
+}
+
+.main {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  padding: 20px;
+  border-top: 4px solid var(--color-brand);
+
+  @include from($sm) {
+    padding: 24px 28px;
+  }
+
+  @include from($md) {
+    flex-direction: row;
+    align-items: flex-end;
+    justify-content: space-between;
+  }
+}
+
+.titles {
+  min-width: 0;
+}
+
+.eyebrow {
+  @include eyebrow;
+  color: var(--color-brand);
+}
+
+.nameRow {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px 10px;
+  margin-top: 8px;
+}
+
+.name {
+  font-size: 32px;
+  font-weight: 500;
+  letter-spacing: -0.02em;
+}
+
+.price {
+  @include from($md) {
+    text-align: right;
+  }
+}
+
+.amount {
+  font-size: 22px;
+  font-weight: 500;
+  letter-spacing: -0.01em;
+  font-variant-numeric: tabular-nums;
+
+  span {
+    font-size: 13px;
+    font-weight: 400;
+    letter-spacing: 0;
+    color: var(--color-body);
+  }
+}
+
+.priceNote {
+  margin-top: 4px;
+  font-size: 12px;
+  color: var(--color-muted);
+}
+
+.facts {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  margin: 0;
+  border-top: 1px solid var(--color-line);
+
+  @include from($sm) {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+}
+
+.fact {
+  padding: 16px 20px;
+
+  & + & {
+    border-top: 1px solid var(--color-line);
+  }
+
+  @include from($sm) {
+    padding: 18px 28px;
+
+    & + & {
+      border-top: none;
+      border-left: 1px solid var(--color-line);
+    }
+  }
+
+  dt {
+    @include eyebrow;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 10px;
+    color: var(--color-muted);
+
+    svg {
+      width: 14px;
+      height: 14px;
+    }
+  }
+
+  dd {
+    margin: 6px 0 0;
+    font-size: 16px;
+    font-weight: 500;
+    font-variant-numeric: tabular-nums;
+
+    span {
+      font-size: 13px;
+      font-weight: 400;
+      color: var(--color-body);
+    }
+  }
+}
+
+.fact dd.factNote {
+  margin-top: 2px;
+  font-size: 12px;
+  font-weight: 400;
+  color: var(--color-muted);
+}

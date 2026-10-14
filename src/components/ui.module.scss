@@ -1,0 +1,144 @@
+@use "mixins" as *;
+
+@include motion-keyframes;
+
+.card {
+  @include card;
+}
+
+.eyebrow {
+  @include eyebrow;
+  color: var(--color-muted);
+}
+
+.tag {
+  display: inline-flex;
+  align-items: center;
+  height: 24px;
+  padding-inline: 10px;
+  border-radius: 999px;
+  border: 1px solid var(--color-line-strong);
+  color: var(--color-body);
+  font-size: 10px;
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  transition:
+    background-color var(--duration) var(--ease-out),
+    border-color var(--duration) var(--ease-out),
+    color var(--duration) var(--ease-out);
+
+  &.brand {
+    border-color: transparent;
+    background: var(--color-brand-soft);
+    color: var(--color-brand);
+  }
+}
+
+.tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.progress {
+  height: 4px;
+  overflow: hidden;
+  border-radius: 999px;
+  background: var(--color-track);
+}
+
+// Vult zich bij binnenkomst vanaf links en schuift soepel mee als de waarde verandert.
+.progressFill {
+  height: 100%;
+  border-radius: inherit;
+  background: var(--color-brand);
+  transform-origin: left center;
+  animation: grow-x var(--duration-slow) var(--ease-out) both;
+  animation-delay: var(--progress-delay, 120ms);
+  transition: width var(--duration-slow) var(--ease-out);
+}
+
+.arrowButton {
+  display: inline-flex;
+  align-items: center;
+  border-radius: 999px;
+  @include press;
+  @include focus-ring;
+
+  &:hover .arrowLabel {
+    background: var(--color-brand-hover);
+  }
+
+  &:hover .arrowIcon {
+    transform: translateX(3px);
+  }
+}
+
+.arrowLabel {
+  display: flex;
+  align-items: center;
+  height: 36px;
+  padding-inline: 20px;
+  border-radius: 999px;
+  background: var(--color-brand);
+  color: #fff;
+  font-size: 14px;
+  font-weight: 600;
+  white-space: nowrap;
+  transition: background-color var(--duration) var(--ease-out);
+}
+
+.arrowIcon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 36px;
+  height: 36px;
+  margin-left: -4px;
+  border-radius: 999px;
+  background: var(--color-ink);
+  color: #fff;
+  transition: transform var(--duration) var(--ease-out);
+
+  svg {
+    width: 16px;
+    height: 16px;
+  }
+}
+
+.avatar {
+  display: flex;
+  flex-shrink: 0;
+  align-items: center;
+  justify-content: center;
+  width: var(--size, 32px);
+  height: var(--size, 32px);
+  border-radius: 999px;
+  background: var(--color-brand-soft);
+  font-size: calc(var(--size, 32px) * 0.36);
+  font-weight: 600;
+}
+
+.breadcrumbs {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  font-size: 12px;
+  color: var(--color-body);
+
+  a {
+    border-radius: var(--radius-sm);
+    transition: color var(--duration-fast) var(--ease-out);
+    @include focus-ring;
+
+    &:hover {
+      color: var(--color-brand);
+    }
+  }
+}
+
+.crumbSeparator {
+  margin-right: 6px;
+  color: var(--color-muted);
+}

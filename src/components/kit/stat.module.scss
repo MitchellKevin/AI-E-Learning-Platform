@@ -1,0 +1,120 @@
+@use "mixins" as *;
+
+@include motion-keyframes;
+
+.stat {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+}
+
+.value {
+  font-size: 24px;
+  font-weight: 500;
+  line-height: 1.2;
+  letter-spacing: -0.01em;
+  font-variant-numeric: tabular-nums;
+
+  &.accent {
+    color: var(--color-brand);
+  }
+
+  .lg & {
+    font-size: 32px;
+  }
+}
+
+.label {
+  margin-top: 6px;
+  font-size: 12px;
+  color: var(--color-body);
+}
+
+.hint {
+  margin-top: 4px;
+  font-size: 11px;
+  color: var(--color-muted);
+}
+
+.trend {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 4px;
+  margin-top: 8px;
+  font-size: 12px;
+  font-weight: 600;
+
+  svg {
+    width: 14px;
+    height: 14px;
+  }
+}
+
+.good {
+  color: var(--color-success);
+}
+
+.bad {
+  color: var(--color-danger);
+}
+
+.flat {
+  color: var(--color-muted);
+}
+
+.trendLabel {
+  font-weight: 400;
+  color: var(--color-muted);
+}
+
+// Groep
+
+.group {
+  @include card;
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  @include stagger-children(4, fade-in);
+
+  > * {
+    padding: 20px 16px;
+    border-top: 1px solid var(--color-line);
+  }
+
+  // Mobiel: twee kolommen, lijnen tussen de cellen.
+  > :nth-child(-n + 2) {
+    border-top: none;
+  }
+
+  > :nth-child(2n) {
+    border-left: 1px solid var(--color-line);
+  }
+}
+
+@include from($sm) {
+  .group > * {
+    border-top: none;
+    border-left: none;
+  }
+
+  .group > * + * {
+    border-left: 1px solid var(--color-line);
+  }
+
+  .columns3 {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+
+  .columns4 {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+  }
+
+  // Twee kolommen: geen rij-lijnen nodig, alleen bij meer dan twee items.
+  .columns2 > :nth-child(2n + 1) {
+    border-left: none;
+  }
+
+  .columns2 > :nth-child(n + 3) {
+    border-top: 1px solid var(--color-line);
+  }
+}

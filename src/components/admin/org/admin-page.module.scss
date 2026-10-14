@@ -1,0 +1,21 @@
+@use "mixins" as *;
+
+@include motion-keyframes;
+
+.page {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+  min-width: 0;
+
+  // Binnenkomst per blok. Dialogen (soms directe kinderen) en de PageHeader animeren zelf.
+  > :not(dialog, header) {
+    animation: fade-up var(--duration-slow) var(--ease-out) both;
+  }
+
+  @for $i from 1 through 10 {
+    > :nth-child(#{$i}):not(dialog, header) {
+      animation-delay: calc(var(--stagger) * #{$i - 1});
+    }
+  }
+}

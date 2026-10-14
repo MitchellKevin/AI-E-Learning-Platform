@@ -1,0 +1,65 @@
+@use "mixins" as *;
+
+.filter {
+  flex: 1 1 180px;
+  max-width: 220px;
+}
+
+.tableWrap {
+  border-top: 1px solid var(--color-line);
+  border-radius: 0 0 var(--radius) var(--radius);
+
+  th:first-child,
+  td:first-child {
+    padding-left: 20px;
+
+    @include from($sm) {
+      padding-left: 28px;
+    }
+  }
+
+  th:last-child,
+  td:last-child {
+    padding-right: 20px;
+
+    @include from($sm) {
+      padding-right: 28px;
+    }
+  }
+}
+
+.time {
+  white-space: nowrap;
+  font-variant-numeric: tabular-nums;
+}
+
+.actor {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  white-space: nowrap;
+}
+
+.action {
+  display: block;
+}
+
+.target {
+  display: block;
+  margin-top: 2px;
+  font-size: 12px;
+  color: var(--color-muted);
+  overflow-wrap: anywhere;
+}
+
+.more {
+  display: flex;
+  justify-content: center;
+  padding: 16px;
+  border-top: 1px solid var(--color-line);
+}
+
+.empty {
+  padding: 24px 20px 32px;
+  border-top: 1px solid var(--color-line);
+}

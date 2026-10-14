@@ -1,0 +1,48 @@
+@use "mixins" as *;
+
+.list {
+  @include reset-list;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  font-size: 13px;
+  line-height: 1.5;
+  color: var(--color-body);
+
+  li {
+    position: relative;
+    padding-left: 16px;
+
+    &::before {
+      content: "";
+      position: absolute;
+      top: 8px;
+      left: 2px;
+      width: 5px;
+      height: 5px;
+      border-radius: 999px;
+      background: var(--color-danger);
+    }
+  }
+}
+
+.action {
+  display: flex;
+}
+
+.form {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.word {
+  font-family: var(--font-jetbrains), ui-monospace, monospace;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+}
+
+.input {
+  font-family: var(--font-jetbrains), ui-monospace, monospace;
+  letter-spacing: 0.04em;
+}

@@ -1,0 +1,57 @@
+@use "mixins" as *;
+
+.main {
+  @include container;
+  padding-block: 40px 96px;
+}
+
+// Laadstatus: zelfde opbouw als de pagina.
+
+.loadingHead {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  max-width: 40rem;
+}
+
+.loadingGrid {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: 32px;
+  margin-top: 32px;
+
+  @include from($lg) {
+    grid-template-columns: minmax(0, 1fr) 320px;
+    align-items: start;
+    gap: 40px;
+  }
+}
+
+.loadingMain {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  min-width: 0;
+}
+
+.loadingToolbar {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 8px;
+}
+
+.loadingCard {
+  @include card;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  padding: 24px;
+}
+
+.loadingRow {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}

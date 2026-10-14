@@ -1,0 +1,129 @@
+@use "mixins" as *;
+
+@include motion-keyframes;
+
+.timeline {
+  @include card;
+  padding: 8px 16px 12px;
+
+  @include from($sm) {
+    padding: 8px 24px 16px;
+  }
+}
+
+.day + .day {
+  border-top: 1px solid var(--color-line);
+}
+
+.dayLabel {
+  @include eyebrow;
+  padding-top: 16px;
+  color: var(--color-muted);
+  animation: fade-in var(--duration-slow) var(--ease-out) both;
+  animation-delay: calc(var(--stagger) * (var(--i, 0) + 4));
+}
+
+.list {
+  @include reset-list;
+  margin-top: 4px;
+}
+
+.item {
+  position: relative;
+  display: grid;
+  grid-template-columns: 32px minmax(0, 1fr) auto;
+  gap: 12px;
+  align-items: start;
+  padding-block: 10px;
+  animation: fade-up var(--duration-slow) var(--ease-out) both;
+  animation-delay: calc(var(--stagger) * (var(--i, 0) + 4));
+
+  // Verbindingslijn tussen de iconen binnen een dag.
+  & + &::before {
+    content: "";
+    position: absolute;
+    top: -10px;
+    left: 15.5px;
+    width: 1px;
+    height: 20px;
+    background: var(--color-line);
+  }
+}
+
+.icon {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  border-radius: 999px;
+  background: var(--color-canvas);
+  color: var(--color-body);
+
+  svg {
+    width: 15px;
+    height: 15px;
+  }
+
+  .badge &,
+  .certificate & {
+    background: var(--color-brand);
+    color: #fff;
+  }
+
+  .practice & {
+    background: var(--color-brand-soft);
+    color: var(--color-brand);
+  }
+}
+
+.body {
+  min-width: 0;
+  padding-top: 1px;
+}
+
+.title {
+  font-size: 13px;
+  font-weight: 500;
+  line-height: 1.45;
+  overflow-wrap: anywhere;
+}
+
+.link {
+  border-radius: var(--radius-sm);
+  transition: color var(--duration-fast) var(--ease-out);
+  @include focus-ring;
+
+  &:hover {
+    color: var(--color-brand);
+  }
+}
+
+.meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 2px 8px;
+  margin-top: 2px;
+  font-size: 12px;
+  color: var(--color-muted);
+
+  time {
+    font-variant-numeric: tabular-nums;
+  }
+
+  span::before {
+    content: "·";
+    margin-right: 8px;
+  }
+}
+
+.points {
+  padding-top: 3px;
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--color-brand);
+  font-variant-numeric: tabular-nums;
+}
+

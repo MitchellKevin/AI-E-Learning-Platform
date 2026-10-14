@@ -1,0 +1,47 @@
+@use "mixins" as *;
+
+.apps {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.help {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  padding: 16px;
+  border-radius: var(--radius);
+  background: var(--color-canvas);
+}
+
+.helpTitle {
+  font-size: 14px;
+  font-weight: 600;
+}
+
+.tips {
+  @include reset-list;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  font-size: 13px;
+  line-height: 1.5;
+  color: var(--color-body);
+
+  li {
+    position: relative;
+    padding-left: 14px;
+
+    &::before {
+      content: "";
+      position: absolute;
+      top: 8px;
+      left: 0;
+      width: 5px;
+      height: 5px;
+      border-radius: 999px;
+      background: var(--color-bar);
+    }
+  }
+}

@@ -1,0 +1,397 @@
+@use "mixins" as *;
+
+@include motion-keyframes;
+
+// Hero
+
+.hero {
+  position: relative;
+  overflow: hidden;
+  border-bottom: 1px solid var(--color-line);
+  background: var(--color-surface);
+}
+
+// Rustig stippenraster rechtsboven, vervaagt naar links en naar onder.
+.heroPattern {
+  position: absolute;
+  inset: 0;
+  background-image: radial-gradient(var(--color-line-strong) 1px, transparent 1px);
+  background-size: 22px 22px;
+  mask-image: radial-gradient(ellipse 70% 80% at 85% 20%, #000 0%, transparent 70%);
+  opacity: 0.7;
+  pointer-events: none;
+}
+
+.heroInner {
+  @include container;
+  position: relative;
+  display: grid;
+  gap: 48px;
+  padding-block: 56px 64px;
+
+  @include from($lg) {
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1.05fr);
+    align-items: center;
+    gap: 56px;
+    padding-block: 88px 96px;
+  }
+}
+
+.heroText {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  @include stagger-children(5);
+}
+
+.kicker {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  max-width: 100%;
+  padding: 4px 12px 4px 4px;
+  border: 1px solid var(--color-line);
+  border-radius: 999px;
+  background: var(--color-surface);
+  color: var(--color-body);
+  font-size: 12px;
+}
+
+.kickerBadge {
+  flex-shrink: 0;
+  padding: 3px 8px;
+  border-radius: 999px;
+  background: var(--color-brand-soft);
+  color: var(--color-brand);
+  font-size: 11px;
+  font-weight: 600;
+}
+
+.heroTitle {
+  margin-top: 20px;
+  font-size: 38px;
+  font-weight: 500;
+  line-height: 1.06;
+  letter-spacing: -0.03em;
+  text-wrap: balance;
+
+  @include from($sm) {
+    font-size: 52px;
+  }
+
+  @include from($lg) {
+    font-size: 56px;
+  }
+}
+
+.heroLead {
+  max-width: 34rem;
+  margin-top: 20px;
+  font-size: 16px;
+  line-height: 1.65;
+  color: var(--color-body);
+  text-wrap: pretty;
+}
+
+.heroActions {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 12px;
+  margin-top: 32px;
+}
+
+.heroPoints {
+  @include reset-list;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px 20px;
+  margin-top: 24px;
+  font-size: 13px;
+  color: var(--color-body);
+
+  li {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+
+  svg {
+    width: 15px;
+    height: 15px;
+    color: var(--color-success);
+  }
+}
+
+// Klanten
+
+.customers {
+  @include container;
+  padding-block: 40px 8px;
+  text-align: center;
+}
+
+.customersTitle {
+  font-size: 13px;
+  font-weight: 400;
+  color: var(--color-muted);
+}
+
+.logos {
+  @include reset-list;
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  align-items: center;
+  gap: 16px 40px;
+  margin-top: 20px;
+  color: var(--color-muted);
+  font-size: 19px;
+  @include stagger-children(6, fade-in);
+
+  @include from($md) {
+    gap: 16px 56px;
+  }
+
+  li {
+    white-space: nowrap;
+    transition: color var(--duration) var(--ease-out);
+
+    &:hover {
+      color: var(--color-ink);
+    }
+  }
+}
+
+// Elk tekstlogo een eigen karakter, zodat de strook niet als een opsomming leest.
+.logo0 {
+  font-weight: 700;
+  letter-spacing: -0.04em;
+}
+
+.logo1 {
+  font-weight: 500;
+  font-style: italic;
+  letter-spacing: -0.02em;
+}
+
+.logo2 {
+  font-size: 15px;
+  font-weight: 600;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+}
+
+.logo3 {
+  font-family: Georgia, "Times New Roman", serif;
+  font-weight: 400;
+}
+
+.logo4 {
+  font-family: var(--font-jetbrains), ui-monospace, monospace;
+  font-size: 16px;
+  font-weight: 600;
+  letter-spacing: -0.03em;
+}
+
+.logo5 {
+  font-weight: 300;
+  letter-spacing: 0.02em;
+}
+
+// Secties
+
+.section {
+  @include container;
+  padding-block: 80px;
+
+  @include from($md) {
+    padding-block: 104px;
+  }
+}
+
+// Witte band over de volle breedte, voor afwisseling tussen secties.
+.band {
+  border-block: 1px solid var(--color-line);
+  background: var(--color-surface);
+}
+
+// Hoe het werkt
+
+.steps {
+  @include reset-list;
+  display: grid;
+  gap: 16px;
+  margin-top: 40px;
+  counter-reset: step;
+  @include stagger-children(3);
+
+  @include from($md) {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+}
+
+.step {
+  @include card;
+  position: relative;
+  padding: 24px;
+
+  // Verbindingslijn naar de volgende stap.
+  @include from($md) {
+    &:not(:last-child)::after {
+      content: "";
+      position: absolute;
+      top: 44px;
+      right: -17px;
+      width: 18px;
+      height: 1px;
+      background: var(--color-line-strong);
+    }
+  }
+}
+
+.stepHead {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.stepIcon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 40px;
+  height: 40px;
+  border-radius: 999px;
+  background: var(--color-brand-soft);
+  color: var(--color-brand);
+
+  svg {
+    width: 18px;
+    height: 18px;
+  }
+}
+
+.stepNumber {
+  font-size: 13px;
+  font-weight: 600;
+  font-variant-numeric: tabular-nums;
+  color: var(--color-line-strong);
+}
+
+.stepTitle {
+  margin-top: 24px;
+  font-size: 17px;
+  font-weight: 500;
+  letter-spacing: -0.01em;
+}
+
+.stepText {
+  margin-top: 8px;
+  font-size: 14px;
+  line-height: 1.6;
+  color: var(--color-body);
+}
+
+// Voor managers
+
+.split {
+  @include container;
+  display: grid;
+  gap: 48px;
+  padding-block: 80px;
+
+  @include from($md) {
+    padding-block: 104px;
+  }
+
+  @include from($lg) {
+    grid-template-columns: minmax(0, 0.9fr) minmax(0, 1.1fr);
+    align-items: center;
+    gap: 64px;
+  }
+}
+
+.splitText {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+}
+
+.splitVisual {
+  min-width: 0;
+}
+
+.checks {
+  @include reset-list;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  margin-top: 28px;
+  font-size: 14px;
+  line-height: 1.5;
+  color: var(--color-body);
+
+  li {
+    display: flex;
+    align-items: flex-start;
+    gap: 10px;
+  }
+}
+
+.checkIcon {
+  display: flex;
+  flex-shrink: 0;
+  align-items: center;
+  justify-content: center;
+  width: 20px;
+  height: 20px;
+  margin-top: 1px;
+  border-radius: 999px;
+  background: var(--color-success-soft);
+  color: var(--color-success);
+
+  svg {
+    width: 12px;
+    height: 12px;
+  }
+}
+
+.textLink {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  margin-top: 28px;
+  border-radius: var(--radius-sm);
+  color: var(--color-brand);
+  font-size: 14px;
+  font-weight: 600;
+  @include focus-ring;
+
+  svg {
+    width: 16px;
+    height: 16px;
+    transition: transform var(--duration) var(--ease-out);
+  }
+
+  &:hover svg {
+    transform: translateX(3px);
+  }
+}
+
+// Veelgestelde vragen
+
+.faq {
+  display: grid;
+  gap: 32px;
+
+  @include from($lg) {
+    grid-template-columns: minmax(0, 0.8fr) minmax(0, 1.2fr);
+    align-items: start;
+    gap: 64px;
+  }
+}
+
+.faqActions {
+  margin-top: 24px;
+}

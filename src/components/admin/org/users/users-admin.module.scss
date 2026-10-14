@@ -1,0 +1,6 @@
+// Actiemenu's in de onderste rijen vallen over de volgende kaart heen; die krijgen anders voorrang
+// doordat elke kaart door de binnenkomst-animatie een eigen stacking context is.
+.tablePanel {
+  position: relative;
+  z-index: 2;
+}

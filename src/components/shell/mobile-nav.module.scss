@@ -1,0 +1,155 @@
+@use "mixins" as *;
+
+@include motion-keyframes;
+
+// Alleen op kleine schermen; daarboven staat de gewone navigatie in de header.
+.root {
+  display: flex;
+
+  @include from($md) {
+    display: none;
+  }
+}
+
+.body.body {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+  @include stagger-children(4, fade-up, var(--duration-slow), 2);
+}
+
+.profile {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.profileText {
+  min-width: 0;
+}
+
+.name {
+  font-size: 16px;
+  font-weight: 500;
+  color: var(--color-ink);
+}
+
+.meta {
+  margin-top: 2px;
+  font-size: 13px;
+  color: var(--color-muted);
+}
+
+.stats {
+  @include card;
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  margin: 0;
+}
+
+.stat {
+  padding: 12px 16px;
+
+  & + & {
+    border-left: 1px solid var(--color-line);
+  }
+
+  dt {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 11px;
+    color: var(--color-body);
+  }
+
+  dt svg {
+    width: 14px;
+    height: 14px;
+    color: var(--color-brand);
+  }
+
+  dd {
+    margin: 4px 0 0;
+    font-size: 18px;
+    font-weight: 500;
+    color: var(--color-ink);
+  }
+}
+
+.section {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.sectionLabel {
+  @include eyebrow;
+  padding-inline: 12px;
+  color: var(--color-muted);
+}
+
+.list {
+  @include reset-list;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.link {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  min-height: 44px;
+  padding: 8px 12px;
+  border-radius: var(--radius);
+  color: var(--color-body);
+  font-size: 14px;
+  transition:
+    background-color var(--duration-fast) var(--ease-out),
+    color var(--duration-fast) var(--ease-out);
+
+  &:hover {
+    background: var(--color-canvas);
+    color: var(--color-ink);
+  }
+
+  &:focus-visible {
+    outline: 2px solid var(--color-brand);
+    outline-offset: -2px;
+  }
+
+  &.primary {
+    font-size: 16px;
+    color: var(--color-ink);
+  }
+
+  &.active {
+    background: var(--color-brand-soft);
+    color: var(--color-brand);
+    font-weight: 600;
+  }
+
+  &.danger {
+    color: var(--color-danger);
+  }
+
+  &.danger:hover {
+    background: var(--color-danger-soft);
+  }
+}
+
+.icon {
+  display: flex;
+  flex-shrink: 0;
+  color: var(--color-muted);
+
+  svg {
+    width: 18px;
+    height: 18px;
+  }
+
+  .active &,
+  .danger & {
+    color: inherit;
+  }
+}

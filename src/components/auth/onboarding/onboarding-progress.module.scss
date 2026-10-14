@@ -1,0 +1,150 @@
+@use "mixins" as *;
+
+.progress {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.meta {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 16px;
+  font-size: 13px;
+}
+
+.count {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  min-width: 0;
+  font-weight: 500;
+  color: var(--color-ink);
+}
+
+.number {
+  font-variant-numeric: tabular-nums;
+}
+
+// Vanaf tablet staan de labels onder de balkjes; dan is deze herhaling niet nodig.
+.currentLabel {
+  color: var(--color-muted);
+  font-weight: 400;
+
+  @include from($sm) {
+    display: none;
+  }
+}
+
+.doneIcon {
+  width: 15px;
+  height: 15px;
+  color: var(--color-success);
+  stroke-width: 2.5;
+}
+
+.percentage {
+  flex-shrink: 0;
+  font-size: 12px;
+  font-variant-numeric: tabular-nums;
+  color: var(--color-muted);
+}
+
+.steps {
+  @include reset-list;
+  display: grid;
+  grid-auto-columns: minmax(0, 1fr);
+  grid-auto-flow: column;
+  gap: 6px;
+}
+
+.button,
+.static {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  width: 100%;
+  text-align: left;
+}
+
+.button {
+  padding: 0;
+  border: none;
+  border-radius: var(--radius-sm);
+  background: none;
+  font: inherit;
+  cursor: pointer;
+  @include focus-ring;
+
+  &:hover .label {
+    color: var(--color-brand);
+  }
+
+  &:hover .bar::after {
+    background: var(--color-brand-hover);
+  }
+}
+
+// Balkje dat vol loopt; de vulling schuift van links naar rechts.
+.bar {
+  position: relative;
+  display: block;
+  height: 4px;
+  overflow: hidden;
+  border-radius: 999px;
+  background: var(--color-track);
+
+  &::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    border-radius: inherit;
+    background: var(--color-brand);
+    transform: scaleX(0);
+    transform-origin: left;
+    transition:
+      transform var(--duration-slow) var(--ease-out),
+      background-color var(--duration) var(--ease-out);
+  }
+
+  .done &::after {
+    transform: scaleX(1);
+  }
+
+  // De huidige stap is half gevuld: je bent ermee bezig.
+  .active &::after {
+    transform: scaleX(0.4);
+  }
+}
+
+// Labels alleen vanaf tablet; op mobiel staat de huidige stap in de regel erboven.
+.label {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+  font-size: 11px;
+  font-weight: 500;
+  color: var(--color-muted);
+  transition: color var(--duration) var(--ease-out);
+
+  @include from($sm) {
+    position: static;
+    width: auto;
+    height: auto;
+    overflow: hidden;
+    clip-path: none;
+    text-overflow: ellipsis;
+  }
+
+  .active & {
+    color: var(--color-ink);
+  }
+
+  .done & {
+    color: var(--color-body);
+  }
+}

@@ -1,0 +1,38 @@
+@use "mixins" as *;
+
+.form {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.effects {
+  @include reset-list;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  padding: 16px;
+  border-radius: var(--radius);
+  background: var(--color-canvas);
+  font-size: 13px;
+  line-height: 1.5;
+  color: var(--color-body);
+
+  li {
+    display: flex;
+    gap: 10px;
+  }
+
+  svg {
+    flex-shrink: 0;
+    width: 16px;
+    height: 16px;
+    margin-top: 2px;
+    color: var(--color-muted);
+  }
+
+  strong {
+    font-weight: 600;
+    color: var(--color-ink);
+  }
+}

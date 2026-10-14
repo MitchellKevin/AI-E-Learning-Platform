@@ -1,0 +1,348 @@
+@use "mixins" as *;
+
+@include motion-keyframes;
+
+@keyframes glow {
+  0% {
+    transform: scale(0.85);
+    opacity: 0;
+  }
+  40% {
+    opacity: 1;
+  }
+  100% {
+    transform: scale(1.25);
+    opacity: 0;
+  }
+}
+
+// Kop
+
+.hero {
+  background: var(--color-surface);
+  border-bottom: 1px solid var(--color-line);
+}
+
+.heroInner {
+  @include container;
+  display: flex;
+  flex-direction: column-reverse;
+  gap: 32px;
+  padding-block: 40px;
+
+  @include from($md) {
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-between;
+  }
+}
+
+.heroText {
+  max-width: 36rem;
+  min-width: 0;
+  @include stagger-children(6, fade-up, var(--duration-slow), 2);
+}
+
+.badges {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-top: 16px;
+}
+
+.title {
+  margin-block: 12px;
+  font-size: 34px;
+  font-weight: 500;
+  line-height: 1.15;
+  letter-spacing: -0.02em;
+  text-wrap: balance;
+  outline: none;
+
+  @include from($sm) {
+    font-size: 44px;
+  }
+}
+
+.lead {
+  font-size: 15px;
+  line-height: 1.6;
+  color: var(--color-body);
+}
+
+.actions {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 12px;
+  margin-top: 24px;
+}
+
+.actionNote {
+  margin-top: 12px;
+  font-size: 12px;
+  color: var(--color-muted);
+}
+
+.scoreWrap {
+  position: relative;
+  align-self: center;
+
+  // Zachte gloed achter de ring bij slagen.
+  .heroPassed &::before {
+    content: "";
+    position: absolute;
+    inset: -12px;
+    border-radius: 999px;
+    background: radial-gradient(circle, var(--color-success-soft) 55%, transparent 72%);
+    animation: glow 1600ms var(--ease-out) both;
+    animation-delay: 900ms;
+  }
+
+  @include from($md) {
+    margin-right: 24px;
+  }
+}
+
+.medal {
+  position: absolute;
+  right: 4px;
+  bottom: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 40px;
+  height: 40px;
+  border: 3px solid var(--color-surface);
+  border-radius: 999px;
+  background: var(--color-success);
+  color: #fff;
+  animation: pop var(--duration-slow) var(--ease-spring) both;
+  animation-delay: 1100ms;
+
+  svg {
+    width: 18px;
+    height: 18px;
+  }
+}
+
+// Layout
+
+.grid {
+  @include container;
+  display: grid;
+  gap: 32px;
+  padding-block: 40px 96px;
+
+  @include from($lg) {
+    grid-template-columns: minmax(0, 1fr) 300px;
+    align-items: start;
+  }
+}
+
+.main {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+  min-width: 0;
+  @include stagger-children(4, fade-up, var(--duration-slow), 4);
+}
+
+.cardTitle {
+  font-size: 18px;
+}
+
+.cardText {
+  margin-top: 6px;
+  font-size: 13px;
+  line-height: 1.6;
+  color: var(--color-body);
+}
+
+// Herhaaltips
+
+.tips {
+  padding: 24px;
+
+  &.tipsFailed {
+    border-color: var(--color-line-strong);
+    border-left: 3px solid var(--color-warning);
+  }
+}
+
+.tipList {
+  @include reset-list;
+  display: grid;
+  gap: 8px;
+  margin-top: 16px;
+
+  @include from($md) {
+    grid-template-columns: 1fr 1fr;
+  }
+}
+
+.tip {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  height: 100%;
+  padding: 12px;
+  border: 1px solid var(--color-line);
+  border-radius: var(--radius-sm);
+  @include hover-lift;
+  @include focus-ring;
+
+  &:hover {
+    border-color: var(--color-brand);
+  }
+}
+
+.tipIcon {
+  display: flex;
+  flex-shrink: 0;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  border: 1px solid var(--color-line-strong);
+  border-radius: 999px;
+  transition:
+    border-color var(--duration) var(--ease-out),
+    color var(--duration) var(--ease-out);
+
+  svg {
+    width: 15px;
+    height: 15px;
+  }
+
+  .tip:hover & {
+    border-color: var(--color-brand);
+    color: var(--color-brand);
+  }
+}
+
+.tipText {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 0;
+}
+
+.tipTitle {
+  font-size: 13px;
+  font-weight: 600;
+  line-height: 1.35;
+}
+
+.tipMeta {
+  font-size: 11px;
+  color: var(--color-body);
+}
+
+.tipArrow {
+  flex-shrink: 0;
+  width: 14px;
+  height: 14px;
+  color: var(--color-muted);
+  transition:
+    transform var(--duration) var(--ease-out),
+    color var(--duration) var(--ease-out);
+
+  .tip:hover & {
+    color: var(--color-brand);
+    transform: translateX(2px);
+  }
+}
+
+.reviewSection {
+  min-width: 0;
+}
+
+// Zijbalk
+
+.aside {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  @include stagger-children(2, fade-up, var(--duration-slow), 5);
+
+  @include from($lg) {
+    position: sticky;
+    top: 24px;
+  }
+}
+
+.sideCard {
+  padding: 20px;
+}
+
+.topics {
+  @include reset-list;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  margin-top: 16px;
+}
+
+.topic {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.topicHead {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.topicTitle {
+  min-width: 0;
+  font-size: 13px;
+  font-weight: 500;
+}
+
+.topicScore {
+  flex-shrink: 0;
+  font-size: 13px;
+  font-weight: 600;
+  font-variant-numeric: tabular-nums;
+
+  &.ok {
+    color: var(--color-success);
+  }
+
+  &.low {
+    color: var(--color-warning);
+  }
+}
+
+.topicBar {
+  height: 6px;
+  overflow: hidden;
+  border-radius: 999px;
+  background: var(--color-track);
+}
+
+.topicFill {
+  display: block;
+  height: 100%;
+  border-radius: inherit;
+  transform-origin: left center;
+  animation: grow-x var(--duration-slow) var(--ease-out) both;
+
+  &.ok {
+    background: var(--color-success);
+  }
+
+  &.low {
+    background: var(--color-warning);
+  }
+}
+
+.topicMeta {
+  font-size: 11px;
+  color: var(--color-muted);
+}

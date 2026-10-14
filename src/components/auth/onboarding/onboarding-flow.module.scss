@@ -1,0 +1,433 @@
+@use "mixins" as *;
+
+@include motion-keyframes;
+
+.flow {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  width: 100%;
+  max-width: 640px;
+}
+
+.flow > :first-child {
+  @include enter(0, fade-in);
+}
+
+.card {
+  @include card;
+  @include enter(1);
+  padding: 28px 20px;
+  // Stappen schuiven een stukje opzij in; niet buiten de kaart laten uitsteken.
+  overflow: hidden;
+  box-shadow: var(--shadow-sm);
+
+  @include from($sm) {
+    padding: 40px 40px 32px;
+  }
+}
+
+.footnote {
+  @include enter(2, fade-in);
+  font-size: 12px;
+  text-align: center;
+  color: var(--color-muted);
+
+  a {
+    border-radius: var(--radius-sm);
+    color: var(--color-body);
+    text-decoration: underline;
+    text-underline-offset: 2px;
+    @include focus-ring;
+
+    &:hover {
+      color: var(--color-brand);
+    }
+  }
+}
+
+// Gedeelde stukjes
+
+.legend {
+  margin-bottom: 6px;
+  padding: 0;
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--color-ink);
+}
+
+.legendHint {
+  margin-bottom: 16px;
+  font-size: 12px;
+  line-height: 1.5;
+  color: var(--color-muted);
+}
+
+.group {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+// Stap 1: welkom
+
+.assignment {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  padding: 14px 16px;
+  border-radius: var(--radius);
+  background: var(--color-canvas);
+  font-size: 13px;
+  line-height: 1.55;
+  color: var(--color-body);
+
+  strong {
+    color: var(--color-ink);
+    font-weight: 600;
+  }
+}
+
+.assignmentIcon {
+  display: flex;
+  flex-shrink: 0;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  border-radius: var(--radius);
+  background: var(--color-surface);
+  color: var(--color-brand);
+  box-shadow: inset 0 0 0 1px var(--color-line);
+
+  svg {
+    width: 16px;
+    height: 16px;
+  }
+}
+
+.assignmentMeta {
+  color: var(--color-muted);
+}
+
+.fieldset {
+  min-width: 0;
+  margin: 0;
+  padding: 0;
+  border: none;
+}
+
+.nameGrid {
+  display: grid;
+  gap: 16px;
+
+  @include from($sm) {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+.emailLine {
+  margin-top: 14px;
+  font-size: 12px;
+  color: var(--color-muted);
+}
+
+.email {
+  color: var(--color-body);
+  font-weight: 500;
+  overflow-wrap: anywhere;
+}
+
+// Stap 2: rol
+
+.cardHint {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 12px;
+  font-weight: 500;
+  color: var(--color-brand);
+
+  svg {
+    flex-shrink: 0;
+    width: 14px;
+    height: 14px;
+  }
+}
+
+// Stap 5: weekdoel
+
+.custom {
+  @include enter(0, fade-up, var(--duration));
+  max-width: 240px;
+}
+
+// Stap 6: onderwerpen en uitslag
+
+.topicList {
+  @include reset-list;
+  display: flex;
+  flex-direction: column;
+  border: 1px solid var(--color-line);
+  border-radius: var(--radius);
+  @include stagger-children(8, fade-up, var(--duration-slow), 1);
+
+  li {
+    display: grid;
+    grid-template-columns: auto minmax(0, 1fr);
+    gap: 2px 12px;
+    align-items: center;
+    padding: 12px 14px;
+    font-size: 13px;
+
+    @include from($sm) {
+      grid-template-columns: auto minmax(0, 1fr) auto;
+    }
+
+    & + li {
+      border-top: 1px solid var(--color-line);
+    }
+  }
+}
+
+.topicIcon {
+  display: flex;
+  grid-row: span 2;
+  align-items: center;
+  justify-content: center;
+  width: 24px;
+  height: 24px;
+  border-radius: 999px;
+  color: var(--color-bar);
+
+  svg {
+    width: 16px;
+    height: 16px;
+  }
+
+  @include from($sm) {
+    grid-row: auto;
+  }
+
+  .known & {
+    background: var(--color-success-soft);
+    color: var(--color-success);
+
+    svg {
+      width: 13px;
+      height: 13px;
+      stroke-width: 3;
+      animation: pop var(--duration-slow) var(--ease-out) both;
+    }
+  }
+}
+
+.topicTitle {
+  color: var(--color-ink);
+  font-weight: 500;
+  line-height: 1.4;
+}
+
+.topicMeta {
+  font-size: 12px;
+  color: var(--color-muted);
+
+  .known & {
+    color: var(--color-success);
+    font-weight: 500;
+  }
+}
+
+.smallPrint {
+  font-size: 12px;
+  line-height: 1.5;
+  color: var(--color-muted);
+}
+
+// Toetsvragen
+
+.questionDots {
+  display: flex;
+  gap: 6px;
+  margin-top: -8px;
+}
+
+.dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 999px;
+  background: var(--color-track);
+  transition:
+    width var(--duration) var(--ease-out),
+    background-color var(--duration) var(--ease-out);
+}
+
+.dotDone {
+  background: var(--color-brand);
+}
+
+.dotActive {
+  width: 24px;
+  background: var(--color-brand);
+}
+
+// Antwoorden als rustige omlijnde rijen; de hele rij is klikbaar.
+.answer {
+  padding: 14px 16px;
+  border: 1px solid var(--color-line-strong);
+  border-radius: var(--radius);
+  background: var(--color-surface);
+  transition:
+    border-color var(--duration) var(--ease-out),
+    background-color var(--duration) var(--ease-out),
+    box-shadow var(--duration) var(--ease-out);
+
+  &:hover {
+    border-color: var(--color-brand);
+  }
+
+  &:has(input:checked) {
+    border-color: var(--color-brand);
+    background: var(--color-brand-soft);
+    box-shadow: 0 0 0 1px var(--color-brand);
+  }
+}
+
+.score {
+  display: grid;
+  grid-auto-columns: minmax(0, 1fr);
+  grid-auto-flow: column;
+  gap: 6px;
+  margin-top: -4px;
+  @include stagger-children(10, grow-x, var(--duration-slow), 1);
+}
+
+.scoreBar {
+  height: 8px;
+  border-radius: 999px;
+  background: var(--color-track);
+  transform-origin: left;
+}
+
+.scoreBarGood {
+  background: var(--color-success);
+}
+
+// Overzicht
+
+.plan {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 16px;
+  border-radius: var(--radius);
+  background: var(--color-brand-soft);
+}
+
+.planIcon {
+  display: flex;
+  flex-shrink: 0;
+  align-items: center;
+  justify-content: center;
+  width: 40px;
+  height: 40px;
+  border-radius: 999px;
+  background: var(--color-brand);
+  color: #fff;
+  animation: pop var(--duration-slow) var(--ease-out) both;
+  animation-delay: calc(var(--stagger) * 3);
+
+  svg {
+    width: 20px;
+    height: 20px;
+  }
+}
+
+.planText {
+  min-width: 0;
+}
+
+.planTitle {
+  font-size: 15px;
+  font-weight: 600;
+  color: var(--color-ink);
+}
+
+.planMeta {
+  margin-top: 2px;
+  font-size: 12px;
+  line-height: 1.5;
+  color: var(--color-body);
+}
+
+.summary {
+  margin: 0;
+}
+
+.summaryRow {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  gap: 4px 12px;
+  align-items: center;
+  padding-block: 12px;
+  border-bottom: 1px solid var(--color-line);
+  font-size: 13px;
+
+  &:last-child {
+    border-bottom: none;
+  }
+
+  @include from($sm) {
+    grid-template-columns: 120px minmax(0, 1fr) auto;
+    gap: 16px;
+  }
+
+  dt {
+    @include eyebrow;
+    color: var(--color-muted);
+  }
+
+  dd {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    min-width: 0;
+    margin: 0;
+    color: var(--color-ink);
+    overflow-wrap: anywhere;
+  }
+}
+
+// Op mobiel: label en "Wijzig" op de eerste regel, de waarde eronder.
+.summaryRow dd:not(.summaryAction) {
+  grid-column: 1 / -1;
+  grid-row: 2;
+
+  @include from($sm) {
+    grid-column: auto;
+    grid-row: auto;
+  }
+}
+
+.summaryAction {
+  grid-column: 2;
+  grid-row: 1;
+  align-items: flex-end;
+
+  @include from($sm) {
+    grid-column: 3;
+  }
+}
+
+.summaryLine {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+
+  svg {
+    flex-shrink: 0;
+    width: 14px;
+    height: 14px;
+    color: var(--color-muted);
+  }
+}

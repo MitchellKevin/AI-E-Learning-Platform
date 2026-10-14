@@ -1,0 +1,181 @@
+@use "mixins" as *;
+
+@include motion-keyframes;
+
+.page {
+  display: flex;
+  flex-direction: column;
+  min-height: 100dvh;
+}
+
+.top {
+  @include container;
+  display: flex;
+  align-items: center;
+  width: 100%;
+  height: 56px;
+}
+
+.logo {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  border-radius: var(--radius-sm);
+  font-size: 15px;
+  font-weight: 500;
+  @include focus-ring;
+}
+
+.logoMark {
+  display: flex;
+  align-items: center;
+  height: 24px;
+  padding-inline: 8px;
+  border-radius: 999px;
+  background: var(--color-brand);
+  color: #fff;
+  font-size: 11px;
+  font-weight: 700;
+}
+
+.main {
+  @include container;
+  width: 100%;
+  max-width: calc(720px + 2 * var(--gutter));
+  padding-block: 48px 96px;
+
+  @include from($md) {
+    padding-top: 96px;
+  }
+}
+
+.intro {
+  @include stagger-children(3);
+}
+
+.code {
+  @include eyebrow;
+  color: var(--color-brand);
+}
+
+.title {
+  margin-top: 12px;
+  font-size: 36px;
+  line-height: 1.15;
+  letter-spacing: -0.02em;
+
+  @include from($md) {
+    font-size: 48px;
+  }
+}
+
+.lead {
+  max-width: 34rem;
+  margin-top: 16px;
+  font-size: 15px;
+  line-height: 1.6;
+  color: var(--color-body);
+}
+
+.search {
+  margin-top: 32px;
+  @include enter(3);
+}
+
+.actions {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 12px;
+  margin-top: 20px;
+  @include enter(4);
+}
+
+.destinations {
+  margin-top: 56px;
+  @include enter(5, fade-in);
+}
+
+.destinationsTitle {
+  @include eyebrow;
+  color: var(--color-muted);
+}
+
+.grid {
+  @include reset-list;
+  display: grid;
+  gap: 12px;
+  margin-top: 16px;
+
+  @include from($sm) {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+// Binnenkomst op de sectie, hover-lift op de kaart.
+.card {
+  @include card;
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  height: 100%;
+  padding: 16px;
+  @include hover-lift;
+  @include focus-ring;
+
+  &:hover {
+    border-color: var(--color-line-strong);
+  }
+}
+
+.cardIcon {
+  display: flex;
+  flex-shrink: 0;
+  align-items: center;
+  justify-content: center;
+  width: 36px;
+  height: 36px;
+  border-radius: 999px;
+  background: var(--color-brand-soft);
+  color: var(--color-brand);
+
+  svg {
+    width: 18px;
+    height: 18px;
+  }
+}
+
+.cardText {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  gap: 4px;
+  min-width: 0;
+}
+
+.cardTitle {
+  font-size: 15px;
+  font-weight: 500;
+}
+
+.cardBody {
+  font-size: 13px;
+  line-height: 1.5;
+  color: var(--color-body);
+}
+
+.cardArrow {
+  flex-shrink: 0;
+  width: 16px;
+  height: 16px;
+  margin-top: 10px;
+  color: var(--color-muted);
+  transition:
+    transform var(--duration) var(--ease-out),
+    color var(--duration) var(--ease-out);
+
+  .card:hover & {
+    color: var(--color-brand);
+    transform: translateX(3px);
+  }
+}

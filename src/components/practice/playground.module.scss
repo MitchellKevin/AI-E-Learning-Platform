@@ -1,0 +1,141 @@
+@use "mixins" as *;
+
+@include motion-keyframes;
+
+.layout {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: 32px;
+
+  @include from($lg) {
+    grid-template-columns: minmax(0, 360px) minmax(0, 1fr);
+    align-items: start;
+  }
+}
+
+.brief {
+  min-width: 0;
+}
+
+.workspace {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  min-width: 0;
+}
+
+.workspaceHead {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  min-height: 28px;
+  @include enter(0, fade-in);
+}
+
+.workspaceTitle {
+  font-size: 18px;
+  letter-spacing: -0.01em;
+}
+
+// Nog geen pogingen
+
+.empty {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 40px 24px;
+  border: 1px dashed var(--color-line-strong);
+  border-radius: var(--radius);
+  text-align: center;
+  @include enter(1);
+}
+
+.emptyIcon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  background: var(--color-brand-soft);
+  color: var(--color-brand);
+
+  svg {
+    width: 20px;
+    height: 20px;
+  }
+}
+
+.emptyTitle {
+  margin-top: 16px;
+  font-size: 16px;
+}
+
+.emptyText {
+  max-width: 28rem;
+  margin-top: 6px;
+  font-size: 13px;
+  line-height: 1.6;
+  color: var(--color-body);
+}
+
+.starters {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 8px;
+  margin-top: 20px;
+}
+
+.emptyAction {
+  margin-top: 20px;
+}
+
+// Pogingen
+
+.tabs {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+// De tabs-gap zorgt al voor ruimte; geen extra padding van het kit-paneel.
+.tabs .panel {
+  padding-top: 0;
+}
+
+.footerRow {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 12px;
+
+  @include from($sm) {
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-between;
+  }
+}
+
+.footerText {
+  font-size: 13px;
+  line-height: 1.55;
+  color: var(--color-body);
+
+  strong {
+    font-weight: 600;
+    color: var(--color-ink);
+  }
+}
+
+// Invoer blijft op desktop onderin beeld staan, zoals in een chat.
+.composer {
+  @include enter(2);
+
+  @include from($lg) {
+    position: sticky;
+    bottom: 16px;
+    z-index: var(--z-sticky);
+  }
+}

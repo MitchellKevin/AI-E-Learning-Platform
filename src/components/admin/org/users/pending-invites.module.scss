@@ -1,0 +1,77 @@
+@use "mixins" as *;
+
+@include motion-keyframes;
+
+.list {
+  @include reset-list;
+  @include stagger-children(8, fade-in);
+}
+
+.item {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr);
+  grid-template-areas:
+    "avatar text"
+    "avatar expiry"
+    "buttons buttons";
+  gap: 6px 12px;
+  align-items: center;
+  padding: 14px 20px;
+  border-top: 1px solid var(--color-line);
+
+  @include from($sm) {
+    padding-inline: 28px;
+  }
+
+  @include from($md) {
+    grid-template-columns: auto minmax(0, 1fr) auto auto;
+    grid-template-areas: "avatar text expiry buttons";
+    gap: 16px;
+  }
+}
+
+.avatar {
+  display: inline-flex;
+  grid-area: avatar;
+  align-self: start;
+
+  @include from($md) {
+    align-self: center;
+  }
+}
+
+.text {
+  grid-area: text;
+  min-width: 0;
+}
+
+.email {
+  overflow: hidden;
+  font-size: 14px;
+  font-weight: 500;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.meta {
+  margin-top: 2px;
+  font-size: 12px;
+  line-height: 1.5;
+  color: var(--color-muted);
+}
+
+.expiry {
+  grid-area: expiry;
+  justify-self: start;
+}
+
+.buttons {
+  display: flex;
+  grid-area: buttons;
+  gap: 8px;
+  margin-top: 6px;
+
+  @include from($md) {
+    margin-top: 0;
+  }
+}

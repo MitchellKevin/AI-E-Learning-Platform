@@ -1,0 +1,149 @@
+@use "mixins" as *;
+
+.container {
+  @include card;
+  max-width: 100%;
+  overflow-x: auto;
+  overscroll-behavior-x: contain;
+
+  &:focus-visible {
+    outline: 2px solid var(--color-brand);
+    outline-offset: 2px;
+  }
+}
+
+.bare {
+  border: none;
+  border-radius: 0;
+  background: none;
+}
+
+.table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 13px;
+  color: var(--color-ink);
+}
+
+.caption {
+  padding: 16px 16px 4px;
+  font-size: 14px;
+  font-weight: 600;
+  text-align: left;
+}
+
+.thead {
+  background: var(--color-canvas);
+}
+
+.th {
+  @include eyebrow;
+  height: 40px;
+  padding: 0 16px;
+  border-bottom: 1px solid var(--color-line);
+  color: var(--color-muted);
+  white-space: nowrap;
+}
+
+.td {
+  height: 56px;
+  padding: 10px 16px;
+  border-bottom: 1px solid var(--color-line);
+  vertical-align: middle;
+}
+
+.tbody .tr:last-child .td {
+  border-bottom: none;
+}
+
+.tfoot .td {
+  border-top: 1px solid var(--color-line);
+  border-bottom: none;
+  font-weight: 600;
+}
+
+.tr {
+  transition: background-color var(--duration-fast) var(--ease-out);
+
+  .tbody &:hover {
+    background: rgb(15 23 42 / 0.02);
+  }
+
+  &.selected {
+    background: var(--color-brand-soft);
+  }
+
+  &.selected:hover {
+    background: var(--color-brand-soft);
+  }
+}
+
+.start {
+  text-align: left;
+}
+
+.center {
+  text-align: center;
+}
+
+.end {
+  text-align: right;
+}
+
+.numeric {
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+}
+
+.muted {
+  color: var(--color-body);
+}
+
+.shrink {
+  width: 1%;
+  white-space: nowrap;
+}
+
+.sortButton {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  margin-inline: -6px;
+  padding: 4px 6px;
+  border: none;
+  border-radius: var(--radius-sm);
+  background: none;
+  color: inherit;
+  font: inherit;
+  letter-spacing: inherit;
+  text-transform: inherit;
+  cursor: pointer;
+  transition:
+    color var(--duration-fast) var(--ease-out),
+    background-color var(--duration-fast) var(--ease-out);
+
+  &:hover {
+    background: var(--color-surface);
+    color: var(--color-ink);
+  }
+
+  &:focus-visible {
+    outline: 2px solid var(--color-brand);
+    outline-offset: 0;
+  }
+
+  &.sorted {
+    color: var(--color-ink);
+  }
+}
+
+.sortIcon {
+  width: 12px;
+  height: 12px;
+  opacity: 0.6;
+
+  .sorted & {
+    color: var(--color-brand);
+    opacity: 1;
+  }
+}

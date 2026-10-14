@@ -1,0 +1,185 @@
+@use "mixins" as *;
+
+@include motion-keyframes;
+
+@keyframes bounce {
+  0%,
+  80%,
+  100% {
+    opacity: 0.3;
+    transform: translateY(0);
+  }
+
+  40% {
+    opacity: 1;
+    transform: translateY(-3px);
+  }
+}
+
+@keyframes pulse {
+  50% {
+    opacity: 0.35;
+  }
+}
+
+.attempt {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+// Prompt
+
+.prompt {
+  padding: 16px 20px;
+  border: 1px solid var(--color-line);
+  border-radius: var(--radius);
+  background: var(--color-brand-soft);
+  @include enter(0);
+}
+
+.promptHead {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  margin-block: -4px 8px;
+}
+
+.eyebrow {
+  @include eyebrow;
+  color: var(--color-brand);
+}
+
+.promptText {
+  font-size: 14px;
+  line-height: 1.6;
+  color: var(--color-ink);
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+
+  &.clamped {
+    display: -webkit-box;
+    overflow: hidden;
+    -webkit-box-orient: vertical;
+    -webkit-line-clamp: 5;
+  }
+}
+
+.more {
+  margin-top: 8px;
+  padding: 0;
+  border: 0;
+  background: none;
+  font: inherit;
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--color-brand);
+  text-decoration: underline;
+  text-underline-offset: 3px;
+  cursor: pointer;
+  @include focus-ring;
+}
+
+// Antwoord
+
+.response {
+  @include card;
+  padding: 20px;
+  @include enter(1);
+
+  @include from($sm) {
+    padding: 24px;
+  }
+}
+
+.responseHead {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 16px;
+}
+
+.avatar {
+  display: flex;
+  flex-shrink: 0;
+  align-items: center;
+  justify-content: center;
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  background: var(--color-ink);
+  color: #fff;
+
+  svg {
+    width: 14px;
+    height: 14px;
+  }
+}
+
+.who {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--color-ink);
+}
+
+.status {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  margin-left: auto;
+  font-size: 12px;
+  color: var(--color-brand);
+
+  &.stopped {
+    color: var(--color-muted);
+  }
+}
+
+.pulse {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: currentColor;
+  animation: pulse 1.2s var(--ease-in-out) infinite;
+}
+
+.responseBody {
+  min-height: 24px;
+}
+
+.thinking {
+  display: inline-flex;
+  gap: 5px;
+  padding-block: 8px;
+
+  span {
+    width: 7px;
+    height: 7px;
+    border-radius: 50%;
+    background: var(--color-muted);
+    animation: bounce 1.2s var(--ease-in-out) infinite;
+
+    &:nth-child(2) {
+      animation-delay: 0.15s;
+    }
+
+    &:nth-child(3) {
+      animation-delay: 0.3s;
+    }
+  }
+}
+
+.empty {
+  font-size: 13px;
+  color: var(--color-muted);
+}
+
+.stoppedNote {
+  margin-top: 16px;
+  padding-top: 12px;
+  border-top: 1px dashed var(--color-line-strong);
+  font-size: 12px;
+  color: var(--color-muted);
+}

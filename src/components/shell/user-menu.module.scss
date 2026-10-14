@@ -1,0 +1,37 @@
+// Avatar als trigger: een zachte ring bij hover en als het menu open is.
+.trigger {
+  border-radius: 999px;
+  transition:
+    box-shadow var(--duration) var(--ease-out),
+    transform var(--duration-fast) var(--ease-out);
+
+  &:hover,
+  &[aria-expanded="true"] {
+    box-shadow: 0 0 0 3px var(--color-brand-soft);
+  }
+}
+
+.account {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 8px 10px 10px;
+}
+
+.accountText {
+  min-width: 0;
+}
+
+.name {
+  font-size: 14px;
+  font-weight: 500;
+}
+
+.email {
+  margin-top: 2px;
+  overflow: hidden;
+  font-size: 12px;
+  color: var(--color-muted);
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}

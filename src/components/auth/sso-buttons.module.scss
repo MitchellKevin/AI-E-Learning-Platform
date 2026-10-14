@@ -1,0 +1,40 @@
+.list {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+// Label links uitgelijnd met het merkteken; zo staan beide knoppen netjes onder elkaar.
+.list .button {
+  justify-content: flex-start;
+  font-size: 14px;
+
+  > span:first-child {
+    flex: 1;
+  }
+
+  // Het label "Aanbevolen" schuift naar de rechterkant van de knop.
+  > span:first-child > :has(> .recommended) {
+    margin-left: auto;
+  }
+}
+
+.recommended {
+  display: inline-flex;
+  align-items: center;
+  height: 20px;
+  margin-left: auto;
+  padding-inline: 8px;
+  border-radius: 999px;
+  background: var(--color-brand-soft);
+  color: var(--color-brand);
+  font-size: 10px;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+
+  // Op een smal scherm gaat de knoptekst voor.
+  @media (max-width: 400px) {
+    display: none;
+  }
+}

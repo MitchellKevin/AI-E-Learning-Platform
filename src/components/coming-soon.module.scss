@@ -1,0 +1,38 @@
+@use "mixins" as *;
+
+@include motion-keyframes;
+
+.main {
+  @include container;
+  padding-block: 40px 96px;
+}
+
+.title {
+  font-size: 36px;
+  letter-spacing: -0.02em;
+  @include enter(0);
+}
+
+.text {
+  max-width: 32rem;
+  margin-block: 12px 24px;
+  font-size: 15px;
+  line-height: 1.6;
+  color: var(--color-body);
+  @include enter(1);
+}
+
+.link {
+  display: inline-block;
+  border-radius: var(--radius-sm);
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--color-brand);
+  transition: color var(--duration-fast) var(--ease-out);
+  @include enter(2, fade-in);
+  @include focus-ring;
+
+  &:hover {
+    color: var(--color-brand-hover);
+  }
+}

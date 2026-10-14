@@ -1,0 +1,167 @@
+@use "mixins" as *;
+
+@include motion-keyframes;
+
+.wrap {
+  margin-top: 40px;
+}
+
+.grid {
+  @include reset-list;
+  display: grid;
+  gap: 16px;
+  @include stagger-children(3);
+
+  @include from($md) {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  @include from($lg) {
+    grid-template-columns: 1.3fr 1fr 1fr;
+  }
+}
+
+.item {
+  min-width: 0;
+}
+
+.featured {
+  @include from($md) {
+    grid-column: 1 / -1;
+  }
+
+  @include from($lg) {
+    grid-column: auto;
+  }
+}
+
+.card {
+  @include card;
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  overflow: hidden;
+  padding: 28px 24px 24px;
+  transition:
+    border-color var(--duration) var(--ease-out),
+    box-shadow var(--duration) var(--ease-out);
+
+  &:hover {
+    border-color: var(--color-line-strong);
+    box-shadow: 0 6px 16px rgb(15 23 42 / 0.06);
+  }
+
+  .featured & {
+    border-color: transparent;
+    background: var(--color-brand);
+    color: #fff;
+  }
+}
+
+// Groot aanhalingsteken als rustig decoratief accent.
+.mark {
+  position: absolute;
+  top: -18px;
+  right: 16px;
+  font-family: Georgia, "Times New Roman", serif;
+  font-size: 120px;
+  line-height: 1;
+  color: var(--color-brand-soft);
+  pointer-events: none;
+
+  .featured & {
+    color: rgb(255 255 255 / 0.14);
+  }
+}
+
+.quote {
+  position: relative;
+  flex: 1;
+  margin: 0;
+  font-size: 15px;
+  line-height: 1.6;
+  color: var(--color-ink);
+  text-wrap: pretty;
+
+  .featured & {
+    font-size: 17px;
+    line-height: 1.55;
+    letter-spacing: -0.01em;
+    color: #fff;
+  }
+}
+
+.person {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-top: 28px;
+
+  .featured & > span:first-child {
+    background: rgb(255 255 255 / 0.16);
+    color: #fff;
+  }
+}
+
+.who {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+}
+
+.name {
+  font-size: 14px;
+  font-weight: 600;
+}
+
+.role {
+  font-size: 12px;
+  color: var(--color-body);
+
+  .featured & {
+    color: rgb(255 255 255 / 0.76);
+  }
+}
+
+// Cijfers
+
+.stats {
+  display: grid;
+  margin: 16px 0 0;
+  @include card;
+
+  @include from($md) {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+}
+
+.stat {
+  display: flex;
+  flex-direction: column-reverse;
+  gap: 4px;
+  padding: 20px 24px;
+
+  & + & {
+    border-top: 1px solid var(--color-line);
+
+    @include from($md) {
+      border-top: 0;
+      border-left: 1px solid var(--color-line);
+    }
+  }
+}
+
+.statValue {
+  margin: 0;
+  font-size: 28px;
+  font-weight: 500;
+  letter-spacing: -0.02em;
+  color: var(--color-ink);
+}
+
+.statLabel {
+  font-size: 13px;
+  line-height: 1.5;
+  color: var(--color-body);
+}

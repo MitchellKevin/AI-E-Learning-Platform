@@ -1,0 +1,13 @@
+@use "mixins" as *;
+
+@include motion-keyframes;
+
+.form {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.hint {
+  @include enter(0, fade-up, var(--duration));
+}

@@ -1,0 +1,269 @@
+@use "mixins" as *;
+
+@include motion-keyframes;
+
+.brief {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  min-width: 0;
+  @include stagger-children(4);
+}
+
+.card {
+  @include card;
+  padding: 20px;
+}
+
+.eyebrow {
+  @include eyebrow;
+  color: var(--color-muted);
+}
+
+.context {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  margin-top: 12px;
+  font-size: 14px;
+  line-height: 1.6;
+  color: var(--color-body);
+}
+
+.goal {
+  display: flex;
+  gap: 12px;
+  margin-top: 16px;
+  padding: 14px 16px;
+  border-radius: var(--radius);
+  background: var(--color-brand-soft);
+
+  > svg {
+    flex-shrink: 0;
+    width: 18px;
+    height: 18px;
+    margin-top: 1px;
+    color: var(--color-brand);
+  }
+}
+
+.goalLabel {
+  @include eyebrow;
+  color: var(--color-brand);
+}
+
+.goalText {
+  margin-top: 4px;
+  font-size: 14px;
+  font-weight: 500;
+  line-height: 1.5;
+  color: var(--color-ink);
+}
+
+// Bronmateriaal
+
+.materialHead {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  margin-block: -6px 6px;
+}
+
+.material {
+  max-height: 240px;
+  margin: 0;
+  padding: 14px 16px;
+  overflow: auto;
+  border: 1px solid var(--color-line);
+  border-radius: var(--radius-sm);
+  background: var(--color-canvas);
+  font-family: inherit;
+  font-size: 13px;
+  line-height: 1.6;
+  color: var(--color-body);
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+  @include focus-ring;
+
+  &.code {
+    border-color: transparent;
+    background: var(--color-ink);
+    color: #e2e8f0;
+    font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+    font-size: 12px;
+    white-space: pre;
+    overflow-wrap: normal;
+  }
+}
+
+// Criteria
+
+.criteriaHead {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.count {
+  font-size: 12px;
+  font-weight: 500;
+  color: var(--color-brand);
+}
+
+.criteria {
+  @include reset-list;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  margin-top: 14px;
+}
+
+.criterion {
+  display: flex;
+  gap: 10px;
+  font-size: 13px;
+  line-height: 1.5;
+  color: var(--color-body);
+  transition: color var(--duration) var(--ease-out);
+
+  strong {
+    font-weight: 600;
+    color: var(--color-ink);
+  }
+
+  &.done {
+    color: var(--color-ink);
+  }
+}
+
+.check {
+  display: flex;
+  flex-shrink: 0;
+  align-items: center;
+  justify-content: center;
+  width: 18px;
+  height: 18px;
+  margin-top: 1px;
+  border: 1.5px solid var(--color-line-strong);
+  border-radius: 50%;
+  transition:
+    background-color var(--duration) var(--ease-out),
+    border-color var(--duration) var(--ease-out);
+
+  svg {
+    width: 11px;
+    height: 11px;
+    color: #fff;
+    animation: pop var(--duration-slow) var(--ease-spring) both;
+  }
+
+  .done & {
+    border-color: var(--color-success);
+    background: var(--color-success);
+  }
+}
+
+.dot {
+  flex-shrink: 0;
+  width: 6px;
+  height: 6px;
+  margin-top: 8px;
+  border-radius: 50%;
+  background: var(--color-brand);
+}
+
+.pass {
+  margin-top: 16px;
+  padding-top: 14px;
+  border-top: 1px solid var(--color-line);
+  font-size: 12px;
+  line-height: 1.55;
+  color: var(--color-muted);
+
+  strong {
+    font-weight: 600;
+    color: var(--color-ink);
+  }
+}
+
+// Tips
+
+.tipsCard {
+  @include card;
+  overflow: hidden;
+}
+
+.tipsHeading {
+  font-size: inherit;
+  font-weight: inherit;
+}
+
+.tipsToggle {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  width: 100%;
+  padding: 14px 20px;
+  border: 0;
+  background: none;
+  font: inherit;
+  font-size: 14px;
+  font-weight: 500;
+  color: var(--color-ink);
+  text-align: left;
+  cursor: pointer;
+  transition: background-color var(--duration-fast) var(--ease-out);
+  @include focus-ring;
+
+  &:hover {
+    background: var(--color-canvas);
+  }
+
+  &:focus-visible {
+    outline-offset: -2px;
+  }
+}
+
+.tipsIcon {
+  width: 16px;
+  height: 16px;
+  color: var(--color-warning);
+}
+
+.tipsLabel {
+  flex: 1;
+}
+
+.chevron {
+  width: 16px;
+  height: 16px;
+  color: var(--color-muted);
+  transition: transform var(--duration) var(--ease-out);
+
+  &.open {
+    transform: rotate(180deg);
+  }
+}
+
+.tips {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  margin: 0;
+  padding: 0 20px 18px 40px;
+  font-size: 13px;
+  line-height: 1.55;
+  color: var(--color-body);
+  animation: fade-in var(--duration) var(--ease-out);
+
+  &[hidden] {
+    display: none;
+  }
+
+  li::marker {
+    color: var(--color-muted);
+  }
+}

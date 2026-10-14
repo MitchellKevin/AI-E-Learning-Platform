@@ -1,0 +1,129 @@
+@use "mixins" as *;
+
+@include motion-keyframes;
+
+.bulk {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+
+  @include from($md) {
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-between;
+  }
+}
+
+.bulkText {
+  @include eyebrow;
+  color: var(--color-muted);
+}
+
+.bulkButtons {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.list {
+  @include reset-list;
+  border-block: 1px solid var(--color-line);
+  @include stagger-children(5, fade-in, var(--duration-slow), 4);
+
+  > li + li {
+    border-top: 1px solid var(--color-line);
+  }
+}
+
+.row {
+  display: grid;
+  grid-template-columns: 32px minmax(0, 1fr);
+  gap: 12px 14px;
+  padding-block: 16px;
+
+  @include from($md) {
+    grid-template-columns: 32px minmax(0, 1fr) auto;
+    align-items: center;
+    gap: 16px;
+  }
+}
+
+.icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  border-radius: var(--radius-sm);
+  background: var(--color-brand-soft);
+  color: var(--color-brand);
+
+  svg {
+    width: 16px;
+    height: 16px;
+  }
+}
+
+.text {
+  min-width: 0;
+}
+
+.title {
+  font-size: 14px;
+  font-weight: 500;
+}
+
+.description {
+  margin-top: 2px;
+  font-size: 12px;
+  line-height: 1.5;
+  color: var(--color-muted);
+}
+
+// Mobiel: twee schakelaars naast elkaar onder de tekst. Desktop: als kolommen rechts.
+.switches {
+  display: grid;
+  grid-column: 1 / -1;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 8px;
+
+  @include from($sm) {
+    grid-column: 2;
+  }
+
+  @include from($md) {
+    grid-column: auto;
+    grid-template-columns: repeat(2, 128px);
+    gap: 12px;
+  }
+}
+
+// Dubbele class: wint van de basisstijl van de Switch.
+.switch.switch {
+  align-items: center;
+  height: 40px;
+  padding-inline: 12px;
+  border: 1px solid var(--color-line);
+  border-radius: var(--radius-sm);
+  background: var(--color-surface);
+  gap: 8px;
+  transition: border-color var(--duration) var(--ease-out);
+
+  &:hover {
+    border-color: var(--color-line-strong);
+  }
+
+  &:has([aria-checked="true"]) {
+    border-color: color-mix(in srgb, var(--color-brand) 35%, var(--color-line));
+  }
+
+  label {
+    font-size: 13px;
+  }
+}
+
+.note {
+  font-size: 12px;
+  line-height: 1.55;
+  color: var(--color-muted);
+}

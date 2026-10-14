@@ -1,0 +1,97 @@
+@use "mixins" as *;
+
+.method {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr);
+  gap: 12px 14px;
+  align-items: center;
+  padding: 14px;
+  border: 1px solid var(--color-line);
+  border-radius: var(--radius);
+
+  @include from($sm) {
+    grid-template-columns: auto minmax(0, 1fr) auto;
+  }
+}
+
+.icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  align-self: start;
+  width: 40px;
+  height: 40px;
+  border-radius: var(--radius);
+  background: var(--color-brand-soft);
+  color: var(--color-brand);
+
+  svg {
+    width: 20px;
+    height: 20px;
+  }
+}
+
+.text {
+  min-width: 0;
+}
+
+.label {
+  font-size: 14px;
+  font-weight: 600;
+}
+
+.detail {
+  margin-top: 2px;
+  font-size: 13px;
+  font-variant-numeric: tabular-nums;
+  letter-spacing: 0.02em;
+  overflow-wrap: anywhere;
+}
+
+.meta {
+  margin-top: 4px;
+  font-size: 12px;
+  color: var(--color-muted);
+}
+
+.change {
+  grid-column: 1 / -1;
+  justify-self: start;
+
+  @include from($sm) {
+    grid-column: auto;
+  }
+}
+
+.secure {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin-top: 12px;
+  font-size: 12px;
+  color: var(--color-muted);
+
+  svg {
+    flex-shrink: 0;
+    width: 13px;
+    height: 13px;
+  }
+}
+
+.form {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.fields {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.mandate {
+  font-size: 12px;
+  line-height: 1.55;
+  color: var(--color-muted);
+}

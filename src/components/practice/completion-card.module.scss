@@ -1,0 +1,76 @@
+@use "mixins" as *;
+
+@include motion-keyframes;
+
+.card {
+  @include card;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  padding: 24px;
+  border-color: var(--color-success);
+  background: linear-gradient(180deg, var(--color-success-soft), var(--color-surface) 70%);
+  @include enter(0);
+
+  @include from($sm) {
+    flex-direction: row;
+    gap: 20px;
+  }
+}
+
+.badge {
+  display: flex;
+  flex-shrink: 0;
+  align-items: center;
+  justify-content: center;
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  background: var(--color-success);
+  color: #fff;
+  animation: pop var(--duration-slow) var(--ease-spring) both;
+  animation-delay: 120ms;
+
+  svg {
+    width: 22px;
+    height: 22px;
+  }
+}
+
+.body {
+  min-width: 0;
+}
+
+.eyebrow {
+  @include eyebrow;
+  color: var(--color-success);
+}
+
+.title {
+  margin-top: 8px;
+  font-size: 22px;
+  letter-spacing: -0.01em;
+  outline: none;
+}
+
+.text {
+  max-width: 34rem;
+  margin-top: 6px;
+  font-size: 14px;
+  line-height: 1.6;
+  color: var(--color-body);
+}
+
+.actions {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px;
+  margin-top: 20px;
+}
+
+.next {
+  margin-top: 10px;
+  font-size: 12px;
+  color: var(--color-muted);
+}
