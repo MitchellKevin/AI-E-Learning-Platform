@@ -6,7 +6,7 @@ import clsx from "clsx";
 import { Minus, Plus } from "lucide-react";
 import { Button, IconButton, useToast } from "@/components/kit";
 import { formatDate } from "@/lib/format";
-import { VAT_RATE, formatEuro, prorate, type Subscription } from "@/lib/data/admin-org";
+import { VAT_RATE, formatEuro, prorate, type Subscription } from "@/lib/data/admin-org-shared";
 import { Panel } from "../panel";
 import { plural, wait } from "../utils";
 import styles from "./seats-stepper.module.scss";

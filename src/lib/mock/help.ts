@@ -659,12 +659,13 @@ export const processors: Processor[] = [
 ];
 
 export const retentionPeriods: RetentionPeriod[] = [
-  { data: "Accountgegevens en voortgang", period: "Zolang je account actief is, daarna 30 dagen" },
+  { data: "Accountgegevens en voortgang", period: "Zolang je account actief is; daarna de bewaartermijn van je organisatie (12, 24 of 36 maanden of tot einde contract). Op eigen verzoek na 30 dagen" },
   { data: "Behaalde certificaten (voor verificatie)", period: "10 jaar, of korter als je daarom vraagt" },
   { data: "Prompts in de oefenomgeving", period: "90 dagen" },
   { data: "Gesprekken met de AI-tutor", period: "30 dagen" },
   { data: "Facturen en betaalgegevens", period: "7 jaar (fiscale bewaarplicht)" },
   { data: "Demo-aanvragen zonder vervolg", period: "12 maanden" },
   { data: "Supportvragen per e-mail", period: "2 jaar na afhandeling" },
+  { data: "Beheeracties (auditlog)", period: "24 maanden" },
   { data: "Beveiligingslogs", period: "6 maanden" },
 ];

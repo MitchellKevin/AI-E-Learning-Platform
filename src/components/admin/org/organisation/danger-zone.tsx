@@ -3,8 +3,9 @@
 import { useRef, useState } from "react";
 import { Trash2 } from "lucide-react";
 import { Alert, Button, Dialog, Field, TextInput, useToast } from "@/components/kit";
+import { errorMessage, unwrap } from "@/lib/action-result";
 import { Panel } from "../panel";
-import { wait } from "../utils";
+import { requestOrgDeletionAction } from "@/server/actions/admin-org";
 import styles from "./danger-zone.module.scss";
 
 export function DangerZone({ orgName, userCount }: { orgName: string; userCount: number }) {
@@ -22,8 +23,13 @@ export function DangerZone({ orgName, userCount }: { orgName: string; userCount:
           requested ? (
             <Button
               variant="secondary"
-              onClick={() => {
-                // Straks: server action die het verzoek intrekt.
+              onClick={async () => {
+                try {
+                  unwrap(await requestOrgDeletionAction(true));
+                } catch (error) {
+                  toast({ variant: "error", title: "Intrekken lukte niet", description: errorMessage(error, "Probeer het opnieuw.") });
+                  return;
+                }
                 setRequested(false);
                 toast({ variant: "success", title: "Verwijderverzoek ingetrokken" });
               }}
@@ -96,8 +102,14 @@ function DeleteDialog({
       return inputRef.current?.focus();
     }
     setBusy(true);
-    // Straks: server action die de verwijdering inplant, het abonnement stopt en alle sessies beëindigt.
-    await wait(1200);
+    // De verwijdering wordt ingepland; na 14 dagen ruimt een taak alles op.
+    try {
+      unwrap(await requestOrgDeletionAction());
+    } catch (error) {
+      setBusy(false);
+      setError(errorMessage(error, "Verwijderen lukte niet. Probeer het opnieuw."));
+      return;
+    }
     setBusy(false);
     onDeleted();
     onOpenChange(false);

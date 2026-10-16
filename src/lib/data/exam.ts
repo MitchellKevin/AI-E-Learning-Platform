@@ -1,6 +1,6 @@
-import { mockExamAttempts, mockExams } from "@/lib/mock/exam";
+import { mockExams } from "@/lib/mock/exam";
 
-// Eindtoets per leerpad. Nu op mock-data; later vragen uit Storyblok en pogingen uit MongoDB.
+// Eindtoets per leerpad: de vragenbank (nu mock, later Storyblok). Pogingen staan in exam-attempts.ts.
 
 export type ExamOption = { id: string; label: string };
 
@@ -68,33 +68,11 @@ export type ExamAttempt = {
   passed: boolean;
 };
 
-// Later: alleen vragen zonder antwoorden naar de client; nakijken gebeurt dan in een server action.
+// Volledige vragenbank met antwoorden: alleen op de server gebruiken (zie server/services/exam.ts).
 export async function getExam(pathSlug: string): Promise<Exam | undefined> {
   return mockExams.find((e) => e.pathSlug === pathSlug);
 }
 
 export async function getExams(): Promise<Exam[]> {
   return mockExams;
-}
-
-// Pogingen van de ingelogde gebruiker; later uit MongoDB.
-export async function getExamAttempts(pathSlug: string): Promise<ExamAttempt[]> {
-  return mockExamAttempts[pathSlug] ?? [];
-}
-
-// Samenvatting voor op de leerpadpagina.
-export async function getExamOverview(pathSlug: string) {
-  const [exam, attempts] = await Promise.all([getExam(pathSlug), getExamAttempts(pathSlug)]);
-  if (!exam) return undefined;
-  const best = attempts.reduce<number | null>((max, a) => (max === null || a.score > max ? a.score : max), null);
-  return {
-    questionCount: exam.questionCount,
-    passingScore: exam.passingScore,
-    maxAttempts: exam.maxAttempts,
-    estimatedMinutes: exam.estimatedMinutes,
-    chapterSlug: exam.chapterSlug,
-    attemptsUsed: attempts.length,
-    bestScore: best,
-    passed: attempts.some((a) => a.passed),
-  };
 }

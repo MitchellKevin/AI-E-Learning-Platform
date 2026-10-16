@@ -28,5 +28,3 @@ export function downloadCsv(filename: string, header: string[], rows: Cell[][]) 
 
 /** Bestandsnaam met datum, bv. "studio-noord-team-2026-10-14.csv". */
 export const csvFilename = (name: string, today: string) => `studio-noord-${name}-${today}.csv`;
-
-export const wait = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms));

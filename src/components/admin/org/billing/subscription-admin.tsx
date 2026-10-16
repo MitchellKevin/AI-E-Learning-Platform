@@ -4,7 +4,7 @@ import { useState, type ReactNode } from "react";
 import { Alert, Button, PageHeader, useToast } from "@/components/kit";
 import type { Plan } from "@/lib/data/marketing";
 import { formatDate } from "@/lib/format";
-import type { Subscription } from "@/lib/data/admin-org";
+import type { Subscription } from "@/lib/data/admin-org-shared";
 import { CancelSubscription } from "./cancel-subscription";
 import { PlanCard } from "./plan-card";
 import { PlanCompare } from "./plan-compare";

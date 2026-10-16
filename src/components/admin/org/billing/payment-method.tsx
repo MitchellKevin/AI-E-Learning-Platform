@@ -3,7 +3,7 @@
 import { useState } from "react";
 import { CreditCard, Landmark, Lock, Smartphone } from "lucide-react";
 import { Alert, Button, Dialog, Field, RadioCard, RadioGroup, Select, TextInput, useToast } from "@/components/kit";
-import type { PaymentMethod as Method, PaymentMethodType } from "@/lib/data/admin-org";
+import type { PaymentMethod as Method, PaymentMethodType } from "@/lib/data/admin-org-shared";
 import { Panel } from "../panel";
 import { wait } from "../utils";
 import styles from "./payment-method.module.scss";

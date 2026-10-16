@@ -24,7 +24,7 @@ const types: { key: NotificationType; title: string; description: string; icon: 
   {
     key: "deadlines",
     title: "Deadlines",
-    description: "Leerpaden die je manager aan je toewijst, en een week en een dag voor de deadline.",
+    description: "Leerpaden die je manager aan je toewijst, en een week, drie dagen en een dag voor de deadline.",
     icon: <CalendarClock />,
   },
   {

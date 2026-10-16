@@ -3,7 +3,9 @@
 import { useEffect, useLayoutEffect, useRef, useState } from "react";
 import { PenLine, Sparkles } from "lucide-react";
 import { Badge, Button, Tab, TabList, TabPanel, Tabs, useToast } from "@/components/kit";
+import { errorMessage, unwrap } from "@/lib/action-result";
 import type { CriterionKey, PracticeExercise } from "@/lib/data/practice";
+import { finishPracticeAction } from "@/server/actions/practice";
 import { AttemptView, type Attempt } from "./attempt-view";
 import { CompletionCard } from "./completion-card";
 import { ExerciseBrief } from "./exercise-brief";
@@ -127,11 +129,25 @@ export function Playground({ exercise, completedScore, next }: Props) {
     stream.stop();
   }
 
-  async function finish(score: number) {
+  async function finish(attempt: Attempt) {
     setFinishing(true);
-    // Straks een server action die de score in MongoDB opslaat en de punten toekent.
-    await new Promise((resolve) => setTimeout(resolve, 700));
-    const points = completedScore === undefined ? exercise.points : 0;
+    const index = attempts.findIndex((a) => a.id === attempt.id);
+    const result = await finishPracticeAction(exercise.slug, attempt.prompt, attempts[index - 1]?.prompt)
+      .then(unwrap)
+      .catch((error) => {
+        toast({ variant: "error", title: "Opslaan lukte niet", description: errorMessage(error, "Probeer het nog een keer.") });
+        return null;
+      });
+    if (!result) {
+      setFinishing(false);
+      return;
+    }
+    if (!result.ok) {
+      setFinishing(false);
+      toast({ variant: "error", title: "Nog niet op de norm", description: `Deze prompt scoort ${result.score}.` });
+      return;
+    }
+    const { score, points } = result;
     finishedRef.current = true;
     setFinished({ score, points });
     setFinishing(false);
@@ -153,7 +169,7 @@ export function Playground({ exercise, completedScore, next }: Props) {
           <p className={styles.footerText}>
             <strong>Deze prompt haalt de norm.</strong> Rond de oefening af, of scherp hem nog verder aan.
           </p>
-          <Button loading={finishing} onClick={() => finish(attempt.review.score)}>
+          <Button loading={finishing} onClick={() => finish(attempt)}>
             Rond oefening af
           </Button>
         </div>

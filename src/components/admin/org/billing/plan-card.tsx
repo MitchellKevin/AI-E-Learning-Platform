@@ -1,7 +1,7 @@
 import { CalendarClock, Users } from "lucide-react";
 import { Badge, StatusPill } from "@/components/kit";
 import { formatDate } from "@/lib/format";
-import { formatEuro, type Subscription } from "@/lib/data/admin-org";
+import { formatEuro, type Subscription } from "@/lib/data/admin-org-shared";
 import styles from "./plan-card.module.scss";
 
 type Props = { subscription: Subscription; seatsUsed: number; scheduledSeats?: number | null };

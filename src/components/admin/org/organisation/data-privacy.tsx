@@ -3,10 +3,12 @@
 import { useState } from "react";
 import { Download, FileCheck2, MapPin } from "lucide-react";
 import { Badge, Button, Field, Select, StatusPill, useToast } from "@/components/kit";
+import { errorMessage, unwrap } from "@/lib/action-result";
 import { formatDate } from "@/lib/format";
-import { RETENTION_OPTIONS, type PrivacySettings, type RetentionPeriod } from "@/lib/data/admin-org";
+import { RETENTION_OPTIONS, type PrivacySettings, type RetentionPeriod } from "@/lib/data/admin-org-shared";
 import { Panel } from "../panel";
 import { wait } from "../utils";
+import { setRetentionAction } from "@/server/actions/admin-org";
 import styles from "./data-privacy.module.scss";
 
 export function DataPrivacy({ initial }: { initial: PrivacySettings }) {
@@ -26,15 +28,31 @@ export function DataPrivacy({ initial }: { initial: PrivacySettings }) {
     });
   }
 
-  function changeRetention(next: RetentionPeriod) {
+  async function changeRetention(next: RetentionPeriod) {
     const previous = retention;
     setRetention(next);
-    // Straks: server action; de opschoontaak gebruikt de nieuwe termijn vanaf de volgende nacht.
+    try {
+      // De opschoontaak gebruikt de nieuwe termijn vanaf de volgende nacht.
+      unwrap(await setRetentionAction(next));
+    } catch (error) {
+      setRetention(previous);
+      toast({ variant: "error", title: "Opslaan lukte niet", description: errorMessage(error, "Probeer het opnieuw.") });
+      return;
+    }
     toast({
       variant: "success",
       title: "Bewaartermijn opgeslagen",
       description: RETENTION_OPTIONS.find((o) => o.value === next)?.label,
-      action: { label: "Ongedaan maken", onClick: () => setRetention(previous) },
+      action: {
+        label: "Ongedaan maken",
+        onClick: () =>
+          setRetentionAction(previous)
+            .then(unwrap)
+            .then(
+              () => setRetention(previous),
+              (error) => toast({ variant: "error", title: "Ongedaan maken lukte niet", description: errorMessage(error, "Probeer het opnieuw.") }),
+            ),
+      },
     });
   }
 

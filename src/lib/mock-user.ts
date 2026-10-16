@@ -1,7 +1,7 @@
 import { ai101 } from "./mock-content";
 import type { Badge, Certificate, LeaderboardEntry, Progress, Stats, User } from "./types";
 
-// Tijdelijke gebruikersdata. Wordt vervangen door MongoDB (zie src/lib/user-data.ts).
+// Demo-gebruikersdata: wordt alleen nog gebruikt door scripts/seed.ts om de database te vullen.
 
 export const mockUser: User = {
   id: "u_sanne",

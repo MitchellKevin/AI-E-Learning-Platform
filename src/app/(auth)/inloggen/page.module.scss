@@ -12,26 +12,3 @@
 
 // Subtiele snelkoppeling voor wie de app wil verkennen zonder account.
 // Dubbele class: wint van de blauwe linkstijl onder de kaart.
-.demo.demo {
-  display: inline-flex;
-  align-items: center;
-  gap: 4px;
-  color: var(--color-muted);
-  font-size: 12px;
-  font-weight: 500;
-
-  svg {
-    width: 13px;
-    height: 13px;
-    transition: transform var(--duration) var(--ease-out);
-  }
-
-  &:hover {
-    color: var(--color-ink);
-    text-decoration: none;
-
-    svg {
-      transform: translateX(2px);
-    }
-  }
-}

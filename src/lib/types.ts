@@ -100,7 +100,7 @@ export type LearningPath = {
   topics: Topic[];
 };
 
-// Gebruikersdata: komt later uit MongoDB.
+// Gebruikersdata (uit MongoDB, zie src/lib/user-data.ts).
 
 export type User = {
   id: string;

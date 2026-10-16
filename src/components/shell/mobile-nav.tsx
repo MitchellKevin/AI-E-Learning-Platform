@@ -9,6 +9,7 @@ import { Avatar, Drawer } from "@/components/kit";
 import { isActivePath, navItems } from "./nav-items";
 import type { ShellUser } from "./user-menu";
 import btn from "./header-button.module.scss";
+import { signOutAction } from "@/server/actions/auth";
 import styles from "./mobile-nav.module.scss";
 
 type Props = {
@@ -121,13 +122,12 @@ export function MobileNav({ user, points, streak }: Props) {
               );
             })}
             <li>
-              {/* Later: signOut() van Auth.js. */}
-              <Link href="/inloggen" className={clsx(styles.link, styles.danger)} onClick={close}>
+              <button type="button" className={clsx(styles.link, styles.danger)} onClick={() => signOutAction()}>
                 <span className={styles.icon} aria-hidden>
                   <LogOut />
                 </span>
                 Uitloggen
-              </Link>
+              </button>
             </li>
           </ul>
         </nav>

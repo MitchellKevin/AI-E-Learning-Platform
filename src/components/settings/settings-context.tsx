@@ -1,7 +1,9 @@
 "use client";
 
 import { createContext, useCallback, useContext, useEffect, useState, type ReactNode } from "react";
+import { unwrap } from "@/lib/action-result";
 import type { Settings } from "@/lib/data/profile";
+import { saveSettingsAction } from "@/server/actions/account";
 
 type SectionKey = keyof Settings;
 
@@ -34,7 +36,6 @@ export function useSettingsContext() {
 }
 
 const isEqual = (a: unknown, b: unknown) => JSON.stringify(a) === JSON.stringify(b);
-const wait = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms));
 
 // Formulierstatus voor één sectie: waarden, wijzigingen t.o.v. de laatst opgeslagen versie, opslaan en herstellen.
 export function useSettingsForm<K extends SectionKey>(key: K, initial: Settings[K]) {
@@ -67,15 +68,17 @@ export function useSettingsForm<K extends SectionKey>(key: K, initial: Settings[
     setValues(baseline);
   }
 
-  // Later: server action die de instellingen in MongoDB bijwerkt.
   // Wat je tijdens het opslaan nog wijzigt, blijft daarna als niet-opgeslagen staan.
   async function save() {
     const snapshot = values;
     setSaving(true);
-    await wait(700);
-    setBaseline(snapshot);
-    remember(key, snapshot);
-    setSaving(false);
+    try {
+      unwrap(await saveSettingsAction(key, snapshot));
+      setBaseline(snapshot);
+      remember(key, snapshot);
+    } finally {
+      setSaving(false);
+    }
   }
 
   return { values, setValues, set, dirty, saving, save, reset };

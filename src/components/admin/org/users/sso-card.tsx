@@ -16,9 +16,11 @@ import {
   TextInput,
   useToast,
 } from "@/components/kit";
-import { formatDateTime, formatShortDate, type SsoConnection } from "@/lib/data/admin-org";
+import { formatDateTime, formatShortDate, type SsoConnection } from "@/lib/data/admin-org-shared";
+import { errorMessage, unwrap } from "@/lib/action-result";
 import { Panel } from "../panel";
 import { wait } from "../utils";
+import { connectSsoAction, disconnectSsoAction, setSsoEnforcedAction } from "@/server/actions/admin-org";
 import styles from "./sso-card.module.scss";
 
 const REDIRECT_URI = "https://app.aiacademy.nl/api/auth/callback/sso";
@@ -43,7 +45,13 @@ export function SsoCard({ initial }: { initial: SsoConnection }) {
     toast({ variant: "success", title: "Verbinding werkt", description: `${sso.provider} reageerde binnen 240 ms.` });
   }
 
-  function enforce(next: boolean) {
+  async function enforce(next: boolean) {
+    try {
+      unwrap(await setSsoEnforcedAction(next));
+    } catch (error) {
+      toast({ variant: "error", title: "Dat lukte niet", description: errorMessage(error, "Probeer het opnieuw.") });
+      return;
+    }
     setSso((s) => ({ ...s, enforced: next }));
     toast({
       variant: "success",
@@ -137,8 +145,12 @@ export function SsoCard({ initial }: { initial: SsoConnection }) {
         description="Collega's loggen daarna in met een link per e-mail. Lopende sessies blijven actief."
         confirmLabel="Ontkoppelen"
         onConfirm={async () => {
-          // Straks: server action die de koppeling verwijdert.
-          await wait(800);
+          try {
+            unwrap(await disconnectSsoAction());
+          } catch (error) {
+            toast({ variant: "error", title: "Ontkoppelen lukte niet", description: errorMessage(error, "Probeer het opnieuw.") });
+            return;
+          }
           setSso((s) => ({ ...s, connected: false, enforced: false }));
           toast({ title: "Single sign-on ontkoppeld" });
         }}
@@ -176,8 +188,14 @@ function SetupDialog({
     if (Object.keys(next).length) return;
 
     setBusy(true);
-    // Straks: server action die de gegevens versleuteld opslaat en een testlogin doet.
-    await wait(1200);
+    // De koppeling (status en tenant) wordt opgeslagen; het clientgeheim hoort later in een kluis.
+    try {
+      unwrap(await connectSsoAction(PROVIDERS[provider], tenant.trim()));
+    } catch (error) {
+      setBusy(false);
+      toast({ variant: "error", title: "Koppelen lukte niet", description: errorMessage(error, "Controleer de gegevens en probeer het opnieuw.") });
+      return;
+    }
     setBusy(false);
     onConnected(PROVIDERS[provider], tenant.trim());
     onOpenChange(false);

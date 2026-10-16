@@ -5,6 +5,7 @@ import { useEffect, useId, useRef, useState } from "react";
 import clsx from "clsx";
 import { Cookie, Settings2 } from "lucide-react";
 import { Badge, Button, Dialog, Switch, useToast, type ButtonProps } from "@/components/kit";
+import { logConsentAction } from "@/server/actions/public";
 import styles from "./cookie-banner.module.scss";
 
 export type CookieConsent = {
@@ -39,10 +40,10 @@ export function readCookieConsent(): CookieConsent | null {
   }
 }
 
-// Slaat de keuze op en laat de rest van de pagina het weten (bv. om Matomo te laden).
-// Later ook naar de server sturen voor het consentlogboek (server action).
+// Slaat de keuze op, legt hem vast in het consentlogboek en laat de rest van de pagina het weten.
 function saveCookieConsent(choice: Choice): CookieConsent {
   const consent: CookieConsent = { version: 1, ...choice, updatedAt: new Date().toISOString() };
+  logConsentAction(choice).catch(() => {});
   try {
     window.localStorage.setItem(COOKIE_CONSENT_KEY, JSON.stringify(consent));
   } catch {

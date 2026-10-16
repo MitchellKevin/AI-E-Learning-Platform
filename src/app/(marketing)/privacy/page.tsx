@@ -185,8 +185,9 @@ export default async function PrivacyPage() {
             </TBody>
           </Table>
           <p>
-            Verlaat je je organisatie, dan sluit je beheerder je account. Na 30 dagen verwijderen we je gegevens. Je
-            certificaten blijven controleerbaar via de verificatielink, tenzij je vraagt om ook die te verwijderen.
+            Verlaat je je organisatie, dan sluit je beheerder je account. Na de bewaartermijn die je organisatie heeft
+            gekozen, verwijderen we je gegevens. Je certificaten blijven dan controleerbaar via de verificatielink. Vraag
+            je zelf om je account te verwijderen, dan verwijderen we na 30 dagen alles, ook je certificaten.
           </p>
         </>
       ),

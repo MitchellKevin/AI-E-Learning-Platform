@@ -3,14 +3,8 @@
 import { useState, type ReactNode } from "react";
 import { Building2, Trophy, Users } from "lucide-react";
 import { Button, EmptyState, SegmentedControl, Tab, TabList, TabPanel, Tabs } from "@/components/kit";
-import {
-  leaderboardPeriods,
-  leaderboardScopes,
-  type LeaderboardBoard,
-  type LeaderboardOverview,
-  type LeaderboardPeriod,
-  type LeaderboardScope,
-} from "@/lib/data/leaderboard";
+import { leaderboardPeriods, leaderboardScopes } from "@/lib/data/leaderboard-shared";
+import type { LeaderboardBoard, LeaderboardOverview, LeaderboardPeriod, LeaderboardScope } from "@/lib/data/leaderboard";
 import { MyPosition } from "./my-position";
 import { Podium } from "./podium";
 import { RankList } from "./rank-list";

@@ -1,23 +1,16 @@
 import { allChapters, getLearningPaths } from "@/lib/content";
-import {
-  mockAssignments,
-  mockExamAttempts,
-  mockMembers,
-  mockMonthlyHours,
-  mockOrganization,
-  mockPeriodSummaries,
-  mockToday,
-  mockWeeklyActivity,
-} from "@/lib/mock/admin-team";
+import { cache } from "react";
+import { connectDb } from "@/server/db";
+import { requireRole } from "@/server/session";
+import { loadAdminSource } from "@/server/services/admin-team";
 import { addDays, daysBetween, formatMonth, formatShortDate } from "@/components/admin/shell/format";
 import { expectedProgress, summarizeAssignment, byStatusThenDeadline } from "@/components/admin/shell/assignments";
 
-// Beheerdata (teamleads). Nu op mockdata; straks dezelfde functies op MongoDB.
+// Beheerdata (teamleads), berekend uit MongoDB (zie server/services/admin-team.ts).
 
 // Types
 
-export type TeamName = "Design" | "Development" | "Strategie";
-export const teamNames: TeamName[] = ["Design", "Development", "Strategie"];
+export type TeamName = string;
 
 export type PathSlug = "ai-101" | "ui-ux-design" | "software-development";
 
@@ -137,16 +130,25 @@ async function pathIndex() {
   return new Map(paths.map((p) => [p.slug as PathSlug, p]));
 }
 
-// Accessors
+// Accessors. Alleen voor teammanagers en beheerders, altijd binnen de eigen organisatie.
+
+const source = cache(async () => {
+  const user = await requireRole("manager");
+  await connectDb();
+  return loadAdminSource(user.orgId);
+});
 
 export async function getReferenceDate() {
-  // Vaste peildatum voor de mockdata; straks gewoon de huidige datum.
-  return mockToday;
+  return (await source()).today;
+}
+
+export async function getTeamNames(): Promise<TeamName[]> {
+  return (await source()).teams;
 }
 
 export async function getOrganization() {
-  const members = mockMembers.length;
-  return { ...mockOrganization, seatsUsed: members };
+  const { organization, members } = await source();
+  return { ...organization, seatsUsed: members.length };
 }
 
 export async function getAdminPaths(): Promise<AdminPath[]> {
@@ -161,10 +163,10 @@ export async function getAdminPaths(): Promise<AdminPath[]> {
 }
 
 export async function getTeamMembers(): Promise<TeamMember[]> {
-  const today = mockToday;
+  const { today, members: sourceMembers, assignments: sourceAssignments, examAttempts } = await source();
   const paths = await pathIndex();
 
-  return mockMembers.map((m) => {
+  return sourceMembers.map((m) => {
     const invited = m.lastActiveAt === null;
     const daysInactive = m.lastActiveAt ? daysBetween(m.lastActiveAt, today) : null;
 
@@ -172,7 +174,7 @@ export async function getTeamMembers(): Promise<TeamMember[]> {
       const title = paths.get(p.slug)?.title ?? p.slug;
       const state = pathState(p.progress);
       // Openstaande toewijzing met de vroegste deadline bepaalt het schema.
-      const assignment = mockAssignments
+      const assignment = sourceAssignments
         .filter((a) => a.pathSlug === p.slug && a.memberIds.includes(m.id) && a.deadline >= today)
         .sort((a, b) => a.deadline.localeCompare(b.deadline))[0];
       const expected = assignment ? expectedProgress(assignment.createdAt, assignment.deadline, today) : undefined;
@@ -205,7 +207,7 @@ export async function getTeamMembers(): Promise<TeamMember[]> {
       status,
       daysInactive,
       certificates,
-      activity: buildActivity(m, memberPaths, paths),
+      activity: buildActivity(m, memberPaths, paths, examAttempts, today),
     };
   });
 }
@@ -215,12 +217,14 @@ function buildActivity(
   m: MockMember,
   memberPaths: MemberPath[],
   paths: Awaited<ReturnType<typeof pathIndex>>,
+  sourceAttempts: MockExamAttempt[],
+  referenceDate: string,
 ): ActivityItem[] {
   if (!m.lastActiveAt) {
     return [
       {
         id: "invite",
-        date: m.invitedAt ?? mockToday,
+        date: m.invitedAt ?? referenceDate,
         kind: "invite",
         label: "Uitgenodigd voor AI Academy",
         detail: "Wacht nog op acceptatie",
@@ -230,7 +234,7 @@ function buildActivity(
 
   const items: ActivityItem[] = [];
 
-  for (const attempt of mockExamAttempts.filter((a) => a.memberId === m.id)) {
+  for (const attempt of sourceAttempts.filter((a) => a.memberId === m.id)) {
     const title = paths.get(attempt.pathSlug)?.title ?? attempt.pathSlug;
     const passed = attempt.score >= 70;
     items.push({
@@ -267,11 +271,10 @@ function buildActivity(
 }
 
 export async function getAssignments(): Promise<Assignment[]> {
-  const today = mockToday;
-  const [members, paths] = await Promise.all([getTeamMembers(), pathIndex()]);
+  const [{ today, assignments: sourceAssignments }, members, paths] = await Promise.all([source(), getTeamMembers(), pathIndex()]);
   const byId = new Map(members.map((m) => [m.id, m]));
 
-  return mockAssignments
+  return sourceAssignments
     .map((a) => {
       const assigned = a.memberIds.map((id) => byId.get(id)).filter((m): m is TeamMember => Boolean(m));
       const progressOf = (id: string) => byId.get(id)?.paths.find((p) => p.slug === a.pathSlug)?.progress ?? 0;
@@ -281,7 +284,7 @@ export async function getAssignments(): Promise<Assignment[]> {
 }
 
 export async function getOverview() {
-  const today = mockToday;
+  const { today, weekly: weeklyActivity } = await source();
   const [members, assignments, paths, org] = await Promise.all([
     getTeamMembers(),
     getAssignments(),
@@ -323,7 +326,7 @@ export async function getOverview() {
     })
     .filter((p) => p.total > 0);
 
-  const weekly = mockWeeklyActivity.slice(-8);
+  const weekly = weeklyActivity.slice(-8);
 
   const attention: AttentionItem[] = [];
   for (const m of members) {
@@ -387,8 +390,8 @@ export type PeriodReport = {
 };
 
 export async function getReports() {
-  const today = mockToday;
-  const [members, paths] = await Promise.all([getTeamMembers(), getAdminPaths()]);
+  const [src, members, paths] = await Promise.all([source(), getTeamMembers(), getAdminPaths()]);
+  const today = src.today;
 
   // Stand vandaag: hoe ver zijn de collega's die een pad hebben?
   const funnel = paths
@@ -408,27 +411,32 @@ export async function getReports() {
     .filter((p) => p.stages[0].count > 0);
 
   const byPeriod = Object.fromEntries(
-    reportPeriods.map(({ value }) => [value, buildPeriodReport(value, today, paths)]),
+    reportPeriods.map(({ value }) => [value, buildPeriodReport(value, today, paths, src)]),
   ) as Record<ReportPeriod, PeriodReport>;
 
   return { today, funnel, byPeriod };
 }
 
-function buildPeriodReport(period: ReportPeriod, today: string, paths: AdminPath[]): PeriodReport {
+function buildPeriodReport(
+  period: ReportPeriod,
+  today: string,
+  paths: AdminPath[],
+  { examAttempts: sourceAttempts, weekly: weeklyActivity, monthly: monthlyHours, summaries: periodSummaries }: Awaited<ReturnType<typeof source>>,
+): PeriodReport {
   const days = periodDays[period];
   const from = addDays(today, -days);
   const previousFrom = addDays(from, -days);
   const inRange = (date: string, start: string, end: string) => date > start && date <= end;
 
-  const attempts = mockExamAttempts.filter((a) => inRange(a.date, from, today));
-  const previousAttempts = mockExamAttempts.filter((a) => inRange(a.date, previousFrom, from));
+  const attempts = sourceAttempts.filter((a) => inRange(a.date, from, today));
+  const previousAttempts = sourceAttempts.filter((a) => inRange(a.date, previousFrom, from));
   const avg = (list: typeof attempts) =>
     list.length ? Math.round(list.reduce((s, a) => s + a.score, 0) / list.length) : null;
   const passed = (list: typeof attempts) => list.filter((a) => a.score >= 70);
 
   const monthly = period === "12m";
-  const weeks = period === "30d" ? mockWeeklyActivity.slice(-5) : mockWeeklyActivity;
-  const months = period === "12m" ? mockMonthlyHours : mockMonthlyHours.slice(-4);
+  const weeks = period === "30d" ? weeklyActivity.slice(-5) : weeklyActivity;
+  const months = period === "12m" ? monthlyHours : monthlyHours.slice(-4);
 
   const time: ChartPoint[] = monthly
     ? months.map((m) => ({ key: m.month, label: formatMonth(m.month), fullLabel: formatMonth(m.month, true), value: m.hours }))
@@ -457,7 +465,7 @@ function buildPeriodReport(period: ReportPeriod, today: string, paths: AdminPath
 
   return {
     summary: {
-      ...mockPeriodSummaries[period],
+      ...periodSummaries[period],
       certificates: { current: passed(attempts).length, previous: passed(previousAttempts).length },
       avgScore: { current: avg(attempts), previous: avg(previousAttempts) },
     },

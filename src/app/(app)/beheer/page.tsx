@@ -11,6 +11,7 @@ import { StackedBar, StackLegend, type StackSegment } from "@/components/admin/t
 import { RemindButton } from "@/components/admin/team/remind-button";
 import { formatDaysLeft, formatLongDate, formatShortDate, plural } from "@/components/admin/shell/format";
 import styles from "./page.module.scss";
+import { requireRole } from "@/server/session";
 
 export const metadata: Metadata = { title: "Overzicht · Beheer · AI Academy" };
 
@@ -20,7 +21,8 @@ const attentionLabel = { inactief: "Inactief", achter: "Achter op schema", uitno
 const attentionVariant = { inactief: "danger", achter: "warning", uitnodiging: "neutral" } as const;
 
 export default async function AdminOverviewPage() {
-  const { today, kpis, pathBreakdown, weekly, attention, deadlines } = await getOverview();
+  const [{ today, kpis, pathBreakdown, weekly, attention, deadlines }, user] = await Promise.all([getOverview(), requireRole("manager")]);
+  const isAdmin = user.role === "admin";
 
   const lastWeek = weekly[weekly.length - 1];
   const peakWeek = weekly.reduce((best, w) => (w.minutes > best.minutes ? w : best), weekly[0]);
@@ -91,9 +93,13 @@ export default async function AdminOverviewPage() {
             label="Licenties in gebruik"
           />
           <ProgressBar value={seatsPercent} className={styles.seatsBar} />
-          <Link href="/beheer/abonnement" className={styles.kpiLink}>
-            {kpis.seats - kpis.seatsUsed} vrij · beheer licenties
-          </Link>
+          {isAdmin ? (
+            <Link href="/beheer/abonnement" className={styles.kpiLink}>
+              {kpis.seats - kpis.seatsUsed} vrij · beheer licenties
+            </Link>
+          ) : (
+            <span className={styles.kpiLink}>{kpis.seats - kpis.seatsUsed} vrij</span>
+          )}
         </Card>
       </section>
 
@@ -197,6 +203,7 @@ export default async function AdminOverviewPage() {
                         <p className={styles.attentionDetail}>{item.detail}</p>
                       </div>
                       <RemindButton
+                        ids={[item.member.id]}
                         names={[item.member.name]}
                         label={item.kind === "uitnodiging" ? "Opnieuw uitnodigen" : "Stuur herinnering"}
                         className={styles.attentionAction}

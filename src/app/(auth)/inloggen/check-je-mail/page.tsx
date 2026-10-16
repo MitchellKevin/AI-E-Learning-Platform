@@ -15,8 +15,8 @@ const mailApps = [
   { label: "Gmail", href: "https://mail.google.com/" },
 ];
 
-export default async function CheckMailPage({ searchParams }: { searchParams: Promise<{ email?: string }> }) {
-  const { email: raw } = await searchParams;
+export default async function CheckMailPage({ searchParams }: { searchParams: Promise<{ email?: string; next?: string }> }) {
+  const { email: raw, next } = await searchParams;
   // Alleen een redelijk e-mailadres tonen; de rest is waarschijnlijk een kapotte link.
   const email = raw && raw.length <= 254 && raw.includes("@") ? raw : undefined;
 
@@ -61,7 +61,7 @@ export default async function CheckMailPage({ searchParams }: { searchParams: Pr
           <li>Open de link in dezelfde browser als waarin je deze pagina ziet.</li>
           <li>Werkt je organisatie met een beveiligd mailfilter? Dan kan het een paar minuten duren.</li>
         </ul>
-        <ResendLink email={email} />
+        <ResendLink email={email} next={next} />
       </div>
 
       <AuthNote>

@@ -36,9 +36,9 @@ export function ProgressBar({ value, className }: { value: number; className?: s
 }
 
 // Primaire knop met losse donkere pijl-cirkel, zoals in het ontwerp.
-export function ArrowButton({ href, children }: { href: string; children: React.ReactNode }) {
+export function ArrowButton({ href, children, onClick }: { href: string; children: React.ReactNode; onClick?: () => void }) {
   return (
-    <Link href={href} className={styles.arrowButton}>
+    <Link href={href} className={styles.arrowButton} onClick={onClick}>
       <span className={styles.arrowLabel}>{children}</span>
       <span className={styles.arrowIcon}>
         <ArrowRight />

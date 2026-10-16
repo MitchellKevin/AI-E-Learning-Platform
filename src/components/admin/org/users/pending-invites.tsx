@@ -3,7 +3,7 @@
 import { useState } from "react";
 import { MailCheck, Send, UserPlus } from "lucide-react";
 import { Avatar, Badge, Button, EmptyState } from "@/components/kit";
-import { ROLE_LABELS, formatShortDate, type OrgUser } from "@/lib/data/admin-org";
+import { ROLE_LABELS, formatShortDate, type OrgUser } from "@/lib/data/admin-org-shared";
 import { expiryLabel, inviteDaysLeft } from "./user-status";
 import styles from "./pending-invites.module.scss";
 

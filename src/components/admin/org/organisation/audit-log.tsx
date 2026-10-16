@@ -3,7 +3,7 @@
 import { useState } from "react";
 import { Download, ScrollText } from "lucide-react";
 import { Avatar, Badge, Button, EmptyState, Select, TBody, THead, Table, Td, Th, Tr, useToast } from "@/components/kit";
-import { AUDIT_LABELS, formatDateTime, type AuditCategory, type AuditEntry } from "@/lib/data/admin-org";
+import { AUDIT_LABELS, formatDateTime, type AuditCategory, type AuditEntry } from "@/lib/data/admin-org-shared";
 import { Panel } from "../panel";
 import { plural } from "../utils";
 import styles from "./audit-log.module.scss";

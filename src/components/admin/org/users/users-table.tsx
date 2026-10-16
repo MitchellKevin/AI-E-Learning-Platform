@@ -46,8 +46,8 @@ import {
   type OrgRole,
   type OrgUser,
   type UserStatus as Status,
-} from "@/lib/data/admin-org";
-import { plural, wait } from "../utils";
+} from "@/lib/data/admin-org-shared";
+import { plural } from "../utils";
 import { UserStatus, displayName } from "./user-status";
 import styles from "./users-table.module.scss";
 
@@ -57,11 +57,11 @@ const ROLES = Object.keys(ROLE_LABELS) as OrgRole[];
 type SortKey = "name" | "lastActive";
 
 export type UserActions = {
-  onRoleChange: (user: OrgUser, role: OrgRole) => void;
-  onDeactivate: (user: OrgUser) => void;
-  onReactivate: (user: OrgUser) => void;
+  onRoleChange: (user: OrgUser, role: OrgRole) => Promise<void>;
+  onDeactivate: (user: OrgUser) => Promise<void>;
+  onReactivate: (user: OrgUser) => Promise<void>;
   onResend: (user: OrgUser) => Promise<void>;
-  onRevoke: (user: OrgUser) => void;
+  onRevoke: (user: OrgUser) => Promise<void>;
 };
 
 type Props = UserActions & {
@@ -249,9 +249,7 @@ export function UsersTable({ users, teams, today, freeSeats, ...actions }: Props
         confirmLabel="Deactiveren"
         onConfirm={async () => {
           if (!deactivateTarget) return;
-          // Straks: server action die de sessies intrekt en de licentie vrijgeeft.
-          await wait(700);
-          actions.onDeactivate(deactivateTarget);
+          await actions.onDeactivate(deactivateTarget);
         }}
       />
     </>
@@ -415,7 +413,7 @@ function RoleDialog({
 }: {
   user: OrgUser | null;
   onClose: () => void;
-  onSave: (user: OrgUser, role: OrgRole) => void;
+  onSave: (user: OrgUser, role: OrgRole) => Promise<void>;
 }) {
   const [role, setRole] = useState<OrgRole>("cursist");
   const [busy, setBusy] = useState(false);
@@ -436,10 +434,8 @@ function RoleDialog({
     if (!current) return;
     if (role === current.role) return onClose();
     setBusy(true);
-    // Straks: server action die de rol en rechten bijwerkt.
-    await wait(600);
+    await onSave(current, role);
     setBusy(false);
-    onSave(current, role);
     onClose();
   }
 

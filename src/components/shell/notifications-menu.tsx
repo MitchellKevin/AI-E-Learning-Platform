@@ -1,15 +1,14 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import Link from "next/link";
 import clsx from "clsx";
-import { Award, Bell, CalendarClock, CheckCheck, Flame, GraduationCap, Settings, Users } from "lucide-react";
+import { AlarmClock, Award, Bell, CalendarClock, CheckCheck, Flame, GraduationCap, Settings, Users } from "lucide-react";
 import type { ShellNotification, ShellNotificationType } from "@/lib/data/shell";
 import { EmptyState, Popover, PopoverContent, PopoverTrigger, SegmentedControl, usePopover } from "@/components/kit";
+import { markNotificationsReadAction } from "@/server/actions/account";
 import btn from "./header-button.module.scss";
 import styles from "./notifications-menu.module.scss";
-
-const READ_KEY = "aia:gelezen-meldingen";
 
 const typeIcon: Record<ShellNotificationType, React.ReactNode> = {
   streak: <Flame />,
@@ -17,6 +16,7 @@ const typeIcon: Record<ShellNotificationType, React.ReactNode> = {
   badge: <Award />,
   certificate: <GraduationCap />,
   team: <Users />,
+  reminder: <AlarmClock />,
 };
 
 type Filter = "alles" | "ongelezen";
@@ -25,26 +25,10 @@ export function NotificationsMenu({ notifications }: { notifications: ShellNotif
   const [items, setItems] = useState(notifications);
   const unread = items.filter((n) => !n.read).length;
 
-  // Gelezen-status per browser onthouden tot er een echte backend is.
-  useEffect(() => {
-    try {
-      const stored: unknown = JSON.parse(localStorage.getItem(READ_KEY) ?? "[]");
-      if (Array.isArray(stored) && stored.length) {
-        setItems((list) => list.map((n) => (stored.includes(n.id) ? { ...n, read: true } : n)));
-      }
-    } catch {
-      // Geen opslag beschikbaar: alles blijft zoals de server het aanlevert.
-    }
-  }, []);
-
-  function update(next: ShellNotification[]) {
+  // Direct bijwerken in het scherm, daarna opslaan.
+  function update(next: ShellNotification[], ids: string[] | "all") {
     setItems(next);
-    // Later: server action markNotificationsRead(ids) in MongoDB.
-    try {
-      localStorage.setItem(READ_KEY, JSON.stringify(next.filter((n) => n.read).map((n) => n.id)));
-    } catch {
-      // Negeren: de status geldt dan alleen voor deze sessie.
-    }
+    markNotificationsReadAction(ids).catch(() => {});
   }
 
   return (
@@ -61,8 +45,8 @@ export function NotificationsMenu({ notifications }: { notifications: ShellNotif
         <Panel
           items={items}
           unread={unread}
-          onMarkAll={() => update(items.map((n) => ({ ...n, read: true })))}
-          onRead={(id) => update(items.map((n) => (n.id === id ? { ...n, read: true } : n)))}
+          onMarkAll={() => update(items.map((n) => ({ ...n, read: true })), "all")}
+          onRead={(id) => update(items.map((n) => (n.id === id ? { ...n, read: true } : n)), [id])}
         />
       </PopoverContent>
     </Popover>

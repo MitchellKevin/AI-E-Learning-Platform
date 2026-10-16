@@ -1,10 +1,11 @@
 "use client";
 
 import { useRef, useState } from "react";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import { ArrowRight, Mail } from "lucide-react";
 import { Alert, Button, Field, TextInput } from "@/components/kit";
 import type { SsoDomain } from "@/lib/data/auth";
+import { requestMagicLink } from "@/server/actions/auth";
 import styles from "./magic-link-form.module.scss";
 
 const EMAIL = /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/;
@@ -34,6 +35,7 @@ function shake(el: Element | null | undefined) {
 
 export function MagicLinkForm({ ssoDomains = [] }: { ssoDomains?: SsoDomain[] }) {
   const router = useRouter();
+  const next = useSearchParams().get("next") ?? undefined;
   const input = useRef<HTMLInputElement>(null);
   const [email, setEmail] = useState("");
   const [error, setError] = useState<string>();
@@ -55,9 +57,15 @@ export function MagicLinkForm({ ssoDomains = [] }: { ssoDomains?: SsoDomain[] })
     }
 
     setBusy(true);
-    // Later: server action die via Auth.js (e-mailprovider) een inloglink verstuurt.
-    await new Promise((resolve) => setTimeout(resolve, 900));
-    router.push(`/inloggen/check-je-mail?email=${encodeURIComponent(email.trim())}`);
+    const result = await requestMagicLink(email.trim(), next);
+    if (!result.ok) {
+      setBusy(false);
+      setError(result.error);
+      input.current?.focus();
+      shake(input.current?.parentElement);
+      return;
+    }
+    router.push(`/inloggen/check-je-mail?email=${encodeURIComponent(email.trim())}${next ? `&next=${encodeURIComponent(next)}` : ""}`);
   }
 
   return (

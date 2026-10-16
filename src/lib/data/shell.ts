@@ -2,9 +2,13 @@ import { chapterStatus, getLearningPaths, pathProgress } from "@/lib/content";
 import { getProgress } from "@/lib/user-data";
 import { audienceLabel, getExercises, getFreePractice } from "@/lib/data/practice";
 import { getHelpArticles, getHelpCategories } from "@/lib/data/help";
-import { mockAccount, mockNotifications, mockPages } from "@/lib/mock/shell";
+import { mockPages } from "@/lib/mock/shell";
+import { connectDb } from "@/server/db";
+import { Notification } from "@/server/models";
+import { getUserContext, requireUser } from "@/server/session";
+import type { UserRole } from "@/server/models/user";
 
-// App-shell: account, meldingen en de zoekindex. Nu op mock-data; later Auth.js-sessie + MongoDB.
+// App-shell: account (uit de sessie), meldingen en de zoekindex.
 
 export type ShellRole = "cursist" | "teammanager" | "beheerder";
 
@@ -15,7 +19,7 @@ export type ShellAccount = {
   roles: ShellRole[];
 };
 
-export type ShellNotificationType = "streak" | "assignment" | "badge" | "certificate" | "team";
+export type ShellNotificationType = "streak" | "assignment" | "badge" | "certificate" | "team" | "reminder";
 
 export type ShellNotificationSeed = {
   id: string;
@@ -62,8 +66,15 @@ export type SearchIndex = {
   suggested: string[];
 };
 
-export async function getShellAccount() {
-  return mockAccount;
+const rolesFor: Record<UserRole, ShellRole[]> = {
+  learner: ["cursist"],
+  manager: ["cursist", "teammanager"],
+  admin: ["cursist", "teammanager", "beheerder"],
+};
+
+export async function getShellAccount(): Promise<ShellAccount> {
+  const { user, org, team } = await getUserContext();
+  return { email: user.email, team: team?.name ?? "", organisation: org.name, roles: rolesFor[user.role as UserRole] };
 }
 
 export function canManage(account: ShellAccount) {
@@ -82,14 +93,20 @@ export function relativeTime(minutesAgo: number) {
 }
 
 export async function getNotifications(): Promise<ShellNotification[]> {
+  const user = await requireUser();
+  await connectDb();
   const now = Date.now();
-  return [...mockNotifications]
-    .sort((a, b) => a.minutesAgo - b.minutesAgo)
-    .map(({ minutesAgo, ...n }) => ({
-      ...n,
-      at: new Date(now - minutesAgo * 60_000).toISOString(),
-      timeLabel: relativeTime(minutesAgo),
-    }));
+  const docs = await Notification.find({ userId: user._id }).sort({ createdAt: -1 }).limit(30).lean();
+  return docs.map((n) => ({
+    id: String(n._id),
+    type: n.type,
+    title: n.title,
+    body: n.body,
+    href: n.href,
+    read: Boolean(n.readAt),
+    at: n.createdAt.toISOString(),
+    timeLabel: relativeTime((now - n.createdAt.getTime()) / 60_000),
+  }));
 }
 
 // Eén platte index voor het zoekvenster; wordt server-side opgebouwd en als prop doorgegeven.

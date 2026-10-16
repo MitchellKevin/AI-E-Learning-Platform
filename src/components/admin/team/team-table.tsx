@@ -27,13 +27,15 @@ import {
   VisuallyHidden,
   type SortDirection,
 } from "@/components/kit";
+import { errorMessage, unwrap } from "@/lib/action-result";
 import type { AdminPath, MemberStatus, TeamMember, TeamName } from "@/lib/data/admin-team";
-import { csvFilename, downloadCsv, wait } from "@/components/admin/shell/csv";
+import { csvFilename, downloadCsv } from "@/components/admin/shell/csv";
 import { formatDaysAgo, formatShortDate, plural } from "@/components/admin/shell/format";
 import { MemberDrawer } from "./member-drawer";
 import { NewAssignmentDialog, type MemberOption } from "./new-assignment-dialog";
 import { reminderCopy } from "./remind-button";
 import { statusLabel, statusVariant } from "./status";
+import { sendRemindersAction } from "@/server/actions/admin-team";
 import styles from "./team-table.module.scss";
 
 type SortKey = "name" | "team" | "progress" | "lastActive" | "status";
@@ -164,8 +166,13 @@ export function TeamTable({ members, paths, teams, today, initialTeam, initialSt
   async function remindSelected() {
     const names = members.filter((m) => selected.has(m.id)).map((m) => m.name);
     setReminding(true);
-    // Straks een server action die de herinneringen verstuurt.
-    await wait(700);
+    try {
+      unwrap(await sendRemindersAction([...selected]));
+    } catch (error) {
+      setReminding(false);
+      toast({ variant: "error", title: "Versturen lukte niet", description: errorMessage(error, "Probeer het opnieuw.") });
+      return;
+    }
     setReminding(false);
     toast({
       variant: "success",
@@ -175,7 +182,12 @@ export function TeamTable({ members, paths, teams, today, initialTeam, initialSt
   }
 
   async function remindOne(member: TeamMember) {
-    await wait(400);
+    try {
+      unwrap(await sendRemindersAction([member.id], member.currentPath.title));
+    } catch (error) {
+      toast({ variant: "error", title: "Versturen lukte niet", description: errorMessage(error, "Probeer het opnieuw.") });
+      return;
+    }
     toast({ variant: "success", ...reminderCopy([member.name], member.currentPath.title) });
   }
 

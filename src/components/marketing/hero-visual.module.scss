@@ -4,7 +4,7 @@
 
 @keyframes float {
   50% {
-    transform: translateY(-6px);
+    transform: translateY(-8px);
   }
 }
 
@@ -20,7 +20,7 @@
   }
 }
 
-// App-venster
+  // App-venster
 
 .windowWrap {
   @include enter(2);

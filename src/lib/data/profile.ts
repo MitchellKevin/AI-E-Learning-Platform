@@ -1,8 +1,12 @@
-import { getLearningPath, isChapterDone, pathProgress } from "@/lib/content";
-import { getBadges, getCertificates, getCurrentUser, getProgress, getStats } from "@/lib/user-data";
-import { mockActivity, mockBadgeCatalog, mockProfile, mockSettings } from "@/lib/mock/profile";
+import { getLearningPath, getLearningPaths, isChapterDone, pathProgress } from "@/lib/content";
+import { getCertificates, getCurrentUser, getProgress, getStats } from "@/lib/user-data";
+import { connectDb } from "@/server/db";
+import { ActivityDay, Certificate, PointEvent, UserBadge, fullName, type PointReason } from "@/server/models";
+import { getUserContext, requireUser } from "@/server/session";
+import { badgeCatalog } from "@/server/services/badges";
+import { longestStreak } from "@/server/services/streak";
 
-// Profiel, badges, activiteit en instellingen. Nu op mock-data; later uit MongoDB.
+// Profiel, badges, activiteit en instellingen van de ingelogde gebruiker, uit MongoDB.
 
 export type ProfileDetails = {
   jobTitle: string;
@@ -60,21 +64,34 @@ export type Settings = {
   language: LanguageSettings;
 };
 
-export async function getProfile() {
-  return mockProfile;
+export async function getProfile(): Promise<ProfileDetails> {
+  const { user, org, team } = await getUserContext();
+  const days = await ActivityDay.find({ userId: user._id }, { date: 1 }).lean();
+  return {
+    jobTitle: user.jobTitle ?? "",
+    team: team?.name ?? "",
+    organisation: org.name,
+    email: user.email,
+    loginProvider: user.loginProvider ?? "E-mail",
+    memberSince: user.createdAt.toISOString(),
+    longestStreak: longestStreak(days.map((d) => d.date)),
+  };
 }
 
-// Alle badges, ook de nog niet behaalde. "Behaald" volgt de bestaande badgedata, zodat het dashboard klopt.
+// Alle badges, ook de nog niet behaalde, met voortgang richting de volgende.
 export async function getBadgeCatalog(): Promise<ProfileBadge[]> {
-  const [{ badges }, stats, progress, ai101] = await Promise.all([
-    getBadges(),
+  const user = await requireUser();
+  await connectDb();
+  const [earned, stats, progress, ai101] = await Promise.all([
+    UserBadge.find({ userId: user._id }).lean(),
     getStats(),
     getProgress(),
     getLearningPath("ai-101"),
   ]);
+  const earnedAt = new Map(earned.map((b) => [b.code, b.earnedAt.toISOString()]));
 
-  // Voortgang die we uit de echte data kunnen afleiden; de rest staat in de mock.
   const derived: Record<string, ProfileBadge["progress"]> = {
+    "7D": { current: stats.streak, target: 7, unit: "dagen" },
     "30D": { current: stats.streak, target: 30, unit: "dagen" },
     "5K": { current: stats.points, target: 5000, unit: "punten" },
   };
@@ -88,38 +105,103 @@ export async function getBadgeCatalog(): Promise<ProfileBadge[]> {
     }
   }
 
-  return mockBadgeCatalog.map((badge) => {
-    const known = badges.find((b) => b.code === badge.code);
-    const earned = known?.earned ?? Boolean(badge.earnedAt);
-    const progress = badge.progress && (derived[badge.code] ?? badge.progress);
-    return { ...badge, earned, progress: earned ? undefined : progress };
+  return badgeCatalog.map(({ earnedAt: _seedDate, progress: seedProgress, ...badge }) => {
+    void _seedDate;
+    const at = earnedAt.get(badge.code);
+    return {
+      ...badge,
+      earned: Boolean(at),
+      earnedAt: at,
+      progress: at ? undefined : (derived[badge.code] ?? seedProgress),
+    };
   });
 }
 
-export async function getActivity(limit?: number): Promise<Activity[]> {
-  const sorted = [...mockActivity].sort((a, b) => b.at.localeCompare(a.at));
-  return limit ? sorted.slice(0, limit) : sorted;
+const activityType: Record<string, ActivityType | undefined> = {
+  hoofdstuk: "chapter",
+  quiz: "quiz",
+  oefening: "practice",
+  certificaat: "certificate",
+};
+
+// Tijdlijn: punten-events (hoofdstukken, quizzen, oefeningen, certificaten) en behaalde badges.
+export async function getActivity(limit = 20): Promise<Activity[]> {
+  const user = await requireUser();
+  await connectDb();
+  const [events, badges, paths] = await Promise.all([
+    PointEvent.find({ userId: user._id, reason: { $in: Object.keys(activityType) as PointReason[] } }).sort({ createdAt: -1 }).limit(limit).lean(),
+    UserBadge.find({ userId: user._id }).sort({ earnedAt: -1 }).limit(limit).lean(),
+    getLearningPaths(),
+  ]);
+  const chapters = new Map(paths.flatMap((p) => p.topics.flatMap((t) => t.chapters.map((c) => [c.id, { path: p, chapter: c }] as const))));
+
+  const items: Activity[] = events.map((e) => {
+    const type = activityType[e.reason]!;
+    const found = type === "chapter" || type === "quiz" ? chapters.get(e.refId.split("/").slice(0, 2).join("/")) : undefined;
+    return {
+      id: String(e._id),
+      type,
+      title: e.label ?? "Punten verdiend",
+      detail: found?.chapter.title,
+      at: e.createdAt.toISOString(),
+      points: e.amount,
+      href: found ? `/leerpaden/${found.path.slug}/${found.chapter.slug}` : type === "practice" ? `/oefenen/${e.refId}` : undefined,
+    };
+  });
+  for (const b of badges) {
+    const badge = badgeCatalog.find((c) => c.code === b.code);
+    items.push({ id: String(b._id), type: "badge", title: `Badge behaald: ${badge?.label ?? b.code}`, detail: badge?.description, at: b.earnedAt.toISOString(), href: "/profiel" });
+  }
+  return items.sort((a, b) => b.at.localeCompare(a.at)).slice(0, limit);
 }
 
 export async function getSettings(): Promise<Settings> {
-  return mockSettings;
+  const user = await requireUser();
+  const s = user.settings;
+  const channel = (c?: { email?: boolean | null; inApp?: boolean | null } | null) => ({ email: Boolean(c?.email), inApp: c?.inApp !== false });
+  return {
+    account: { firstName: user.firstName, lastName: user.lastName, jobTitle: user.jobTitle ?? "" },
+    learning: {
+      weekGoal: (s?.learning?.weekGoal ?? 120) as WeekGoal,
+      focus: (s?.learning?.focus ?? "beide") as Focus,
+      dailyReminder: s?.learning?.dailyReminder !== false,
+      reminderTime: s?.learning?.reminderTime ?? "09:00",
+    },
+    notifications: {
+      reminders: channel(s?.notifications?.reminders),
+      streak: channel(s?.notifications?.streak),
+      deadlines: channel(s?.notifications?.deadlines),
+      certificates: channel(s?.notifications?.certificates),
+      productUpdates: channel(s?.notifications?.productUpdates),
+    },
+    privacy: {
+      showOnLeaderboard: s?.privacy?.showOnLeaderboard !== false,
+      visibleToTeam: s?.privacy?.visibleToTeam !== false,
+    },
+    language: { locale: (s?.language?.locale ?? "nl") as Locale },
+  };
 }
 
-// Publieke verificatie op certificaatnummer. Later een losse query op MongoDB, los van de ingelogde gebruiker.
+// Publieke verificatie op certificaatnummer: los van wie er is ingelogd.
 export async function verifyCertificate(number: string) {
-  const normalized = number.trim().toUpperCase();
-  const certificate = (await getCertificates()).find((c) => c.number.toUpperCase() === normalized);
-  if (!certificate) return undefined;
-  const [holder, path] = await Promise.all([getCurrentUser(), getLearningPath(certificate.pathSlug)]);
+  await connectDb();
+  const doc = await Certificate.findOne({ number: number.trim().toUpperCase() }).lean();
+  if (!doc) return undefined;
+  const path = await getLearningPath(doc.pathSlug);
   if (!path) return undefined;
-  return { certificate, holder, path };
+  const [firstName, ...rest] = doc.holderName.split(" ");
+  return {
+    certificate: { number: doc.number, pathSlug: doc.pathSlug, issuedAt: doc.issuedAt.toISOString(), score: doc.score },
+    holder: { id: String(doc.userId), firstName, lastName: rest.join(" "), initials: `${firstName[0] ?? ""}${rest.at(-1)?.[0] ?? ""}`.toUpperCase() },
+    path,
+  };
 }
 
 export async function getCertificateNumbers() {
   return (await getCertificates()).map((c) => c.number);
 }
 
-// Alles wat we over de gebruiker bewaren, voor "Download mijn gegevens". Later samengesteld uit MongoDB.
+// Alles wat we over de gebruiker bewaren, voor "Download mijn gegevens" (AVG, recht op inzage).
 export async function getDataExport() {
   const [user, profile, settings, stats, progress, badges, certificates, activity] = await Promise.all([
     getCurrentUser(),
@@ -129,12 +211,13 @@ export async function getDataExport() {
     getProgress(),
     getBadgeCatalog(),
     getCertificates(),
-    getActivity(),
+    getActivity(500),
   ]);
-  const slug = `${user.firstName}-${user.lastName}`.toLowerCase().replace(/[^a-z0-9]+/g, "-");
+  const slug = fullName(user).toLowerCase().replace(/[^a-z0-9]+/g, "-");
   return {
     fileName: `ai-academy-gegevens-${slug}.json`,
     data: {
+      exportedAt: new Date().toISOString(),
       account: { ...user, ...profile },
       settings,
       stats: { points: stats.points, streak: stats.streak, teamRank: stats.teamRank },

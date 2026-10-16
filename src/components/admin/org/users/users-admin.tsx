@@ -3,9 +3,13 @@
 import { useMemo, useState } from "react";
 import { Download, UserPlus } from "lucide-react";
 import { Button, PageHeader, useToast } from "@/components/kit";
-import { ROLE_LABELS, initialsFromEmail, seatUsage, type OrgRole, type OrgUser } from "@/lib/data/admin-org";
+import { ROLE_LABELS, STATUS_LABELS, seatUsage, type OrgRole, type OrgUser } from "@/lib/data/admin-org-shared";
 import { Panel } from "../panel";
-import { plural, wait } from "../utils";
+import { plural } from "../utils";
+import { downloadCsv, csvFilename } from "@/components/admin/shell/csv";
+import { errorMessage, unwrap } from "@/lib/action-result";
+import { createInvitesAction, revokeInviteAction, setUserRoleAction, setUserStatusAction } from "@/server/actions/admin-org";
+import { sendRemindersAction } from "@/server/actions/admin-team";
 import { InviteDialog, type NewInvite } from "./invite-dialog";
 import { PendingInvites } from "./pending-invites";
 import { SeatsMeter } from "./seats-meter";
@@ -49,32 +53,56 @@ export function UsersAdmin({ initialUsers, teams, seatTotal, today }: Props) {
     setUsers((list) => list.map((u) => (u.id === previous.id ? previous : u)));
   }
 
-  // Straks: elke handler hieronder roept een server action aan; nu werken we de lijst optimistisch bij.
+  // Elke wijziging gaat via een server action; het scherm werkt pas bij als de server akkoord is.
+  function fail(error: unknown) {
+    toast({ variant: "error", title: "Dat lukte niet", description: errorMessage(error, "Probeer het opnieuw.") });
+  }
 
-  function changeRole(user: OrgUser, role: OrgRole) {
+  async function changeRole(user: OrgUser, role: OrgRole) {
+    try {
+      unwrap(await setUserRoleAction(user.id, role));
+    } catch (error) {
+      return fail(error);
+    }
     update(user.id, { role });
     toast({
       variant: "success",
       title: "Rol gewijzigd",
       description: `${displayName(user)} is nu ${ROLE_LABELS[role].toLowerCase()}.`,
-      action: { label: "Ongedaan maken", onClick: () => restore(user) },
+      action: {
+        label: "Ongedaan maken",
+        onClick: () => setUserRoleAction(user.id, user.role).then(unwrap).then(() => restore(user), fail),
+      },
     });
   }
 
-  function deactivate(user: OrgUser) {
+  async function deactivate(user: OrgUser) {
+    try {
+      unwrap(await setUserStatusAction(user.id, "gedeactiveerd"));
+    } catch (error) {
+      return fail(error);
+    }
     update(user.id, { status: "gedeactiveerd", lastActiveAt: new Date().toISOString() });
     toast({
       variant: "success",
       title: `${displayName(user)} is gedeactiveerd`,
       description: "De licentie is vrijgekomen.",
-      action: { label: "Ongedaan maken", onClick: () => restore(user) },
+      action: {
+        label: "Ongedaan maken",
+        onClick: () => setUserStatusAction(user.id, "actief").then(unwrap).then(() => restore(user), fail),
+      },
     });
   }
 
-  function reactivate(user: OrgUser) {
+  async function reactivate(user: OrgUser) {
     if (freeSeats <= 0) {
       toast({ variant: "error", title: "Geen licentie vrij", description: "Breid eerst je abonnement uit." });
       return;
+    }
+    try {
+      unwrap(await setUserStatusAction(user.id, "actief"));
+    } catch (error) {
+      return fail(error);
     }
     update(user.id, { status: "actief" });
     toast({
@@ -85,8 +113,12 @@ export function UsersAdmin({ initialUsers, teams, seatTotal, today }: Props) {
   }
 
   async function resend(user: OrgUser) {
-    await wait(700);
-    update(user.id, { invitedAt: new Date().toISOString(), invitedBy: "Sanne Visser" });
+    try {
+      unwrap(await sendRemindersAction([user.id]));
+    } catch (error) {
+      return fail(error);
+    }
+    update(user.id, { invitedAt: new Date().toISOString() });
     toast({
       variant: "success",
       title: "Uitnodiging opnieuw verstuurd",
@@ -94,7 +126,12 @@ export function UsersAdmin({ initialUsers, teams, seatTotal, today }: Props) {
     });
   }
 
-  function revoke(user: OrgUser) {
+  async function revoke(user: OrgUser) {
+    try {
+      unwrap(await revokeInviteAction(user.id));
+    } catch (error) {
+      return fail(error);
+    }
     const index = users.findIndex((u) => u.id === user.id);
     setUsers((list) => list.filter((u) => u.id !== user.id));
     toast({
@@ -103,26 +140,26 @@ export function UsersAdmin({ initialUsers, teams, seatTotal, today }: Props) {
       action: {
         label: "Ongedaan maken",
         onClick: () =>
-          setUsers((list) =>
-            list.some((u) => u.id === user.id) ? list : [...list.slice(0, index), user, ...list.slice(index)],
+          revokeInviteAction(user.id, true).then(unwrap).then(
+            () =>
+              setUsers((list) =>
+                list.some((u) => u.id === user.id) ? list : [...list.slice(0, index), user, ...list.slice(index)],
+              ),
+            fail,
           ),
       },
     });
   }
 
-  function invite(newInvites: NewInvite[]) {
-    const now = new Date().toISOString();
-    const created: OrgUser[] = newInvites.map((inv, i) => ({
-      id: `inv_${Date.now()}_${i}`,
-      name: null,
-      initials: initialsFromEmail(inv.email),
-      email: inv.email,
-      team: inv.team,
-      role: inv.role,
-      status: "uitgenodigd",
-      invitedAt: now,
-      invitedBy: "Sanne Visser",
-    }));
+  async function invite(newInvites: NewInvite[]) {
+    let created: OrgUser[];
+    try {
+      created = unwrap(await createInvitesAction(newInvites));
+    } catch (error) {
+      fail(error);
+      throw error;
+    }
+    if (created.length === 0) return;
     setUsers((list) => [...list, ...created]);
     toast({
       variant: "success",
@@ -135,8 +172,13 @@ export function UsersAdmin({ initialUsers, teams, seatTotal, today }: Props) {
   }
 
   function exportCsv() {
-    // Straks: export via de API; nu een melding.
-    toast({ title: "Export wordt voorbereid", description: "Je krijgt de CSV binnen een paar minuten per e-mail." });
+    const filename = csvFilename("gebruikers", today);
+    downloadCsv(
+      filename,
+      ["Naam", "E-mail", "Team", "Rol", "Status", "Laatst actief / uitgenodigd"],
+      users.map((u) => [u.name ?? "", u.email, u.team, ROLE_LABELS[u.role], STATUS_LABELS[u.status], u.lastActiveAt ?? u.invitedAt ?? ""]),
+    );
+    toast({ variant: "success", title: "Export gedownload", description: filename });
   }
 
   return (

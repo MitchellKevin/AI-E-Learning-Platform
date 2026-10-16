@@ -1,6 +1,6 @@
 import { Settings2 } from "lucide-react";
 import { Button } from "@/components/kit";
-import type { SeatUsage } from "@/lib/data/admin-org";
+import type { SeatUsage } from "@/lib/data/admin-org-shared";
 import styles from "./seats-meter.module.scss";
 
 // Licentiegebruik: actief + uitgenodigd bezet een licentie.

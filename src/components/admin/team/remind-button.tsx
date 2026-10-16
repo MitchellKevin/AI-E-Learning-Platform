@@ -3,9 +3,12 @@
 import { useState } from "react";
 import { BellRing, Check } from "lucide-react";
 import { Button, useToast, type ButtonSize, type ButtonVariant } from "@/components/kit";
-import { wait } from "@/components/admin/shell/csv";
+import { errorMessage, unwrap } from "@/lib/action-result";
+import { sendRemindersAction } from "@/server/actions/admin-team";
 
 type Props = {
+  /** Id's van wie de herinnering krijgt (gebruikers, of "inv_…" voor een open uitnodiging). */
+  ids: string[];
   /** Volledige naam(en) van wie de herinnering krijgt. */
   names: string[];
   /** Waar de herinnering over gaat, bv. "AI 101". */
@@ -25,14 +28,19 @@ export function reminderCopy(names: string[], topic?: string) {
 }
 
 // Knop die een herinnering stuurt; daarna blijft hij op "Verstuurd" staan.
-export function RemindButton({ names, topic, label = "Stuur herinnering", variant = "secondary", size = "sm", className }: Props) {
+export function RemindButton({ ids, names, topic, label = "Stuur herinnering", variant = "secondary", size = "sm", className }: Props) {
   const { toast } = useToast();
   const [state, setState] = useState<"idle" | "busy" | "sent">("idle");
 
   async function send() {
     setState("busy");
-    // Straks een server action die de e-mail en de in-app melding verstuurt.
-    await wait(600);
+    try {
+      unwrap(await sendRemindersAction(ids, topic));
+    } catch (error) {
+      setState("idle");
+      toast({ variant: "error", title: "Versturen lukte niet", description: errorMessage(error, "Probeer het opnieuw.") });
+      return;
+    }
     setState("sent");
     toast({ variant: "success", ...reminderCopy(names, topic) });
   }

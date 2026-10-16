@@ -96,7 +96,7 @@ export function LearningForm({ initial }: { initial: LearningSettings }) {
         description="Een seintje om je streak vast te houden. Bij Meldingen kies je of hij per e-mail of in de app komt."
       >
         <Switch
-          label="Herinner me elke dag"
+          label="Herinner me elke werkdag"
           description="Alleen op dagen dat je nog niet hebt geleerd."
           checked={dailyReminder}
           onCheckedChange={(checked) => form.set("dailyReminder", checked)}

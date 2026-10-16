@@ -208,7 +208,7 @@ export const mockProofStats: ProofStat[] = [
 ];
 
 // Fictieve klantnamen als tekstlogo's.
-export const mockCustomers = ["Noordlicht", "Brightlane", "Studio Veld", "Kade & Co", "Polder Digital", "Lumenwerk"];
+export const mockCustomers = ["Hogeschool van Amsterdam"];
 
 export const mockTeamPreview: TeamPreviewMember[] = [
   { name: "Joris Bakker", initials: "JB", path: "UI/UX Design", percent: 100, status: "Afgerond" },

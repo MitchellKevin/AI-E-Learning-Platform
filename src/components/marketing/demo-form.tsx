@@ -4,7 +4,9 @@ import Link from "next/link";
 import { useEffect, useRef, useState, type FormEvent } from "react";
 import { ArrowRight, Building2, Check, CircleAlert, Mail, User } from "lucide-react";
 import { Alert, Button, Checkbox, Field, Select, TextInput, Textarea } from "@/components/kit";
+import { errorMessage, unwrap } from "@/lib/action-result";
 import type { DemoOptions } from "@/lib/data/marketing";
+import { requestDemoAction } from "@/server/actions/public";
 import styles from "./demo-form.module.scss";
 
 type Values = {
@@ -133,8 +135,13 @@ export function DemoForm({ options, plans, defaultPlan = "" }: Props) {
     }
 
     setStatus("submitting");
-    // Hier komt later een server action die de aanvraag opslaat en het salesteam een seintje geeft.
-    await new Promise((resolve) => setTimeout(resolve, 1200));
+    try {
+      unwrap(await requestDemoAction({ ...values, toestemming: true }));
+    } catch (error) {
+      setStatus("idle");
+      setErrors({ email: errorMessage(error, "Versturen lukte niet. Controleer je gegevens of probeer het later opnieuw.") });
+      return;
+    }
     setStatus("success");
   }
 

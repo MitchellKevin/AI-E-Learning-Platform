@@ -28,13 +28,14 @@ import {
   useToast,
   VisuallyHidden,
 } from "@/components/kit";
+import { errorMessage, unwrap } from "@/lib/action-result";
 import type { AdminPath, Assignment, TeamName } from "@/lib/data/admin-team";
 import { byStatusThenDeadline } from "@/components/admin/shell/assignments";
-import { wait } from "@/components/admin/shell/csv";
 import { formatDaysLeft, formatLongDate, formatShortDate, plural } from "@/components/admin/shell/format";
 import { NewAssignmentDialog, type MemberOption } from "./new-assignment-dialog";
 import { reminderCopy } from "./remind-button";
 import { assignmentStatusLabel, assignmentStatusVariant } from "./status";
+import { deleteAssignmentAction, sendRemindersAction } from "@/server/actions/admin-team";
 import styles from "./assignments-view.module.scss";
 
 type View = "lopend" | "afgerond" | "alles";
@@ -89,20 +90,39 @@ export function AssignmentsView({ assignments: initial, members, paths, teams, t
 
   async function remind(a: Assignment) {
     const pending = a.members.filter((m) => progressOf(m.id, a) < 100);
-    await wait(500);
+    if (pending.length === 0) return;
+    try {
+      unwrap(await sendRemindersAction(pending.map((m) => m.id), a.pathTitle));
+    } catch (error) {
+      toast({ variant: "error", title: "Versturen lukte niet", description: errorMessage(error, "Probeer het opnieuw.") });
+      return;
+    }
     toast({ variant: "success", ...reminderCopy(pending.map((m) => m.name), a.pathTitle) });
   }
 
   async function remove(a: Assignment) {
-    // Straks een server action die de toewijzing verwijdert.
-    await wait(500);
+    try {
+      unwrap(await deleteAssignmentAction(a.id));
+    } catch (error) {
+      toast({ variant: "error", title: "Verwijderen lukte niet", description: errorMessage(error, "Probeer het opnieuw.") });
+      return;
+    }
     setAssignments((prev) => prev.filter((x) => x.id !== a.id));
     toast({
       title: "Toewijzing verwijderd",
       description: `${a.pathTitle} voor ${a.targetLabel.replace(/^Team/, "team")}. Voortgang van collega's blijft bewaard.`,
       action: {
         label: "Ongedaan maken",
-        onClick: () => setAssignments((prev) => [...prev, a].sort(byStatusThenDeadline)),
+        onClick: () => {
+          setAssignments((prev) => [...prev, a].sort(byStatusThenDeadline));
+          // Lukt terugzetten niet, dan verdwijnt de toewijzing weer uit de lijst.
+          deleteAssignmentAction(a.id, true)
+            .then(unwrap)
+            .catch((error) => {
+              setAssignments((prev) => prev.filter((x) => x.id !== a.id));
+              toast({ variant: "error", title: "Ongedaan maken lukte niet", description: errorMessage(error, "Probeer het opnieuw.") });
+            });
+        },
       },
     });
   }

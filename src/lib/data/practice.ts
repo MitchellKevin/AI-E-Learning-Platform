@@ -1,8 +1,11 @@
 import type { Level } from "@/lib/types";
-import { mockExercises, mockFreePractice, mockPracticeProgress } from "@/lib/mock/practice";
+import { mockExercises, mockFreePractice } from "@/lib/mock/practice";
+import { connectDb } from "@/server/db";
+import { PracticeAttempt } from "@/server/models";
+import { requireUser } from "@/server/session";
 
 // Oefenen: opdrachten, voortgang en (straks) de echte AI-antwoorden.
-// Nu op mock-data; later komen de opdrachten uit Storyblok en de voortgang uit MongoDB.
+// De opdrachten zijn nu nog mock (later Storyblok); de voortgang komt uit MongoDB.
 
 export type PracticeAudience = "iedereen" | "designers" | "developers";
 
@@ -69,8 +72,15 @@ export async function getFreePractice() {
   return mockFreePractice;
 }
 
-export async function getPracticeProgress() {
-  return mockPracticeProgress;
+// Beste score per afgeronde oefening van de ingelogde gebruiker.
+export async function getPracticeProgress(): Promise<PracticeProgress> {
+  const user = await requireUser();
+  await connectDb();
+  const best = await PracticeAttempt.aggregate<{ _id: string; score: number }>([
+    { $match: { userId: user._id, completed: true } },
+    { $group: { _id: "$exerciseSlug", score: { $max: "$score" } } },
+  ]);
+  return { completed: Object.fromEntries(best.map((b) => [b._id, b.score])) };
 }
 
 // Eerstvolgende oefening die nog niet af is (na de huidige), voor "Volgende oefening".
@@ -81,8 +91,4 @@ export async function getNextExercise(slug: string) {
   return rest.find((e) => !(e.slug in progress.completed)) ?? rest[0];
 }
 
-export const audienceLabel: Record<PracticeAudience, string> = {
-  iedereen: "Voor iedereen",
-  designers: "Voor designers",
-  developers: "Voor developers",
-};
+export { audienceLabel } from "./practice-shared";

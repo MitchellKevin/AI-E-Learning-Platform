@@ -1,18 +1,21 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import Link from "next/link";
 import clsx from "clsx";
 import { ArrowLeft, ArrowRight, Check, ChevronDown } from "lucide-react";
+import { errorMessage, unwrap } from "@/lib/action-result";
 import type { Chapter } from "@/lib/types";
 import { Breadcrumbs, ProgressBar, Tag, Tags } from "@/components/ui";
+import { useToast } from "@/components/kit";
+import { completeTaskAction, recordMinuteAction, recordQuizAction } from "@/server/actions/learning";
 import { TutorButton } from "@/components/tutor/tutor-provider";
 import { TaskBlocks, type ContinueAction } from "./task-blocks";
 import styles from "./chapter-view.module.scss";
 
 type NavLink = { href: string; label: string };
 
-// Voortgang is voorlopig alleen lokale state; wordt later via een server action opgeslagen.
+// Voortgang wordt direct getoond en via een server action opgeslagen.
 export function ChapterView({
   chapter,
   initialCompleted,
@@ -26,6 +29,7 @@ export function ChapterView({
   prev?: NavLink;
   next?: NavLink;
 }) {
+  const { toast } = useToast();
   const [completed, setCompleted] = useState(initialCompleted);
   const [openId, setOpenId] = useState<string | null>(
     chapter.tasks.find((t) => !initialCompleted.includes(t.id))?.id ?? null,
@@ -42,7 +46,27 @@ export function ChapterView({
     const updated = [...completed, taskId];
     setCompleted(updated);
     if (!stay) setOpenId(firstOpen(updated));
+
+    completeTaskAction(chapter.id, taskId)
+      .then(unwrap)
+      .then((result) => {
+        if (result.points) toast({ variant: "success", title: `Hoofdstuk afgerond: +${result.points} punten` });
+        for (const label of result.badges) toast({ variant: "success", title: "Nieuwe badge behaald", description: label });
+      })
+      .catch((error) => {
+        // Terugdraaien, zodat het scherm niet meer belooft dan er is opgeslagen.
+        setCompleted((list) => list.filter((id) => id !== taskId));
+        toast({ variant: "error", title: "Opslaan lukte niet", description: errorMessage(error, "Controleer je verbinding en probeer het opnieuw.") });
+      });
   }
+
+  // Leertijd: elke minuut dat de pagina zichtbaar is.
+  useEffect(() => {
+    const timer = window.setInterval(() => {
+      if (document.visibilityState === "visible") recordMinuteAction().catch(() => {});
+    }, 60_000);
+    return () => window.clearInterval(timer);
+  }, []);
 
   // De knop verdwijnt mee met het dichtklappende paneel; de focus gaat naar de kop van de taak.
   function openAndFocus(taskId: string | null, focusId: string) {
@@ -125,6 +149,7 @@ export function ChapterView({
                         done={isDone}
                         active={isOpen}
                         onComplete={(stay) => complete(task.id, stay)}
+                        onQuizResult={(firstTry) => recordQuizAction(chapter.id, task.id, firstTry).catch(() => {})}
                         continueAction={continueFor(task.id)}
                       />
                     </div>

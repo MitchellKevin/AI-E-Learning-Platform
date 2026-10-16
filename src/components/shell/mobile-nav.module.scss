@@ -97,6 +97,12 @@
 
 .link {
   display: flex;
+  width: 100%;
+  border: none;
+  background: none;
+  font: inherit;
+  text-align: left;
+  cursor: pointer;
   align-items: center;
   gap: 12px;
   min-height: 44px;

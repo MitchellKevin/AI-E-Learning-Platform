@@ -35,6 +35,7 @@ import {
   useToast,
 } from "@/components/kit";
 import type { LevelTestQuestion, OnboardingOptions, OnboardingProfile } from "@/lib/data/auth";
+import { completeOnboarding } from "@/server/actions/onboarding";
 import { formatDate } from "@/lib/format";
 import { GoalChips } from "./goal-chips";
 import { OnboardingProgress } from "./onboarding-progress";
@@ -163,14 +164,30 @@ export function OnboardingFlow({ profile, options, levelTest, path }: Onboarding
 
   async function finish() {
     setSaving(true);
-    // Later: server action die de intake opslaat in MongoDB en het leerplan klaarzet.
-    await new Promise((resolve) => setTimeout(resolve, 900));
+    try {
+      await completeOnboarding({
+        firstName: firstName.trim(),
+        lastName: lastName.trim(),
+        role,
+        level,
+        goals,
+        weekGoal: minutes,
+        reminder: reminder as "dagelijks" | "wekelijks" | "geen",
+        levelTest: test === "done" ? "gedaan" : test === "skipped" ? "overgeslagen" : undefined,
+        knownTopics: [...knownTopics],
+      });
+    } catch {
+      setSaving(false);
+      toast({ variant: "error", title: "Opslaan lukte niet", description: "Probeer het nog een keer." });
+      return;
+    }
     toast({
       variant: "success",
       title: "Je leerplan staat klaar",
       description: `Veel plezier met ${path.title}, ${firstName.trim()}!`,
     });
     router.push("/dashboard");
+    router.refresh();
   }
 
   let content: ReactNode;

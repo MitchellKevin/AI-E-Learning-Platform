@@ -9,6 +9,8 @@ import { Breadcrumbs, Card, Eyebrow } from "@/components/ui";
 import { ShareActions } from "@/components/share-actions";
 import styles from "./page.module.scss";
 
+export const dynamic = "force-dynamic";
+
 export default async function CertificatePage({ params }: { params: Promise<{ path: string }> }) {
   const { path: slug } = await params;
   const [path, paths, user, certificates, progress] = await Promise.all([
@@ -135,8 +137,4 @@ export default async function CertificatePage({ params }: { params: Promise<{ pa
       </div>
     </main>
   );
-}
-
-export async function generateStaticParams() {
-  return (await getCertificates()).map((c) => ({ path: c.pathSlug }));
 }

@@ -7,7 +7,7 @@ import { ArrowUpRight, Check } from "lucide-react";
 import { Badge, Button, ConfirmDialog, useToast } from "@/components/kit";
 import { seatPrice, type Plan } from "@/lib/data/marketing";
 import { formatDate } from "@/lib/format";
-import { formatEuro, type BillingInterval, type PlanId } from "@/lib/data/admin-org";
+import { formatEuro, type BillingInterval, type PlanId } from "@/lib/data/admin-org-shared";
 import { Panel } from "../panel";
 import { wait } from "../utils";
 import styles from "./plan-compare.module.scss";

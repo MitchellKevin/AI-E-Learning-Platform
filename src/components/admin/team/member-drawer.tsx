@@ -43,6 +43,7 @@ export function MemberDrawer({ member, open, onOpenChange, onAssign }: Props) {
               Leerpad toewijzen
             </Button>
             <RemindButton
+              ids={[member.id]}
               names={[member.name]}
               topic={member.currentPath.title}
               variant="primary"

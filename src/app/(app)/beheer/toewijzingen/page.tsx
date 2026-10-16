@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { getAdminPaths, getAssignments, getReferenceDate, getTeamMembers, teamNames } from "@/lib/data/admin-team";
+import { getAdminPaths, getAssignments, getReferenceDate, getTeamMembers, getTeamNames } from "@/lib/data/admin-team";
 import { AssignmentsView } from "@/components/admin/team/assignments-view";
 import type { MemberOption } from "@/components/admin/team/new-assignment-dialog";
 
@@ -8,11 +8,12 @@ export const metadata: Metadata = { title: "Toewijzingen · Beheer · AI Academy
 type Props = { searchParams: Promise<{ nieuw?: string }> };
 
 export default async function AdminAssignmentsPage({ searchParams }: Props) {
-  const [assignments, members, paths, today, params] = await Promise.all([
+  const [assignments, members, paths, today, teamNames, params] = await Promise.all([
     getAssignments(),
     getTeamMembers(),
     getAdminPaths(),
     getReferenceDate(),
+    getTeamNames(),
     searchParams,
   ]);
 

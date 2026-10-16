@@ -4,7 +4,7 @@ import { useRef, useState } from "react";
 import clsx from "clsx";
 import { Check } from "lucide-react";
 import { Button, Field, Select, TextInput, useToast } from "@/components/kit";
-import { isValidEmail, isValidNlVat, isValidPostalCode, normalizeVat, type BillingDetails } from "@/lib/data/admin-org";
+import { isValidEmail, isValidNlVat, isValidPostalCode, normalizeVat, type BillingDetails } from "@/lib/data/admin-org-shared";
 import { Panel } from "../panel";
 import { wait } from "../utils";
 import styles from "./billing-details-form.module.scss";

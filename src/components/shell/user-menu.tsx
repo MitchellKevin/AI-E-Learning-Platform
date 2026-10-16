@@ -1,7 +1,8 @@
 "use client";
 
 import { Award, LayoutGrid, LifeBuoy, LogOut, Settings, User } from "lucide-react";
-import { Avatar, Menu, MenuContent, MenuItem, MenuSeparator, MenuTrigger, useToast } from "@/components/kit";
+import { Avatar, Menu, MenuContent, MenuItem, MenuSeparator, MenuTrigger } from "@/components/kit";
+import { signOutAction } from "@/server/actions/auth";
 import styles from "./user-menu.module.scss";
 
 export type ShellUser = {
@@ -14,7 +15,6 @@ export type ShellUser = {
 };
 
 export function UserMenu({ user }: { user: ShellUser }) {
-  const { toast } = useToast();
 
   return (
     <Menu>
@@ -51,13 +51,7 @@ export function UserMenu({ user }: { user: ShellUser }) {
         <MenuItem href="/help" icon={<LifeBuoy />}>
           Help
         </MenuItem>
-        <MenuItem
-          href="/inloggen"
-          icon={<LogOut />}
-          danger
-          // Later: signOut() van Auth.js; nu alleen terug naar het inlogscherm.
-          onSelect={() => toast({ title: "Je bent uitgelogd", description: "Tot de volgende les!" })}
-        >
+        <MenuItem icon={<LogOut />} danger onSelect={() => signOutAction()}>
           Uitloggen
         </MenuItem>
       </MenuContent>

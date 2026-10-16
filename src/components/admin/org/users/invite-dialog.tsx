@@ -5,8 +5,8 @@ import Link from "next/link";
 import clsx from "clsx";
 import { CircleAlert, X } from "lucide-react";
 import { Alert, Button, Dialog, Field, Select, Textarea, useFieldProps } from "@/components/kit";
-import { INVITE_VALID_DAYS, ROLE_DESCRIPTIONS, ROLE_LABELS, isValidEmail, type OrgRole } from "@/lib/data/admin-org";
-import { plural, wait } from "../utils";
+import { INVITE_VALID_DAYS, ROLE_DESCRIPTIONS, ROLE_LABELS, isValidEmail, type OrgRole } from "@/lib/data/admin-org-shared";
+import { plural } from "../utils";
 import styles from "./invite-dialog.module.scss";
 
 export type NewInvite = { email: string; role: OrgRole; team: string; message: string };
@@ -27,7 +27,7 @@ type Props = {
   /** Bestaande adressen (kleine letters) met hun status, om dubbele uitnodigingen te voorkomen. */
   existing: Map<string, "member" | "invited">;
   freeSeats: number;
-  onInvite: (invites: NewInvite[]) => void;
+  onInvite: (invites: NewInvite[]) => Promise<void>;
 };
 
 const MESSAGE_MAX = 400;
@@ -136,10 +136,14 @@ export function InviteDialog({ open, onOpenChange, teams, existing, freeSeats, o
     if (next.team) return teamRef.current?.focus();
 
     setBusy(true);
-    // Straks: server action die de uitnodigingen aanmaakt en de e-mails verstuurt.
-    await wait(900);
+    try {
+      await onInvite(ok.map((c) => ({ email: c.email, role, team, message: message.trim() })));
+    } catch {
+      // De melding komt van de ouder; het venster blijft open zodat je het opnieuw kunt proberen.
+      setBusy(false);
+      return;
+    }
     setBusy(false);
-    onInvite(ok.map((c) => ({ email: c.email, role, team, message: message.trim() })));
     onOpenChange(false);
   }
 

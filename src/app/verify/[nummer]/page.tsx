@@ -1,21 +1,20 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { BadgeCheck, Check, SearchX } from "lucide-react";
-import { getCertificateNumbers, verifyCertificate } from "@/lib/data/profile";
+import { verifyCertificate } from "@/lib/data/profile";
 import { allChapters } from "@/lib/content";
 import { formatDate } from "@/lib/format";
 import { VerifyLookup } from "@/components/profile/verify-lookup";
 import styles from "../verify.module.scss";
+import { cache } from "react";
+import { headers } from "next/headers";
+import { connectDb } from "@/server/db";
+import { MINUTE, clientIp, rateLimit } from "@/server/services/rate-limit";
+
+// Altijd live tegen de database: een ingetrokken certificaat moet direct ongeldig zijn.
+export const dynamic = "force-dynamic";
 
 type Params = { params: Promise<{ nummer: string }> };
-
-// Bekende nummers vooraf renderen; onbekende nummers worden op aanvraag gecontroleerd.
-export async function generateStaticParams() {
-  return (await getCertificateNumbers()).map((nummer) => ({ nummer }));
-}
-
-// Een ingetrokken certificaat moet snel ongeldig worden.
-export const revalidate = 3600;
 
 function readNumber(raw: string) {
   let value = raw;
@@ -27,9 +26,18 @@ function readNumber(raw: string) {
   return value.trim().slice(0, 64);
 }
 
+// Eén opzoeking per request (metadata en pagina delen hem), met een limiet per IP tegen het afspeuren van nummers.
+const lookup = cache(async (number: string) => {
+  await connectDb();
+  const limited = await rateLimit({ key: `verify:ip:${clientIp(await headers())}`, limit: 60, windowMs: 15 * MINUTE });
+  if (!limited.ok) return "te-veel" as const;
+  return verifyCertificate(number);
+});
+
 export async function generateMetadata({ params }: Params): Promise<Metadata> {
   const number = readNumber((await params).nummer);
-  const result = await verifyCertificate(number);
+  const found = await lookup(number);
+  const result = found === "te-veel" ? undefined : found;
   return {
     title: result ? `Certificaat ${result.certificate.number} is geldig · AI Academy` : "Certificaat niet gevonden · AI Academy",
     description: result
@@ -41,7 +49,18 @@ export async function generateMetadata({ params }: Params): Promise<Metadata> {
 
 export default async function VerifyPage({ params }: Params) {
   const number = readNumber((await params).nummer);
-  const result = await verifyCertificate(number);
+  const found = await lookup(number);
+  if (found === "te-veel") {
+    return (
+      <main className={styles.main}>
+        <article className={styles.card} aria-labelledby="verify-title">
+          <h1 id="verify-title">Even geduld</h1>
+          <p>Je hebt in korte tijd veel certificaten gecontroleerd. Probeer het over een kwartier opnieuw.</p>
+        </article>
+      </main>
+    );
+  }
+  const result = found;
 
   if (!result) {
     return (

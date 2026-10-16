@@ -1,5 +1,5 @@
 import { StatusPill } from "@/components/kit";
-import { INVITE_VALID_DAYS, STATUS_LABELS, daysBetween, type OrgUser } from "@/lib/data/admin-org";
+import { INVITE_VALID_DAYS, STATUS_LABELS, daysBetween, type OrgUser } from "@/lib/data/admin-org-shared";
 
 /** Dagen tot een uitnodiging verloopt; negatief = verlopen. */
 export const inviteDaysLeft = (invitedAt: string, today: string) => INVITE_VALID_DAYS - daysBetween(invitedAt, today);

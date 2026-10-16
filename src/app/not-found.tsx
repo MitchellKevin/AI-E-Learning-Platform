@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { ArrowRight, BookOpen, LayoutDashboard, LifeBuoy, Sparkles } from "lucide-react";
 import { getSearchIndex } from "@/lib/data/shell";
+import { getSessionUser } from "@/server/session";
 import { ArrowButton, Button } from "@/components/kit";
 import { CommandPalette } from "@/components/shell/command-palette";
 import styles from "./not-found.module.scss";
@@ -34,12 +35,15 @@ const destinations = [
 
 // Vriendelijke 404 voor alle routes; staat buiten de app-layout, dus met een eigen kleine kop.
 export default async function NotFound() {
-  const index = await getSearchIndex();
+  // Zoeken en de app-bestemmingen alleen voor wie is ingelogd; bezoekers krijgen een gewone 404.
+  const user = await getSessionUser().catch(() => null);
+  const index = user ? await getSearchIndex() : null;
+  const home = user ? "/dashboard" : "/";
 
   return (
     <div className={styles.page}>
       <header className={styles.top}>
-        <Link href="/dashboard" className={styles.logo} aria-label="AI Academy, naar je dashboard">
+        <Link href={home} className={styles.logo} aria-label={user ? "AI Academy, naar je dashboard" : "AI Academy, naar de homepage"}>
           <span className={styles.logoMark} aria-hidden>
             AI
           </span>
@@ -57,38 +61,42 @@ export default async function NotFound() {
           </p>
         </div>
 
-        <div className={styles.search}>
-          <CommandPalette index={index} variant="field" />
-        </div>
+        {index && (
+          <div className={styles.search}>
+            <CommandPalette index={index} variant="field" />
+          </div>
+        )}
 
         <div className={styles.actions}>
-          <ArrowButton href="/dashboard">Naar je dashboard</ArrowButton>
+          <ArrowButton href={home}>{user ? "Naar je dashboard" : "Naar de homepage"}</ArrowButton>
           <Button href="/help" variant="secondary" size="lg">
             Naar het helpcentrum
           </Button>
         </div>
 
-        <section aria-labelledby="nf-destinations" className={styles.destinations}>
-          <h2 id="nf-destinations" className={styles.destinationsTitle}>
-            Of kies een van deze plekken
-          </h2>
-          <ul className={styles.grid}>
-            {destinations.map((d) => (
-              <li key={d.href}>
-                <Link href={d.href} className={styles.card}>
-                  <span className={styles.cardIcon} aria-hidden>
-                    {d.icon}
-                  </span>
-                  <span className={styles.cardText}>
-                    <span className={styles.cardTitle}>{d.title}</span>
-                    <span className={styles.cardBody}>{d.text}</span>
-                  </span>
-                  <ArrowRight aria-hidden className={styles.cardArrow} />
-                </Link>
-              </li>
-            ))}
-          </ul>
-        </section>
+        {user && (
+          <section aria-labelledby="nf-destinations" className={styles.destinations}>
+            <h2 id="nf-destinations" className={styles.destinationsTitle}>
+              Of kies een van deze plekken
+            </h2>
+            <ul className={styles.grid}>
+              {destinations.map((d) => (
+                <li key={d.href}>
+                  <Link href={d.href} className={styles.card}>
+                    <span className={styles.cardIcon} aria-hidden>
+                      {d.icon}
+                    </span>
+                    <span className={styles.cardText}>
+                      <span className={styles.cardTitle}>{d.title}</span>
+                      <span className={styles.cardBody}>{d.text}</span>
+                    </span>
+                    <ArrowRight aria-hidden className={styles.cardArrow} />
+                  </Link>
+                </li>
+              ))}
+            </ul>
+          </section>
+        )}
       </main>
     </div>
   );

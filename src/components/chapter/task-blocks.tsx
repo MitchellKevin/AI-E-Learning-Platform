@@ -25,6 +25,7 @@ export function TaskBlocks({
   done,
   active = true,
   onComplete,
+  onQuizResult,
   continueAction,
 }: {
   blocks: TaskBlock[];
@@ -33,6 +34,8 @@ export function TaskBlocks({
   active?: boolean;
   /** `stay`: taak afronden maar open laten, zodat de uitleg te lezen blijft. */
   onComplete: (stay?: boolean) => void;
+  /** Vraag goed beantwoord; firstTry = zonder foute poging (geeft quizpunten). */
+  onQuizResult?: (firstTry: boolean) => void;
   /** Vervolgstap na een uitleg, bv. "Volgende taak". */
   continueAction?: ContinueAction;
 }) {
@@ -106,7 +109,10 @@ export function TaskBlocks({
                 {...block}
                 done={done}
                 animate={!initiallyDone}
-                onCorrect={() => pass(i)}
+                onCorrect={(firstTry) => {
+                  pass(i);
+                  onQuizResult?.(firstTry);
+                }}
               />
             );
           case "quiz":
@@ -118,7 +124,10 @@ export function TaskBlocks({
                 number={quizCount > 1 ? `Vraag ${quizNumber} van ${quizCount}` : "Vraag"}
                 done={done}
                 animate={!initiallyDone}
-                onCorrect={() => pass(i)}
+                onCorrect={(firstTry) => {
+                  pass(i);
+                  onQuizResult?.(firstTry);
+                }}
               />
             );
           case "video":
@@ -189,7 +198,7 @@ function KnowledgeCheck({
   explanation?: string;
   done: boolean;
   animate: boolean;
-  onCorrect: () => void;
+  onCorrect: (firstTry: boolean) => void;
 }) {
   const id = useId();
   const [value, setValue] = useState("");
@@ -206,7 +215,7 @@ function KnowledgeCheck({
     // Later beoordeelt de Claude API het antwoord en schrijft de uitleg op maat.
     const correct = answers.some((a) => normalize(value).includes(normalize(a)));
     setResult(correct ? "correct" : "wrong");
-    if (correct) onCorrect();
+    if (correct) onCorrect(attempt === 0);
     else setAttempt((n) => n + 1);
   }
 
@@ -288,7 +297,7 @@ function Quiz({
   explanation: string;
   done: boolean;
   animate: boolean;
-  onCorrect: () => void;
+  onCorrect: (firstTry: boolean) => void;
 }) {
   const id = useId();
   const [wrong, setWrong] = useState<number[]>([]);
@@ -298,10 +307,9 @@ function Quiz({
   function pick(index: number) {
     if (solved || wrong.includes(index)) return;
     setLast(index);
-    // Later: antwoord opslaan via een server action (voor de rapportages van de teamlead).
     if (options[index].correct) {
       setSolved(true);
-      onCorrect();
+      onCorrect(wrong.length === 0);
     } else {
       setWrong((list) => [...list, index]);
     }

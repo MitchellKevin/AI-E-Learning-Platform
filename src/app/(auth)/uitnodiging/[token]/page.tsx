@@ -1,10 +1,16 @@
 import type { Metadata } from "next";
 import Link from "next/link";
-import { ArrowRight, CalendarClock, Link2Off, Mail, TimerReset, UserCheck } from "lucide-react";
+import { ArrowRight, CalendarClock, Link2Off, TimerReset, UserCheck } from "lucide-react";
 import { Avatar, Button, Tag, Tags } from "@/components/kit";
 import { AuthCard, AuthDivider, AuthNote } from "@/components/auth/auth-card";
 import { SsoButtons } from "@/components/auth/sso-buttons";
-import { getInvite, getInviteTokens, type Invite } from "@/lib/data/auth";
+import { InviteEmailButton } from "@/components/auth/invite-email-button";
+import { SignedInAs } from "@/components/auth/signed-in-as";
+import { initialsOf } from "@/server/models/user";
+import { getSessionUser } from "@/server/session";
+import { ssoEnabled } from "@/server/env";
+import type { SsoProvider } from "@/lib/data/auth";
+import { getInvite, type Invite } from "@/lib/data/auth";
 import { formatDate } from "@/lib/format";
 import styles from "./page.module.scss";
 
@@ -14,16 +20,13 @@ export const metadata: Metadata = {
   robots: { index: false },
 };
 
-export async function generateStaticParams() {
-  const tokens = await getInviteTokens();
-  return tokens.map((token) => ({ token }));
-}
+export const dynamic = "force-dynamic";
 
 const providerLabel = { microsoft: "Microsoft", google: "Google" };
 
 export default async function InvitePage({ params }: { params: Promise<{ token: string }> }) {
   const { token } = await params;
-  const invite = await getInvite(token);
+  const [invite, current] = await Promise.all([getInvite(token), getSessionUser()]);
 
   // Ongeldige links krijgen een vriendelijke uitleg in plaats van een kale 404.
   if (!invite) return <InviteNotFound />;
@@ -105,11 +108,31 @@ export default async function InvitePage({ params }: { params: Promise<{ token: 
             {organisation.name} logt in via {providerLabel[provider]}. Gebruik het account van {invite.email}.
           </p>
         )}
-        <SsoButtons next="/welkom" recommended={provider} />
-        <AuthDivider>of</AuthDivider>
-        <Button href="/welkom" variant="ghost" size="lg" fullWidth icon={<Mail />} iconRight={<ArrowRight />}>
-          Doorgaan met e-mail
-        </Button>
+        {current ? (
+          // Iemand anders is al ingelogd in deze browser: eerst uitloggen, zodat de uitnodiging bij het juiste account komt.
+          <>
+            <p className={styles.providerHint}>
+              {current.email === invite.email
+                ? "Je bent al ingelogd met dit e-mailadres."
+                : `Deze uitnodiging is voor ${invite.email}. Log eerst uit om hem te accepteren.`}
+            </p>
+            <SignedInAs
+              name={`${current.firstName} ${current.lastName}`.trim()}
+              email={current.email}
+              initials={initialsOf(current.firstName, current.lastName, current.email)}
+            />
+          </>
+        ) : (
+          <>
+            <SsoButtons
+              next="/welkom"
+              recommended={provider}
+              enabled={(["microsoft", "google"] as SsoProvider[]).filter((p) => ssoEnabled[p]())}
+            />
+            <AuthDivider>of</AuthDivider>
+            <InviteEmailButton email={invite.email} />
+          </>
+        )}
       </div>
 
       <AuthNote>

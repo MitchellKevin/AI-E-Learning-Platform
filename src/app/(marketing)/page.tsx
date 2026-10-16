@@ -113,7 +113,7 @@ export default async function HomePage() {
       </section>
 
       {/* Klanten */}
-      <section aria-labelledby="klanten-titel" className={styles.customers}>
+      {/* <section aria-labelledby="klanten-titel" className={styles.customers}>
         <h2 id="klanten-titel" className={styles.customersTitle}>
           Teams van deze organisaties leren al met AI Academy
         </h2>
@@ -124,7 +124,7 @@ export default async function HomePage() {
             </li>
           ))}
         </ul>
-      </section>
+      </section> */}
 
       {/* Hoe het werkt */}
       <section id="product" aria-labelledby="werkwijze-titel" className={styles.section}>
@@ -208,7 +208,7 @@ export default async function HomePage() {
       </section>
 
       {/* Ervaringen */}
-      <section aria-labelledby="ervaringen-titel" className={styles.section}>
+      {/* <section aria-labelledby="ervaringen-titel" className={styles.section}>
         <SectionIntro
           id="ervaringen-titel"
           eyebrow="Ervaringen"
@@ -216,7 +216,7 @@ export default async function HomePage() {
           lead="Design- en developmentteams in heel Nederland leren met AI Academy. Dit merken ze in hun werk."
         />
         <Testimonials items={testimonials} stats={proofStats} />
-      </section>
+      </section> */}
 
       {/* Veelgestelde vragen */}
       <section aria-labelledby="faq-titel" className={styles.section}>

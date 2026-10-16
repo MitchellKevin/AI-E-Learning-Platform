@@ -28,6 +28,8 @@ type Props = ExamFlowProps & {
   demo: boolean;
   onDemoChange: (demo: boolean) => void;
   onStart: () => void;
+  /** De server zet een poging klaar. */
+  starting?: boolean;
   /** Vergrendeld en geen demo. */
   locked: boolean;
   /** Focus op de kop, bv. na "Opnieuw proberen". */
@@ -44,6 +46,7 @@ export function ExamIntro({
   demo,
   onDemoChange,
   onStart,
+  starting = false,
   locked,
   focusOnMount,
 }: Props) {
@@ -217,7 +220,7 @@ export function ExamIntro({
               ))}
             </ul>
             <div className={styles.start}>
-              <Button size="lg" iconRight={<ArrowRight />} onClick={onStart} disabled={!canStart}>
+              <Button size="lg" iconRight={<ArrowRight />} onClick={onStart} disabled={!canStart} loading={starting}>
                 {used > 0 && !passed ? `Start poging ${used + 1}` : "Start de toets"}
               </Button>
               <p className={styles.startNote}>

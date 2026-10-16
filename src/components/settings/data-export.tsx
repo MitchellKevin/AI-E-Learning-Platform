@@ -3,16 +3,11 @@
 import { useState } from "react";
 import { Download } from "lucide-react";
 import { Button, useToast } from "@/components/kit";
+import { errorMessage, unwrap } from "@/lib/action-result";
 import { SettingsCard, SettingsGroup } from "./settings-form";
+import { exportMyDataAction } from "@/server/actions/account";
 import styles from "./data-export.module.scss";
 
-const wait = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms));
-
-type Props = {
-  /** Wat er in de export komt; nu uit de mock-data. */
-  data: Record<string, unknown>;
-  fileName: string;
-};
 
 const contents = [
   "Je accountgegevens en instellingen",
@@ -22,16 +17,16 @@ const contents = [
 ];
 
 // Gegevens downloaden (AVG, recht op inzage).
-export function DataExport({ data, fileName }: Props) {
+export function DataExport() {
   const { toast } = useToast();
   const [busy, setBusy] = useState(false);
 
-  // Later: server action die de volledige export in MongoDB samenstelt; nu bouwen we het bestand in de browser.
+  // De server stelt de export samen uit de database; de browser maakt er een bestand van.
   async function download() {
     setBusy(true);
-    await wait(1200);
     try {
-      const blob = new Blob([JSON.stringify({ exportedAt: new Date().toISOString(), ...data }, null, 2)], {
+      const { data, fileName } = unwrap(await exportMyDataAction());
+      const blob = new Blob([JSON.stringify(data, null, 2)], {
         type: "application/json",
       });
       const url = URL.createObjectURL(blob);
@@ -43,11 +38,11 @@ export function DataExport({ data, fileName }: Props) {
       link.remove();
       window.setTimeout(() => URL.revokeObjectURL(url), 1000);
       toast({ variant: "success", title: "Je gegevens zijn gedownload", description: fileName });
-    } catch {
+    } catch (error) {
       toast({
         variant: "error",
         title: "Downloaden is niet gelukt",
-        description: "Probeer het opnieuw of neem contact op met support.",
+        description: errorMessage(error, "Probeer het opnieuw of neem contact op met support."),
       });
     } finally {
       setBusy(false);

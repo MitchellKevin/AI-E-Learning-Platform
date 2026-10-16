@@ -3,14 +3,15 @@
 import { useRef, useState } from "react";
 import { AtSign, Copy, Globe, Plus, Trash2 } from "lucide-react";
 import { Button, Field, IconButton, Select, StatusPill, Switch, TextInput, useToast } from "@/components/kit";
-import {
+import { domainTxtRecord,
   PUBLIC_EMAIL_DOMAINS,
   isValidDomain,
   type AutoJoinDomain,
   type DomainSettings as Settings,
-} from "@/lib/data/admin-org";
+} from "@/lib/data/admin-org-shared";
+import { errorMessage, unwrap } from "@/lib/action-result";
 import { Panel } from "../panel";
-import { wait } from "../utils";
+import { addDomainAction, removeDomainAction, updateAutoJoinAction, verifyDomainAction } from "@/server/actions/admin-org";
 import styles from "./domain-settings.module.scss";
 
 // "https://www.Studionoord.nl/" of "@studionoord.nl" -> "studionoord.nl"
@@ -23,7 +24,7 @@ const normalize = (value: string) =>
     .replace(/^@/, "")
     .replace(/\/.*$/, "");
 
-const txtRecord = (domain: string) => `ai-academy-verificatie=${domain.replace(/\./g, "-")}-7f3k2q`;
+const txtRecord = domainTxtRecord;
 
 export function DomainSettings({ initial, teams }: { initial: Settings; teams: string[] }) {
   const [autoJoin, setAutoJoin] = useState(initial.autoJoin);
@@ -36,9 +37,16 @@ export function DomainSettings({ initial, teams }: { initial: Settings; teams: s
   const inputRef = useRef<HTMLInputElement>(null);
   const { toast } = useToast();
 
-  // Straks: deze instellingen worden via een server action opgeslagen; nu direct bijwerken.
+  function fail(error: unknown) {
+    toast({ variant: "error", title: "Dat lukte niet", description: errorMessage(error, "Probeer het opnieuw.") });
+  }
 
-  function toggle(next: boolean) {
+  async function toggle(next: boolean) {
+    try {
+      unwrap(await updateAutoJoinAction({ autoJoin: next }));
+    } catch (error) {
+      return fail(error);
+    }
     setAutoJoin(next);
     toast({
       variant: "success",
@@ -62,7 +70,12 @@ export function DomainSettings({ initial, teams }: { initial: Settings; teams: s
     if (message) return inputRef.current?.focus();
 
     setAdding(true);
-    await wait(600);
+    try {
+      unwrap(await addDomainAction(domain));
+    } catch (error) {
+      setAdding(false);
+      return fail(error);
+    }
     setAdding(false);
     setDomains((list) => [...list, { domain, verified: false, addedAt: new Date().toISOString() }]);
     setDraft("");
@@ -73,7 +86,12 @@ export function DomainSettings({ initial, teams }: { initial: Settings; teams: s
     });
   }
 
-  function remove(domain: AutoJoinDomain) {
+  async function remove(domain: AutoJoinDomain) {
+    try {
+      unwrap(await removeDomainAction(domain.domain));
+    } catch (error) {
+      return fail(error);
+    }
     const index = domains.indexOf(domain);
     setDomains((list) => list.filter((d) => d.domain !== domain.domain));
     toast({
@@ -82,10 +100,14 @@ export function DomainSettings({ initial, teams }: { initial: Settings; teams: s
       action: {
         label: "Ongedaan maken",
         onClick: () =>
-          setDomains((list) =>
-            list.some((d) => d.domain === domain.domain)
-              ? list
-              : [...list.slice(0, index), domain, ...list.slice(index)],
+          addDomainAction(domain.domain).then(unwrap).then(
+            () =>
+              setDomains((list) =>
+                list.some((d) => d.domain === domain.domain)
+                  ? list
+                  : [...list.slice(0, index), domain, ...list.slice(index)],
+              ),
+            fail,
           ),
       },
     });
@@ -94,9 +116,22 @@ export function DomainSettings({ initial, teams }: { initial: Settings; teams: s
 
   async function verify(domain: AutoJoinDomain) {
     setChecking(domain.domain);
-    // Straks: DNS-controle op de server.
-    await wait(1200);
+    let verified: boolean;
+    try {
+      verified = unwrap(await verifyDomainAction(domain.domain));
+    } catch (error) {
+      setChecking(null);
+      return fail(error);
+    }
     setChecking(null);
+    if (!verified) {
+      toast({
+        variant: "error",
+        title: "TXT-record nog niet gevonden",
+        description: `Controleer de DNS van ${domain.domain}. Wijzigingen kunnen tot een uur duren.`,
+      });
+      return;
+    }
     setDomains((list) => list.map((d) => (d.domain === domain.domain ? { ...d, verified: true } : d)));
     toast({ variant: "success", title: `${domain.domain} is geverifieerd` });
   }
@@ -142,12 +177,18 @@ export function DomainSettings({ initial, teams }: { initial: Settings; teams: s
           <Select
             value={team}
             disabled={!autoJoin}
-            onChange={(e) => {
-              setTeam(e.target.value);
+            onChange={async (e) => {
+              const next = e.target.value;
+              try {
+                unwrap(await updateAutoJoinAction({ defaultTeam: next }));
+              } catch (error) {
+                return fail(error);
+              }
+              setTeam(next);
               toast({
                 variant: "success",
                 title: "Standaardteam opgeslagen",
-                description: `Nieuwe collega's komen in ${e.target.value}.`,
+                description: `Nieuwe collega's komen in ${next}.`,
               });
             }}
           >

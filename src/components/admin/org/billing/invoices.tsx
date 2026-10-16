@@ -16,7 +16,7 @@ import {
   useToast,
   VisuallyHidden,
 } from "@/components/kit";
-import { VAT_RATE, formatEuro, formatShortDate, type Invoice } from "@/lib/data/admin-org";
+import { VAT_RATE, formatEuro, formatShortDate, type Invoice } from "@/lib/data/admin-org-shared";
 import { Panel } from "../panel";
 import styles from "./invoices.module.scss";
 

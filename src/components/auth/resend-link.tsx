@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import { RotateCcw } from "lucide-react";
 import { Button, useToast } from "@/components/kit";
+import { requestMagicLink } from "@/server/actions/auth";
 import styles from "./resend-link.module.scss";
 
 const COOLDOWN = 30;
@@ -10,7 +11,7 @@ const COOLDOWN = 30;
 const formatSeconds = (s: number) => `0:${String(s).padStart(2, "0")}`;
 
 // Opnieuw versturen met een wachttijd, zodat niemand tien links tegelijk aanvraagt.
-export function ResendLink({ email }: { email?: string }) {
+export function ResendLink({ email, next }: { email?: string; next?: string }) {
   const { toast } = useToast();
   // De eerste link is net verstuurd, dus de teller loopt al.
   const [seconds, setSeconds] = useState(COOLDOWN);
@@ -29,9 +30,12 @@ export function ResendLink({ email }: { email?: string }) {
   async function resend() {
     setBusy(true);
     setAnnouncement("");
-    // Later: dezelfde server action als het inlogformulier.
-    await new Promise((resolve) => setTimeout(resolve, 800));
+    const result = email ? await requestMagicLink(email, next).catch(() => ({ ok: false as const, error: "Versturen lukte niet. Probeer het opnieuw." })) : null;
     setBusy(false);
+    if (result && !result.ok) {
+      toast({ variant: "error", title: "Geen nieuwe link verstuurd", description: result.error });
+      return;
+    }
     setSeconds(COOLDOWN);
     toast({
       variant: "success",

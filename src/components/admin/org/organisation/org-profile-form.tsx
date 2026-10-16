@@ -5,9 +5,10 @@ import Link from "next/link";
 import clsx from "clsx";
 import { Check, ImageUp, Trash2, TriangleAlert } from "lucide-react";
 import { Button, Field, TextInput, buttonClassName, useToast } from "@/components/kit";
-import type { OrgProfile } from "@/lib/data/admin-org";
+import { errorMessage, unwrap } from "@/lib/action-result";
+import type { OrgProfile } from "@/lib/data/admin-org-shared";
 import { Panel } from "../panel";
-import { wait } from "../utils";
+import { saveOrgProfileAction } from "@/server/actions/admin-org";
 import styles from "./org-profile-form.module.scss";
 
 const PRESETS = [
@@ -120,8 +121,20 @@ export function OrgProfileForm({ initial }: { initial: OrgProfile }) {
     if (next.website) return websiteRef.current?.focus();
 
     setBusy(true);
-    // Straks: server action die het organisatieprofiel opslaat.
-    await wait(900);
+    try {
+      unwrap(
+        await saveOrgProfileAction({
+          name: values.name,
+          legalName: initial.legalName,
+          website: values.website,
+          brandColor: values.brandColor,
+        }),
+      );
+    } catch (error) {
+      setBusy(false);
+      toast({ variant: "error", title: "Opslaan lukte niet", description: errorMessage(error, "Controleer de velden en probeer het opnieuw.") });
+      return;
+    }
     setBusy(false);
     setSaved(values);
     setSavedLogo(logo?.url ?? null);

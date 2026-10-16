@@ -1,10 +1,8 @@
-import {
-  mockInvites,
-  mockLevelTest,
-  mockOnboardingOptions,
-  mockOnboardingProfile,
-  mockSsoDomains,
-} from "@/lib/mock/auth";
+import { mockLevelTest, mockOnboardingOptions } from "@/lib/mock/auth";
+import { getLearningPath } from "@/lib/content";
+import { connectDb } from "@/server/db";
+import { Assignment, Invite as InviteModel, Organization, Team, User, initialsOf } from "@/server/models";
+import { getUserContext } from "@/server/session";
 
 // Types voor inloggen, uitnodigingen en onboarding.
 
@@ -68,23 +66,75 @@ export type LevelTestQuestion = {
   answer: number;
 };
 
-// Uitnodigingen. Wordt later een opzoeking in MongoDB (token gehasht, met vervaldatum).
-export async function getInvite(token: string) {
-  return mockInvites.find((invite) => invite.token === token) ?? null;
+// Uitnodiging op token, met organisatie en uitnodiger.
+export async function getInvite(token: string): Promise<Invite | null> {
+  await connectDb();
+  const invite = await InviteModel.findOne({ token, revokedAt: null }).lean();
+  if (!invite) return null;
+
+  const [org, team, inviter, memberCount] = await Promise.all([
+    Organization.findById(invite.orgId).lean(),
+    invite.teamId ? Team.findById(invite.teamId).lean() : null,
+    invite.invitedBy ? User.findById(invite.invitedBy).lean() : null,
+    User.countDocuments({ orgId: invite.orgId, status: "actief" }),
+  ]);
+  if (!org) return null;
+
+  const paths = await Promise.all((invite.paths ?? []).map((slug) => getLearningPath(slug)));
+  const status = invite.acceptedAt ? "accepted" : invite.expiresAt < new Date() ? "expired" : "open";
+
+  return {
+    token: invite.token,
+    status,
+    email: invite.email,
+    organisation: {
+      name: org.name,
+      initials: org.initials,
+      memberCount,
+      ssoProvider: org.sso?.status === "verbonden" ? (org.sso.provider as SsoProvider) : undefined,
+    },
+    inviter: {
+      name: inviter ? `${inviter.firstName} ${inviter.lastName}` : org.name,
+      initials: inviter ? initialsOf(inviter.firstName, inviter.lastName) : org.initials,
+      title: inviter?.jobTitle ?? "",
+    },
+    role: invite.role === "learner" ? "Cursist" : "Manager",
+    team: team?.name ?? "",
+    paths: paths.filter(Boolean).map((p) => p!.title),
+    deadline: invite.deadline?.toISOString(),
+    expiresAt: invite.expiresAt.toISOString(),
+  };
 }
 
-export async function getInviteTokens() {
-  return mockInvites.map((invite) => invite.token);
+// Domeinen met een verbonden SSO-koppeling, voor de hint op het inlogscherm.
+export async function getSsoDomains(): Promise<SsoDomain[]> {
+  await connectDb();
+  const orgs = await Organization.find({ "sso.status": "verbonden" }).lean();
+  return orgs.flatMap((org) =>
+    org.domains.filter((d) => d.verified && d.domain && !d.removedAt).map((d) => ({ domain: d.domain!, organisation: org.name, provider: org.sso!.provider as SsoProvider })),
+  );
 }
 
-// Domeinen met SSO, voor de hint op het inlogscherm. Komt later uit de organisatie-instellingen.
-export async function getSsoDomains() {
-  return mockSsoDomains;
-}
+// Wat we al weten van de ingelogde nieuwe gebruiker, plus het eerste toegewezen leerpad.
+export async function getOnboardingProfile(): Promise<OnboardingProfile> {
+  const { user, org, team } = await getUserContext();
+  const assignment = await Assignment.findOne({
+    orgId: user.orgId,
+    $or: [{ userIds: user._id }, ...(user.teamId ? [{ teamIds: user.teamId }] : [])],
+  })
+    .sort({ deadline: 1 })
+    .lean();
+  const slug = assignment?.pathSlug ?? "ai-101";
+  const path = await getLearningPath(slug);
 
-// Gegevens van de ingelogde nieuwe gebruiker. Wordt later de Auth.js-sessie + MongoDB.
-export async function getOnboardingProfile() {
-  return mockOnboardingProfile;
+  return {
+    firstName: user.firstName,
+    lastName: user.lastName,
+    email: user.email,
+    organisation: org.name,
+    team: team?.name ?? "",
+    assignedPath: { slug, title: path?.title ?? "AI 101", deadline: assignment?.deadline?.toISOString() },
+  };
 }
 
 // Keuzes in de intake. Komt later uit Storyblok, zodat de tekst zonder deploy aan te passen is.

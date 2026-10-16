@@ -8,7 +8,7 @@ import type {
   WeeklyActivity,
 } from "@/lib/data/admin-team";
 
-// Tijdelijke beheerdata voor Studio Noord. Wordt vervangen door MongoDB (zie src/lib/data/admin-team.ts).
+// Demo-beheerdata voor Studio Noord: wordt alleen nog gebruikt door scripts/seed.ts.
 
 // Vaste peildatum, zodat "laatst actief" en deadlines bij de mockdata blijven kloppen.
 export const mockToday = "2026-10-14";

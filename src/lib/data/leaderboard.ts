@@ -1,18 +1,15 @@
-import {
-  mockLeaderboardMembers,
-  mockLeaderboardVisible,
-  mockMyId,
-  mockMyTeam,
-  mockPointRules,
-} from "@/lib/mock/leaderboard";
+import { cache } from "react";
+import { mockPointRules } from "@/lib/mock/leaderboard";
+import { connectDb } from "@/server/db";
+import { Team } from "@/server/models";
+import { requireUser } from "@/server/session";
+import { leaderboardMembers } from "@/server/services/leaderboard";
 
 // Types en accessors voor het leaderboard.
 
-export type LeaderboardScope = "team" | "organisatie";
-export type LeaderboardPeriod = "week" | "maand" | "altijd";
+import { leaderboardPeriods, type LeaderboardPeriod, type LeaderboardScope } from "./leaderboard-shared";
 
-export const leaderboardScopes: LeaderboardScope[] = ["team", "organisatie"];
-export const leaderboardPeriods: LeaderboardPeriod[] = ["week", "maand", "altijd"];
+export { leaderboardPeriods, leaderboardScopes, type LeaderboardPeriod, type LeaderboardScope } from "./leaderboard-shared";
 
 export type LeaderboardMember = {
   id: string;
@@ -86,7 +83,7 @@ function rankBy(members: LeaderboardMember[], points: (m: LeaderboardMember) => 
   return { sorted, ranks };
 }
 
-function buildBoard(members: LeaderboardMember[], scope: LeaderboardScope, period: LeaderboardPeriod): LeaderboardBoard {
+function buildBoard(members: LeaderboardMember[], scope: LeaderboardScope, period: LeaderboardPeriod, myId: string): LeaderboardBoard {
   const now = rankBy(members, (m) => m.points[period]);
   const before = rankBy(members, (m) => m.previous[period]);
 
@@ -102,14 +99,14 @@ function buildBoard(members: LeaderboardMember[], scope: LeaderboardScope, perio
       points: m.points[period],
       rank,
       change: previousRank === undefined ? null : previousRank - rank,
-      isMe: m.id === mockMyId,
+      isMe: m.id === myId,
     };
   });
 
   return { scope, period, entries, memberCount: members.length, me: entries.find((e) => e.isMe) ?? null };
 }
 
-function teamAverages(members: LeaderboardMember[], period: LeaderboardPeriod): TeamAverage[] {
+function teamAverages(members: LeaderboardMember[], period: LeaderboardPeriod, myTeam: string): TeamAverage[] {
   const byTeam = new Map<string, LeaderboardMember[]>();
   for (const m of members) byTeam.set(m.team, [...(byTeam.get(m.team) ?? []), m]);
   return [...byTeam]
@@ -117,27 +114,33 @@ function teamAverages(members: LeaderboardMember[], period: LeaderboardPeriod): 
       team,
       members: list.length,
       average: Math.round(list.reduce((sum, m) => sum + m.points[period], 0) / list.length),
-      isMine: team === mockMyTeam,
+      isMine: team === myTeam,
     }))
     .sort((a, b) => b.average - a.average);
 }
 
 // Alle ranglijsten in één keer, zodat wisselen tussen team/organisatie en periode direct gaat.
-// Straks één aggregatie-query op MongoDB (punten-events per gebruiker, gegroepeerd per periode).
-export async function getLeaderboardOverview(): Promise<LeaderboardOverview> {
-  const all = mockLeaderboardMembers;
-  const team = all.filter((m) => m.team === mockMyTeam);
+export const getLeaderboardOverview = cache(async (): Promise<LeaderboardOverview> => {
+  const user = await requireUser();
+  await connectDb();
+  const [all, myTeamDoc] = await Promise.all([
+    leaderboardMembers(user.orgId, user._id),
+    user.teamId ? Team.findById(user.teamId).lean() : null,
+  ]);
+  const myTeam = myTeamDoc?.name ?? "";
+  const myId = String(user._id);
+  const team = all.filter((m) => m.team === myTeam);
 
   const boards = {} as Record<BoardKey, LeaderboardBoard>;
   const teams = {} as Record<LeaderboardPeriod, TeamAverage[]>;
   for (const period of leaderboardPeriods) {
-    boards[`team-${period}`] = buildBoard(team, "team", period);
-    boards[`organisatie-${period}`] = buildBoard(all, "organisatie", period);
-    teams[period] = teamAverages(all, period);
+    boards[`team-${period}`] = buildBoard(team, "team", period, myId);
+    boards[`organisatie-${period}`] = buildBoard(all, "organisatie", period, myId);
+    teams[period] = teamAverages(all, period, myTeam);
   }
 
-  return { myTeam: mockMyTeam, visible: mockLeaderboardVisible, boards, teams };
-}
+  return { myTeam, visible: user.settings?.privacy?.showOnLeaderboard !== false, boards, teams };
+});
 
 // Hoe je punten verdient. Straks uit Storyblok, zodat de puntentabel zonder deploy kan wijzigen.
 export async function getPointRules() {

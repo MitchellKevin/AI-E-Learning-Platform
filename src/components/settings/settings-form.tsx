@@ -4,6 +4,7 @@ import { useId, useState, type FormEvent, type ReactNode } from "react";
 import clsx from "clsx";
 import { Check } from "lucide-react";
 import { Button, useToast } from "@/components/kit";
+import { errorMessage } from "@/lib/action-result";
 import styles from "./settings-form.module.scss";
 
 type SettingsFormProps = {
@@ -41,7 +42,12 @@ export function SettingsForm({
     e.preventDefault();
     if (!dirty || saving) return;
     if (validate && !validate()) return;
-    await onSave();
+    try {
+      await onSave();
+    } catch (error) {
+      toast({ variant: "error", title: "Opslaan lukte niet", description: errorMessage(error, "Controleer je invoer en probeer het opnieuw.") });
+      return;
+    }
     setJustSaved(true);
     toast({ variant: "success", ...savedMessage });
   }

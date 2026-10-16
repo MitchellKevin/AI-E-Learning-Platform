@@ -13,7 +13,7 @@ import {
   topicProgress,
 } from "@/lib/content";
 import { getProgress } from "@/lib/user-data";
-import { getExamOverview } from "@/lib/data/exam";
+import { getExamOverview } from "@/lib/data/exam-attempts";
 import { ArrowButton, Breadcrumbs, Card, ProgressBar, Tag, Tags } from "@/components/ui";
 import { TopicIcon } from "@/components/topic-icon";
 import styles from "./page.module.scss";

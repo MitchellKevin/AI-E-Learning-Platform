@@ -7,6 +7,7 @@ import { Check } from "lucide-react";
 import type { LearningPath } from "@/lib/types";
 import { ArrowButton, Eyebrow, Tag, Tags } from "./ui";
 import { TopicIcon } from "./topic-icon";
+import { chooseSpecialisationAction } from "@/server/actions/enrollment";
 import styles from "./specialisation-picker.module.scss";
 
 export function SpecialisationPicker({ paths }: { paths: LearningPath[] }) {
@@ -64,7 +65,7 @@ export function SpecialisationPicker({ paths }: { paths: LearningPath[] }) {
 
       <div className={styles.actions}>
         {chosen && (
-          <ArrowButton href={`/leerpaden/${chosen.slug}`}>
+          <ArrowButton href={`/leerpaden/${chosen.slug}`} onClick={() => chooseSpecialisationAction(chosen.slug).catch(() => {})}>
             {/* Alle labels gestapeld: vaste knopbreedte en een crossfade bij wisselen. */}
             <span className={styles.ctaLabels}>
               {paths.map((path) => (

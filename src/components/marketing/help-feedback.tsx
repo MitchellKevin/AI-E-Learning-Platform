@@ -3,13 +3,14 @@
 import { useEffect, useRef, useState, type FormEvent } from "react";
 import { CircleCheck, ThumbsDown, ThumbsUp } from "lucide-react";
 import { Button, Field, Textarea } from "@/components/kit";
+import { helpFeedbackAction } from "@/server/actions/public";
 import styles from "./help-feedback.module.scss";
 
 type State = "idle" | "nee" | "sent";
 
 const storageKey = (slug: string) => `aia-help-feedback:${slug}`;
 
-// Feedback per artikel. Wordt straks een server action die de stem opslaat (bv. in MongoDB).
+// Feedback per artikel; de stem (en eventuele toelichting) wordt opgeslagen.
 export function HelpFeedback({ slug }: { slug: string }) {
   const [state, setState] = useState<State>("idle");
   const [comment, setComment] = useState("");
@@ -37,8 +38,8 @@ export function HelpFeedback({ slug }: { slug: string }) {
 
   async function send(vote: "ja" | "nee") {
     setBusy(true);
-    // Hier komt straks de server action.
-    await new Promise((r) => setTimeout(r, 450));
+    // Niet blokkeren als opslaan mislukt: de bezoeker heeft zijn mening al gegeven.
+    await helpFeedbackAction(slug, vote === "ja", comment.trim() || undefined).catch(() => {});
     remember(vote);
     focusThanks.current = true;
     setBusy(false);

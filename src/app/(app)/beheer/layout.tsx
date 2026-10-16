@@ -8,8 +8,12 @@ import {
   Users,
 } from "lucide-react";
 import { getOrganization } from "@/lib/data/admin-team";
+import { requireRole } from "@/server/session";
 import { Badge, TabLinks, type TabLinkItem } from "@/components/kit";
 import styles from "./layout.module.scss";
+
+// Gebruikers, abonnement en organisatie zijn alleen voor beheerders.
+const adminOnly = new Set(["/beheer/gebruikers", "/beheer/abonnement", "/beheer/organisatie"]);
 
 const navItems: TabLinkItem[] = [
   { href: "/beheer", label: "Overzicht", icon: <LayoutDashboard />, exact: true },
@@ -24,7 +28,8 @@ const navItems: TabLinkItem[] = [
 // Schil voor het hele beheergedeelte: organisatiekop, subnavigatie en de paginacontainer.
 // Pagina's hieronder renderen zelf geen <main> en geen container.
 export default async function AdminLayout({ children }: { children: React.ReactNode }) {
-  const org = await getOrganization();
+  const [org, user] = await Promise.all([getOrganization(), requireRole("manager")]);
+  const items = user.role === "admin" ? navItems : navItems.filter((item) => !adminOnly.has(item.href));
   const seatsLeft = org.seats - org.seatsUsed;
 
   return (
@@ -54,7 +59,7 @@ export default async function AdminLayout({ children }: { children: React.ReactN
           </div>
         </div>
         <div className={styles.navWrap}>
-          <TabLinks aria-label="Beheer" items={navItems} className={styles.nav} />
+          <TabLinks aria-label="Beheer" items={items} className={styles.nav} />
         </div>
       </div>
       <div className={styles.content}>{children}</div>

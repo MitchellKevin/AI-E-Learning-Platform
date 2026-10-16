@@ -2,7 +2,9 @@ import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { allChapters, getLearningPath, getLearningPaths, isChapterDone, topicProgress } from "@/lib/content";
 import { getCertificates, getProgress } from "@/lib/user-data";
-import { getExam, getExamAttempts, getExams } from "@/lib/data/exam";
+import { getExam, getExams } from "@/lib/data/exam";
+import { getExamAttempts } from "@/lib/data/exam-attempts";
+import { withoutAnswers } from "@/server/services/exam";
 import { ExamFlow, type ExamRequirement } from "@/components/exam/exam-flow";
 
 export async function generateStaticParams() {
@@ -58,7 +60,8 @@ export default async function ExamPage({ params }: { params: Promise<{ path: str
       path={{ slug: path.slug, title: path.title, level: path.level }}
       topics={path.topics.map((t) => ({ id: t.id, title: t.title, icon: t.icon }))}
       chapters={chapters}
-      exam={exam}
+      // Zonder antwoorden: de browser krijgt pas na het inleveren de uitwerkingen.
+      exam={{ ...exam, questions: exam.questions.map(withoutAnswers) }}
       initialAttempts={attempts}
       requirement={requirement}
       certificateHref={certificateHref}

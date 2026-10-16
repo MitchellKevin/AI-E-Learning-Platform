@@ -1,326 +1,186 @@
+import { cache } from "react";
+import { mockBillingDetails, mockInvoices, mockPaymentMethod, mockSubscription } from "@/lib/mock/admin-org";
+import { connectDb } from "@/server/db";
+import { AuditLog, Invite, Organization, Team, User, initialsOf, type UserRole } from "@/server/models";
+import { requireRole } from "@/server/session";
 import {
-  mockAuditLog,
-  mockBillingDetails,
-  mockDomains,
-  mockInvoices,
-  mockOrgProfile,
-  mockOrgUsers,
-  mockPaymentMethod,
-  mockPrivacy,
-  mockSso,
-  mockSubscription,
-  mockTeams,
-} from "@/lib/mock/admin-org";
+  initialsFromEmail,
+  type AuditCategory,
+  type AuditEntry,
+  type BillingDetails,
+  type DomainSettings,
+  type Invoice,
+  type OrgProfile,
+  type OrgRole,
+  type OrgUser,
+  type PaymentMethod,
+  type PrivacySettings,
+  type RetentionPeriod,
+  type SsoConnection,
+  type Subscription,
+} from "./admin-org-shared";
 
-// Organisatiebeheer: gebruikers, licenties, abonnement en organisatie-instellingen.
-// Nu op mock-data; later uit MongoDB (gebruikers, organisatie) en Stripe (abonnement, facturen).
+export * from "./admin-org-shared";
 
-// Gebruikers
+// Organisatiebeheer (alleen beheerders): gebruikers en organisatie uit MongoDB.
+// Abonnement, betaalmethode en facturen blijven mock tot Stripe gekoppeld is.
 
-export type OrgRole = "cursist" | "teammanager" | "beheerder";
-export type UserStatus = "actief" | "uitgenodigd" | "gedeactiveerd";
+export const orgRoleOf: Record<UserRole, OrgRole> = { learner: "cursist", manager: "teammanager", admin: "beheerder" };
+export const userRoleOf: Record<OrgRole, UserRole> = { cursist: "learner", teammanager: "manager", beheerder: "admin" };
 
-export const ROLE_LABELS: Record<OrgRole, string> = {
-  cursist: "Cursist",
-  teammanager: "Teammanager",
-  beheerder: "Beheerder",
-};
-
-export const ROLE_DESCRIPTIONS: Record<OrgRole, string> = {
-  cursist: "Volgt leerpaden en ziet alleen de eigen voortgang.",
-  teammanager: "Wijst leerpaden toe en ziet de voortgang van het eigen team.",
-  beheerder: "Beheert gebruikers, het abonnement en de organisatie.",
-};
-
-export const STATUS_LABELS: Record<UserStatus, string> = {
-  actief: "Actief",
-  uitgenodigd: "Uitgenodigd",
-  gedeactiveerd: "Gedeactiveerd",
-};
-
-export type OrgUser = {
-  id: string;
-  /** Leeg zolang een uitgenodigde collega nog niet heeft ingelogd. */
-  name: string | null;
-  initials: string;
-  email: string;
-  team: string;
-  role: OrgRole;
-  status: UserStatus;
-  /** Laatste keer ingelogd (actief) of gedeactiveerd op. */
-  lastActiveAt?: string;
-  invitedAt?: string;
-  invitedBy?: string;
-  /** De ingelogde beheerder zelf. */
-  isMe?: boolean;
-};
-
-export type SeatUsage = { total: number; active: number; invited: number };
-
-/** Uitnodigingen verlopen na 14 dagen. */
-export const INVITE_VALID_DAYS = 14;
-
-export type AutoJoinDomain = { domain: string; verified: boolean; addedAt: string };
-
-export type DomainSettings = {
-  autoJoin: boolean;
-  /** Team waarin collega's via een domein binnenkomen; ze starten als cursist. */
-  defaultTeam: string;
-  domains: AutoJoinDomain[];
-};
-
-export type SsoConnection = {
-  provider: string;
-  connected: boolean;
-  tenant?: string;
-  connectedAt?: string;
-  lastSyncAt?: string;
-  /** Inloggen met e-mail uit, alleen via SSO. */
-  enforced: boolean;
-};
+const context = cache(async () => {
+  const admin = await requireRole("admin", "/beheer");
+  await connectDb();
+  const org = await Organization.findById(admin.orgId).lean();
+  if (!org) throw new Error("Organisatie niet gevonden");
+  return { admin, org };
+});
 
 export async function getOrgUsers(): Promise<OrgUser[]> {
-  return mockOrgUsers;
+  const { admin, org } = await context();
+  const [users, invites, teams] = await Promise.all([
+    User.find({ orgId: org._id }).sort({ firstName: 1 }).lean(),
+    Invite.find({ orgId: org._id, acceptedAt: null, revokedAt: null }).sort({ createdAt: -1 }).lean(),
+    Team.find({ orgId: org._id }).lean(),
+  ]);
+  const teamName = new Map(teams.map((t) => [String(t._id), t.name]));
+  const inviters = new Map(
+    (await User.find({ _id: { $in: invites.map((i) => i.invitedBy).filter(Boolean) } }, { firstName: 1, lastName: 1 }).lean()).map(
+      (u) => [String(u._id), `${u.firstName} ${u.lastName}`],
+    ),
+  );
+
+  return [
+    ...users.map<OrgUser>((u) => ({
+      id: String(u._id),
+      name: `${u.firstName} ${u.lastName}`.trim() || null,
+      initials: initialsOf(u.firstName, u.lastName, u.email),
+      email: u.email,
+      team: teamName.get(String(u.teamId)) ?? "",
+      role: orgRoleOf[u.role as UserRole],
+      status: u.status === "gedeactiveerd" ? "gedeactiveerd" : "actief",
+      lastActiveAt: (u.status === "gedeactiveerd" ? u.updatedAt : u.lastActiveAt)?.toISOString(),
+      isMe: u._id.equals(admin._id) || undefined,
+    })),
+    // Uitgenodigd maar nog niet ingelogd: de naam kennen we pas na de eerste login.
+    ...invites
+      .filter((i) => i.expiresAt > new Date())
+      .map<OrgUser>((i) => ({
+        id: `inv_${i._id}`,
+        name: null,
+        initials: initialsFromEmail(i.email),
+        email: i.email,
+        team: teamName.get(String(i.teamId)) ?? "",
+        role: orgRoleOf[i.role as UserRole],
+        status: "uitgenodigd",
+        invitedAt: (i.lastSentAt ?? i.createdAt).toISOString(),
+        invitedBy: i.invitedBy ? inviters.get(String(i.invitedBy)) : undefined,
+      })),
+  ];
 }
 
 export async function getTeams(): Promise<string[]> {
-  return mockTeams;
+  const { org } = await context();
+  return (await Team.find({ orgId: org._id }).sort({ name: 1 }).lean()).map((t) => t.name);
 }
 
 export async function getSeatTotal(): Promise<number> {
-  return mockSubscription.seats;
+  return (await context()).org.seats ?? 0;
 }
 
 export async function getDomainSettings(): Promise<DomainSettings> {
-  return mockDomains;
-}
-
-export async function getSso(): Promise<SsoConnection> {
-  return mockSso;
-}
-
-/** Actieve en uitgenodigde gebruikers bezetten een licentie; gedeactiveerde niet. */
-export function seatUsage(users: OrgUser[], total: number): SeatUsage {
+  const { org } = await context();
+  const team = org.autoJoinTeamId ? await Team.findById(org.autoJoinTeamId).lean() : null;
   return {
-    total,
-    active: users.filter((u) => u.status === "actief").length,
-    invited: users.filter((u) => u.status === "uitgenodigd").length,
+    autoJoin: Boolean(org.autoJoin),
+    defaultTeam: team?.name ?? "",
+    domains: org.domains.filter((d) => !d.removedAt).map((d) => ({
+      domain: d.domain ?? "",
+      verified: Boolean(d.verified),
+      addedAt: (d.addedAt ?? org.createdAt).toISOString().slice(0, 10),
+    })),
   };
 }
 
-const EMAIL = /^[^\s@,;<>()]+@[^\s@,;<>()]+\.[a-z]{2,}$/i;
-export const isValidEmail = (value: string) => EMAIL.test(value.trim());
+const providerName = { microsoft: "Microsoft Entra ID", google: "Google Workspace" } as const;
 
-const DOMAIN = /^(?!-)[a-z0-9-]{1,63}(?<!-)(\.(?!-)[a-z0-9-]{1,63}(?<!-))*\.[a-z]{2,}$/i;
-export const isValidDomain = (value: string) => DOMAIN.test(value.trim());
-
-/** Publieke maildomeinen mogen niet automatisch toetreden. */
-export const PUBLIC_EMAIL_DOMAINS = [
-  "gmail.com",
-  "hotmail.com",
-  "outlook.com",
-  "live.nl",
-  "icloud.com",
-  "yahoo.com",
-  "ziggo.nl",
-  "kpnmail.nl",
-];
-
-export function initialsFromEmail(email: string) {
-  const local = email.split("@")[0] ?? "";
-  const parts = local.split(/[._-]+/).filter(Boolean);
-  const letters = parts.length > 1 ? parts[0][0] + parts[parts.length - 1][0] : local.slice(0, 2);
-  return letters.toUpperCase() || "?";
+export async function getSso(): Promise<SsoConnection> {
+  const { org } = await context();
+  const sso = org.sso;
+  return {
+    provider: sso?.provider ? providerName[sso.provider] : "Microsoft Entra ID",
+    connected: sso?.status === "verbonden",
+    tenant: sso?.tenant ?? undefined,
+    connectedAt: sso?.connectedAt?.toISOString().slice(0, 10),
+    lastSyncAt: sso?.lastSyncAt?.toISOString(),
+    enforced: Boolean(sso?.enforced),
+  };
 }
 
-// Abonnement
-
-export type PlanId = "starter" | "team" | "enterprise";
-export type BillingInterval = "maand" | "jaar";
-
-export type Subscription = {
-  planId: PlanId;
-  planName: string;
-  interval: BillingInterval;
-  /** Prijs per gebruiker per maand, excl. btw, na jaarkorting. */
-  pricePerSeat: number;
-  seats: number;
-  minSeats: number;
-  maxSeats: number;
-  startedAt: string;
-  renewsAt: string;
-  /** Opgezegd: loopt door tot `renewsAt` en verlengt daarna niet. */
-  cancelAtPeriodEnd: boolean;
-};
-
-export type PaymentMethodType = "sepa" | "ideal" | "card";
-
-export type PaymentMethod = {
-  type: PaymentMethodType;
-  /** Bijvoorbeeld "SEPA-incasso" of "Visa". */
-  label: string;
-  /** Gemaskeerd: IBAN of kaartnummer. */
-  detail: string;
-  holder: string;
-  /** Mandaat- of vervaldatum. */
-  meta: string;
-};
-
-export type BillingDetails = {
-  companyName: string;
-  street: string;
-  postalCode: string;
-  city: string;
-  country: string;
-  vatNumber: string;
-  invoiceEmail: string;
-  /** Inkoopordernummer op elke factuur. */
-  reference: string;
-};
-
-export type InvoiceStatus = "betaald" | "open";
-
-export type Invoice = {
-  number: string;
-  date: string;
-  description: string;
-  /** Excl. btw. */
-  amount: number;
-  status: InvoiceStatus;
-  dueAt?: string;
-};
-
+// Abonnement (Stripe, nog mock). Het aantal licenties komt wel uit de organisatie.
 export async function getSubscription(): Promise<Subscription> {
-  return mockSubscription;
+  const { org } = await context();
+  return { ...mockSubscription, seats: org.seats ?? mockSubscription.seats };
 }
 
 export async function getPaymentMethod(): Promise<PaymentMethod> {
+  await context();
   return mockPaymentMethod;
 }
 
 export async function getBillingDetails(): Promise<BillingDetails> {
+  await context();
   return mockBillingDetails;
 }
 
 export async function getInvoices(): Promise<Invoice[]> {
+  await context();
   return mockInvoices;
 }
 
-export const VAT_RATE = 0.21;
-
-const euro = new Intl.NumberFormat("nl-NL", { style: "currency", currency: "EUR" });
-
-/** Altijd met centen: facturen en prijzen moeten tot op de cent kloppen. */
-export const formatEuro = (amount: number) => euro.format(Math.round(amount * 100) / 100);
-
-const DAY = 24 * 60 * 60 * 1000;
-
-export const daysBetween = (fromIso: string, toIso: string) =>
-  Math.max(0, Math.round((Date.parse(toIso.slice(0, 10)) - Date.parse(fromIso.slice(0, 10))) / DAY));
-
-/**
- * Kosten van extra licenties voor de rest van de lopende periode (excl. btw).
- * Minder licenties gaan pas in bij de verlenging en leveren dus niets op.
- */
-export function prorate(sub: Subscription, newSeats: number, todayIso: string) {
-  const extra = newSeats - sub.seats;
-  const periodDays = daysBetween(sub.startedAt, sub.renewsAt) || 365;
-  const remainingDays = Math.min(periodDays, daysBetween(todayIso, sub.renewsAt));
-  const yearly = sub.interval === "jaar" ? 12 : 1;
-  const perSeatPeriod = sub.pricePerSeat * yearly;
-  const amount = extra > 0 ? (extra * perSeatPeriod * remainingDays) / periodDays : 0;
-  return { extra, remainingDays, amount: Math.round(amount * 100) / 100 };
-}
-
-/** NL-btw-nummer: NL + 9 cijfers + B + 2 cijfers, bv. NL859123456B01. */
-export function normalizeVat(value: string) {
-  return value.replace(/[\s.-]/g, "").toUpperCase();
-}
-
-export const isValidNlVat = (value: string) => /^NL\d{9}B\d{2}$/.test(normalizeVat(value));
-
-export const isValidPostalCode = (value: string) => /^\d{4}\s?[A-Z]{2}$/i.test(value.trim());
-
-// Organisatie
-
-export type OrgProfile = {
-  name: string;
-  legalName: string;
-  initials: string;
-  /** Accentkleur op certificaten. */
-  brandColor: string;
-  website: string;
-  memberSince: string;
-};
-
-export type RetentionPeriod = "12" | "24" | "36" | "contract";
-
-export const RETENTION_OPTIONS: { value: RetentionPeriod; label: string }[] = [
-  { value: "12", label: "12 maanden na deactivatie" },
-  { value: "24", label: "24 maanden na deactivatie" },
-  { value: "36", label: "36 maanden na deactivatie" },
-  { value: "contract", label: "Tot het einde van het contract" },
-];
-
-export type PrivacySettings = {
-  region: string;
-  regionDetail: string;
-  dpa: { status: "getekend" | "niet-getekend"; version: string; signedAt?: string; signedBy?: string };
-  retention: RetentionPeriod;
-};
-
-export type AuditCategory = "gebruikers" | "abonnement" | "organisatie" | "beveiliging";
-
-export const AUDIT_LABELS: Record<AuditCategory, string> = {
-  gebruikers: "Gebruikers",
-  abonnement: "Abonnement",
-  organisatie: "Organisatie",
-  beveiliging: "Beveiliging",
-};
-
-export type AuditEntry = {
-  id: string;
-  at: string;
-  actor: string;
-  actorInitials: string;
-  category: AuditCategory;
-  action: string;
-  target?: string;
-};
-
 export async function getOrgProfile(): Promise<OrgProfile> {
-  return mockOrgProfile;
+  const { org } = await context();
+  return {
+    name: org.name,
+    legalName: org.legalName ?? "",
+    initials: org.initials,
+    brandColor: org.brandColor ?? "#1d4ed8",
+    website: org.website ?? "",
+    memberSince: org.createdAt.toISOString().slice(0, 10),
+  };
 }
 
 export async function getPrivacySettings(): Promise<PrivacySettings> {
-  return mockPrivacy;
+  const { org } = await context();
+  return {
+    region: org.dataRegion ?? "EU — Frankfurt",
+    regionDetail: "Alle gegevens en back-ups staan in datacenters in Frankfurt (Duitsland) en verlaten de EU niet.",
+    dpa: {
+      status: org.dpa?.signedAt ? "getekend" : "niet-getekend",
+      version: org.dpa?.version ?? "2.1",
+      signedAt: org.dpa?.signedAt?.toISOString().slice(0, 10),
+      signedBy: org.dpa?.signedBy ?? undefined,
+    },
+    retention: (org.retention ?? "24") as RetentionPeriod,
+  };
 }
+
+const categories: AuditCategory[] = ["gebruikers", "abonnement", "organisatie", "beveiliging"];
 
 export async function getAuditLog(): Promise<AuditEntry[]> {
-  return mockAuditLog;
+  const { org } = await context();
+  const entries = await AuditLog.find({ orgId: org._id }).sort({ createdAt: -1 }).limit(100).lean();
+  return entries.map((e) => {
+    const [first = "", ...rest] = (e.actorName ?? "").split(" ");
+    const category = (e.meta as { category?: string } | undefined)?.category as AuditCategory | undefined;
+    return {
+      id: String(e._id),
+      at: e.createdAt.toISOString(),
+      actor: e.actorName ?? "Systeem",
+      actorInitials: initialsOf(first, rest.join(" ")),
+      category: category && categories.includes(category) ? category : "organisatie",
+      action: e.action,
+      target: e.target ?? undefined,
+    };
+  });
 }
-
-// Datums
-
-// Vaste tijdzone, zodat server en browser dezelfde datum tonen.
-const shortDate = new Intl.DateTimeFormat("nl-NL", {
-  day: "numeric",
-  month: "short",
-  year: "numeric",
-  timeZone: "Europe/Amsterdam",
-});
-const dateTime = new Intl.DateTimeFormat("nl-NL", {
-  day: "numeric",
-  month: "short",
-  hour: "2-digit",
-  minute: "2-digit",
-  timeZone: "Europe/Amsterdam",
-});
-
-/** "12 okt. 2026" */
-export const formatShortDate = (iso: string) => shortDate.format(new Date(iso));
-
-/** "12 okt. 14:05" */
-export const formatDateTime = (iso: string) => dateTime.format(new Date(iso));
-
-export const addDays = (iso: string, days: number) => new Date(Date.parse(iso) + days * DAY).toISOString();

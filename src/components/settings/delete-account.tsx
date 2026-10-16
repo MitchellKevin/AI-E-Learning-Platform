@@ -3,13 +3,14 @@
 import { useState, type FormEvent } from "react";
 import { Trash2 } from "lucide-react";
 import { Alert, Button, Dialog, Field, TextInput, useToast } from "@/components/kit";
+import { errorMessage, unwrap } from "@/lib/action-result";
 import { formatDate } from "@/lib/format";
 import { SettingsCard, SettingsGroup } from "./settings-form";
+import { cancelAccountDeletionAction, requestAccountDeletionAction } from "@/server/actions/account";
 import styles from "./delete-account.module.scss";
 
 const CONFIRM_WORD = "VERWIJDEREN";
 const GRACE_DAYS = 30;
-const wait = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms));
 
 const consequences = [
   "Je voortgang, punten, badges en streak worden gewist.",
@@ -17,13 +18,13 @@ const consequences = [
   "De openbare verificatielinks van je certificaten werken niet meer. Download ze dus eerst.",
 ];
 
-export function DeleteAccount({ organisation }: { organisation: string }) {
+export function DeleteAccount({ organisation, scheduled }: { organisation: string; scheduled?: string }) {
   const { toast } = useToast();
   const [open, setOpen] = useState(false);
   const [typed, setTyped] = useState("");
   const [error, setError] = useState<string>();
   const [busy, setBusy] = useState(false);
-  const [scheduledFor, setScheduledFor] = useState<string>();
+  const [scheduledFor, setScheduledFor] = useState<string | undefined>(scheduled);
 
   const matches = typed.trim().toUpperCase() === CONFIRM_WORD;
 
@@ -33,7 +34,7 @@ export function DeleteAccount({ organisation }: { organisation: string }) {
     setOpen(true);
   }
 
-  // Later: server action die het verzoek vastlegt en de beheerder van de organisatie op de hoogte brengt.
+  // Legt het verzoek vast en brengt de beheerders van de organisatie op de hoogte.
   async function submit(e: FormEvent) {
     e.preventDefault();
     if (!matches) {
@@ -41,8 +42,14 @@ export function DeleteAccount({ organisation }: { organisation: string }) {
       return;
     }
     setBusy(true);
-    await wait(900);
-    const date = new Date(Date.now() + GRACE_DAYS * 24 * 60 * 60 * 1000).toISOString();
+    let date: string;
+    try {
+      date = unwrap(await requestAccountDeletionAction());
+    } catch (error) {
+      setBusy(false);
+      toast({ variant: "error", title: "Er ging iets mis", description: errorMessage(error, "Je verzoek is niet opgeslagen. Probeer het opnieuw.") });
+      return;
+    }
     setScheduledFor(date);
     setBusy(false);
     setOpen(false);
@@ -53,10 +60,15 @@ export function DeleteAccount({ organisation }: { organisation: string }) {
     });
   }
 
-  // Later: server action die het verzoek intrekt.
   async function cancelRequest() {
     setBusy(true);
-    await wait(600);
+    try {
+      unwrap(await cancelAccountDeletionAction());
+    } catch (error) {
+      setBusy(false);
+      toast({ variant: "error", title: "Er ging iets mis", description: errorMessage(error, "Je verzoek is niet ingetrokken. Probeer het opnieuw.") });
+      return;
+    }
     setScheduledFor(undefined);
     setBusy(false);
     toast({ variant: "success", title: "Verwijderen ingetrokken", description: "Je account blijft gewoon bestaan." });

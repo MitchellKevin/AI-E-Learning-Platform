@@ -2,7 +2,8 @@ import Link from "next/link";
 import clsx from "clsx";
 import { Check } from "lucide-react";
 import { Badge, Tag, Tags } from "@/components/kit";
-import { audienceLabel, type PracticeExercise } from "@/lib/data/practice";
+import type { PracticeExercise } from "@/lib/data/practice";
+import { audienceLabel } from "@/lib/data/practice-shared";
 import { PracticeIcon } from "./practice-icon";
 import styles from "./exercise-card.module.scss";
 

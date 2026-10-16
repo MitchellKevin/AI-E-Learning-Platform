@@ -17,10 +17,11 @@ import {
   TextInput,
   useToast,
 } from "@/components/kit";
+import { errorMessage, unwrap } from "@/lib/action-result";
 import type { AdminPath, Assignment, PathSlug, TeamName } from "@/lib/data/admin-team";
 import { summarizeAssignment } from "@/components/admin/shell/assignments";
-import { wait } from "@/components/admin/shell/csv";
 import { addDays, formatLongDate, plural } from "@/components/admin/shell/format";
+import { createAssignmentAction } from "@/server/actions/admin-team";
 import styles from "./new-assignment-dialog.module.scss";
 
 export type MemberOption = {
@@ -163,12 +164,27 @@ function AssignmentForm({
     if (Object.keys(found).length > 0 || !path) return;
 
     setBusy(true);
-    // Straks een server action die de toewijzing opslaat en de e-mails verstuurt.
-    await wait(800);
+    let id: string;
+    try {
+      ({ id } = unwrap(
+        await createAssignmentAction({
+          pathSlug: path.slug,
+          teams: mode === "team" ? teams.filter((t) => selectedTeams.has(t)) : [],
+          memberIds: mode === "team" ? [] : targetIds,
+          deadline,
+          required,
+          message: message.trim() || undefined,
+        }),
+      ));
+    } catch (error) {
+      setBusy(false);
+      toast({ variant: "error", title: "Toewijzing niet opgeslagen", description: errorMessage(error, "Probeer het opnieuw.") });
+      return;
+    }
     const assigned = members.filter((m) => targetIds.includes(m.id));
     const assignment = summarizeAssignment(
       {
-        id: `t_${Date.now()}`,
+        id,
         pathSlug: path.slug,
         target: mode === "team" ? { kind: "team", teams: teams.filter((t) => selectedTeams.has(t)) } : { kind: "people" },
         memberIds: targetIds,
